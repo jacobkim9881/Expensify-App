@@ -42,6 +42,7 @@ function IOURequestStepParticipants({
     const iouRequestType = TransactionUtils.getRequestType(transaction);
     const headerTitle = translate(TransactionUtils.getHeaderTitleTranslationKey(transaction));
     const receiptFilename = lodashGet(transaction, 'filename');
+    const receiptFilename1 = lodashGet(transaction, 'iouRequestType');
     const receiptPath = lodashGet(transaction, 'receipt.source');
 
     // When the component mounts, if there is a receipt, see if the image can be read from the disk. If not, redirect the user to the starting step of the flow.
@@ -50,6 +51,15 @@ function IOURequestStepParticipants({
     useEffect(() => {
         IOUUtils.navigateToStartStepIfScanFileCannotBeRead(receiptFilename, receiptPath, () => {}, iouRequestType, iouType, transactionID, reportID);
     }, [receiptPath, receiptFilename, iouRequestType, iouType, transactionID, reportID]);
+
+	/*
+	    console.log('transaction: ', transaction)
+	console.log('tran type: ', receiptFilename)
+	console.log('tran type1: ', receiptFilename1)
+	*/
+	//const hasAccountID = !!transaction?.participants[0]?.accountID
+	    //console.log('tran hasAccountID: ', hasAccountID)
+
 
     const addParticipant = useCallback(
         (val) => {
