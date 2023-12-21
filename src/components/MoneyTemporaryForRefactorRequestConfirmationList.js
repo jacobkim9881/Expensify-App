@@ -298,8 +298,6 @@ function MoneyTemporaryForRefactorRequestConfirmationList({
     }, [isEditingSplitBill, hasSmartScanFailed, transaction, didConfirmSplit]);
 
     useEffect(() => {
-	    console.log('transaction: ', transaction)
-	    console.log('ioutype: ', iouType)
         if (shouldDisplayFieldError && hasSmartScanFailed) {
             setFormError('iou.receiptScanningFailed');
             return;
@@ -493,12 +491,6 @@ function MoneyTemporaryForRefactorRequestConfirmationList({
             } else {
                 // validate the amount for distance requests
                 const decimals = CurrencyUtils.getCurrencyDecimals(iouCurrencyCode);
-		    return;
-		if (isDistanceRequest && isDistanceRequestWithoutRoute) {
-                    setFormError('common.error.invalidAmount');
-		    return;
-		}
-
                 if (isDistanceRequest && !isDistanceRequestWithoutRoute && !MoneyRequestUtils.validateAmount(String(iouAmount), decimals)) {
                     setFormError('common.error.invalidAmount');
                     return;
@@ -509,8 +501,6 @@ function MoneyTemporaryForRefactorRequestConfirmationList({
                     setFormError('iou.error.genericSmartscanFailureMessage');
                     return;
                 }
-		console.log('condition1 isDistanceRequest: ', isDistanceRequest)    
-		console.log('condition2 isDistanceRequestWithoutRoute: ', isDistanceRequestWithoutRoute)    
 
                 setDidConfirm(true);
                 onConfirm(selectedParticipants);

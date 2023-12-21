@@ -24,21 +24,6 @@ function navigateToStartMoneyRequestStep(requestType: ValueOf<typeof CONST.IOU.R
 }
 
 type SuccessCallback = (file?: File) => void;
-
-function navigateToStartStepIfFromWorkspace(
-    accountID: string,
-    requestType: ValueOf<typeof CONST.IOU.REQUEST_TYPE>,
-    iouType: ValueOf<typeof CONST.IOU.TYPE>,
-    transactionID: string,
-    reportID: string,
-
-){
-if (accountID) {
-navigateToStartMoneyRequestStep(requestType, iouType, transactionID, reportID);
-
-}
-}
-
 // eslint-disable-next-line rulesdir/no-negated-variables
 function navigateToStartStepIfScanFileCannotBeRead(
     receiptFilename: string,
@@ -49,10 +34,10 @@ function navigateToStartStepIfScanFileCannotBeRead(
     transactionID: string,
     reportID: string,
 ) {
-	console.log('tran receiptFilename: ', receiptFilename)
     if (!receiptFilename || !receiptPath) {
         return;
     }
+
     const onFailure = () => navigateToStartMoneyRequestStep(requestType, iouType, transactionID, reportID);
     FileUtils.readFileAsync(receiptPath, receiptFilename, onSuccess, onFailure);
 }
@@ -133,4 +118,4 @@ function isValidMoneyRequestType(iouType: string): boolean {
     return moneyRequestType.includes(iouType);
 }
 
-export {calculateAmount, updateIOUOwnerAndTotal, isIOUReportPendingCurrencyConversion, isValidMoneyRequestType, navigateToStartMoneyRequestStep, navigateToStartStepIfScanFileCannotBeRead, navigateToStartStepIfFromWorkspace};
+export {calculateAmount, updateIOUOwnerAndTotal, isIOUReportPendingCurrencyConversion, isValidMoneyRequestType, navigateToStartMoneyRequestStep, navigateToStartStepIfScanFileCannotBeRead};
