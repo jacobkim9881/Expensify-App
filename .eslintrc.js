@@ -1,12 +1,14 @@
 const restrictedImportPaths = [
     {
         name: 'react-native',
-        importNames: ['useWindowDimensions', 'StatusBar', 'TouchableOpacity', 'TouchableWithoutFeedback', 'TouchableNativeFeedback', 'TouchableHighlight', 'Pressable'],
+        importNames: ['useWindowDimensions', 'StatusBar', 'TouchableOpacity', 'TouchableWithoutFeedback', 'TouchableNativeFeedback', 'TouchableHighlight', 'Pressable', 'Text', 'ScrollView'],
         message: [
             '',
             "For 'useWindowDimensions', please use 'src/hooks/useWindowDimensions' instead.",
             "For 'TouchableOpacity', 'TouchableWithoutFeedback', 'TouchableNativeFeedback', 'TouchableHighlight', 'Pressable', please use 'PressableWithFeedback' and/or 'PressableWithoutFeedback' from 'src/components/Pressable' instead.",
             "For 'StatusBar', please use 'src/libs/StatusBar' instead.",
+            "For 'Text', please use '@components/Text' instead.",
+            "For 'ScrollView', please use '@components/ScrollView' instead.",
         ].join('\n'),
     },
     {
@@ -29,6 +31,30 @@ const restrictedImportPaths = [
         importNames: ['CSSProperties'],
         message: "Please use 'ViewStyle', 'TextStyle', 'ImageStyle' from 'react-native' instead.",
     },
+    {
+        name: '@styles/index',
+        importNames: ['default', 'defaultStyles'],
+        message: 'Do not import styles directly. Please use the `useThemeStyles` hook or `withThemeStyles` HOC instead.',
+    },
+    {
+        name: '@styles/utils',
+        importNames: ['default', 'DefaultStyleUtils'],
+        message: 'Do not import StyleUtils directly. Please use the `useStyleUtils` hook or `withStyleUtils` HOC instead.',
+    },
+    {
+        name: '@styles/theme',
+        importNames: ['default', 'defaultTheme'],
+
+        message: 'Do not import themes directly. Please use the `useTheme` hook or `withTheme` HOC instead.',
+    },
+    {
+        name: '@styles/theme/illustrations',
+        message: 'Do not import theme illustrations directly. Please use the `useThemeIllustrations` hook instead.',
+    },
+    {
+        name: 'date-fns/locale',
+        message: "Do not import 'date-fns/locale' directly. Please use the submodule import instead, like 'date-fns/locale/en-GB'.",
+    },
 ];
 
 const restrictedImportPatterns = [
@@ -36,11 +62,23 @@ const restrictedImportPatterns = [
         group: ['**/assets/animations/**/*.json'],
         message: "Do not import animations directly. Please use the 'src/components/LottieAnimations' import instead.",
     },
+    {
+        group: ['@styles/theme/themes/**'],
+        message: 'Do not import themes directly. Please use the `useTheme` hook or `withTheme` HOC instead.',
+    },
+    {
+        group: ['@styles/utils/**', '!@styles/utils/FontUtils', '!@styles/utils/types'],
+        message: 'Do not import style util functions directly. Please use the `useStyleUtils` hook or `withStyleUtils` HOC instead.',
+    },
+    {
+        group: ['@styles/theme/illustrations/themes/**'],
+        message: 'Do not import theme illustrations directly. Please use the `useThemeIllustrations` hook instead.',
+    },
 ];
 
 module.exports = {
-    extends: ['expensify', 'plugin:storybook/recommended', 'plugin:react-hooks/recommended', 'plugin:react-native-a11y/basic', 'plugin:@dword-design/import-alias/recommended', 'prettier'],
-    plugins: ['react-hooks', 'react-native-a11y'],
+    extends: ['expensify', 'plugin:storybook/recommended', 'plugin:react-native-a11y/basic', 'plugin:@dword-design/import-alias/recommended', 'prettier'],
+    plugins: ['react-native-a11y'],
     parser: 'babel-eslint',
     ignorePatterns: ['!.*', 'src/vendor', '.github/actions/**/index.js', 'desktop/dist/*.js', 'dist/*.js', 'node_modules/.bin/**', 'node_modules/.cache/**', '.git/**'],
     env: {
@@ -54,6 +92,7 @@ module.exports = {
             files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
             plugins: ['react'],
             rules: {
+                'prefer-regex-literals': 'off',
                 'rulesdir/no-multiple-onyx-in-file': 'off',
                 'rulesdir/onyx-props-must-have-default': 'off',
                 'react-native-a11y/has-accessibility-hint': ['off'],
@@ -79,6 +118,7 @@ module.exports = {
                             '@styles': './src/styles',
                             // This path is provide alias for files like `ONYXKEYS` and `CONST`.
                             '@src': './src',
+                            '@desktop': './desktop',
                         },
                     },
                 ],
@@ -158,6 +198,7 @@ module.exports = {
                     {
                         selector: ['parameter', 'method'],
                         format: ['camelCase', 'PascalCase'],
+                        leadingUnderscore: 'allow',
                     },
                 ],
                 '@typescript-eslint/ban-types': [
@@ -176,10 +217,26 @@ module.exports = {
                 '@typescript-eslint/switch-exhaustiveness-check': 'error',
                 '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
                 '@typescript-eslint/no-floating-promises': 'off',
+                '@typescript-eslint/consistent-type-imports': [
+                    'error',
+                    {
+                        prefer: 'type-imports',
+                        fixStyle: 'separate-type-imports',
+                    },
+                ],
+                '@typescript-eslint/no-import-type-side-effects': 'error',
+                '@typescript-eslint/consistent-type-exports': [
+                    'error',
+                    {
+                        fixMixedExportsWithInlineTypeSpecifier: false,
+                    },
+                ],
+                'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
                 'es/no-nullish-coalescing-operators': 'off',
                 'es/no-optional-chaining': 'off',
                 'valid-jsdoc': 'off',
                 'jsdoc/no-types': 'error',
+                'rulesdir/no-default-props': 'error',
                 'import/no-extraneous-dependencies': 'off',
                 'rulesdir/prefer-underscore-method': 'off',
                 'rulesdir/prefer-import-module-contents': 'off',

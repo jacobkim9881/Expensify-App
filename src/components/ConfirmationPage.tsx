@@ -5,7 +5,7 @@ import Button from './Button';
 import FixedFooter from './FixedFooter';
 import Lottie from './Lottie';
 import LottieAnimations from './LottieAnimations';
-import DotLottieAnimation from './LottieAnimations/types';
+import type DotLottieAnimation from './LottieAnimations/types';
 import Text from './Text';
 
 type ConfirmationPageProps = {
@@ -47,6 +47,7 @@ function ConfirmationPage({animation = LottieAnimations.Fireworks, heading, desc
                 <FixedFooter>
                     <Button
                         success
+                        large
                         text={buttonText}
                         style={styles.mt6}
                         pressOnEnter

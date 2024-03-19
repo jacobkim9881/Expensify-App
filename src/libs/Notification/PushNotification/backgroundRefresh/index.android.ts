@@ -4,7 +4,7 @@ import Visibility from '@libs/Visibility';
 import * as App from '@userActions/App';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
-import BackgroundRefresh from './types';
+import type BackgroundRefresh from './types';
 
 function getLastOnyxUpdateID(): Promise<number | null> {
     return new Promise((resolve) => {
@@ -39,6 +39,7 @@ const backgroundRefresh: BackgroundRefresh = () => {
              * See more here: https://reactnative.dev/docs/headless-js-android
              */
             App.confirmReadyToOpenApp();
+            Log.info('[PushNotification] Sending ReconnectApp');
             App.reconnectApp(lastUpdateIDAppliedToClient ?? undefined);
         })
         .catch((error) => {
