@@ -332,6 +332,7 @@ function getCombinedReportActions(reportActions: ReportAction[], transactionThre
  * Note: sortedReportActions sorted in descending order
  */
 function getContinuousReportActionChain(sortedReportActions: ReportAction[], id?: string): ReportAction[] {
+//return sortedReportActions
     let index;
 
     if (id) {
@@ -368,6 +369,8 @@ function getContinuousReportActionChain(sortedReportActions: ReportAction[], id?
         startIndex--;
     }
 
+	console.log('startIndex: ', startIndex, ', endIndex: ', endIndex, ', id: ', id)
+	console.log('sortedReportActions.slice: ',  sortedReportActions.slice(startIndex, endIndex + 1))
     return sortedReportActions.slice(startIndex, endIndex + 1);
 }
 
@@ -657,6 +660,7 @@ function filterOutDeprecatedReportActions(reportActions: ReportActions | null): 
  * This is all handled with getSortedReportActions() which is used by several other methods to keep the code DRY.
  */
 function getSortedReportActionsForDisplay(reportActions: ReportActions | null | ReportAction[], shouldIncludeInvisibleActions = false): ReportAction[] {
+	console.log('getSortedReportActionsForDisplay: ', reportActions)
     let filteredReportActions: ReportAction[] = [];
     if (!reportActions) {
         return [];

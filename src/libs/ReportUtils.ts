@@ -4133,6 +4133,7 @@ function buildOptimisticModifiedExpenseReportAction(
         avatar: getCurrentUserAvatarOrDefault(),
         created: DateUtils.getDBTime(),
         isAttachment: false,
+	   isOptimisticAction: true,
         message: [
             {
                 // Currently we are composing the message from the originalMessage and message is only used in OldDot and not in the App
@@ -4268,6 +4269,7 @@ function buildOptimisticTaskReportAction(
         automatic: false,
         avatar: getCurrentUserAvatarOrDefault(),
         isAttachment: false,
+	    isOptimisticAction: true,
         originalMessage,
         message: [
             {
