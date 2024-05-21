@@ -329,6 +329,7 @@ function completeTask(taskReport: OnyxEntry<OnyxTypes.Report>) {
             value: {
                 [completedTaskReportAction.reportActionID]: {
                     pendingAction: null,
+		    isOptimisticAction: null,
                 },
             },
         },
@@ -399,6 +400,7 @@ function reopenTask(taskReport: OnyxEntry<OnyxTypes.Report>) {
             value: {
                 [reopenedTaskReportAction.reportActionID]: {
                     pendingAction: null,
+		    isOptimisticAction: null,
                 },
             },
         },
@@ -912,6 +914,7 @@ function deleteTask(report: OnyxEntry<OnyxTypes.Report>) {
             value: {
                 [optimisticReportActionID]: {
                     pendingAction: null,
+		    isOptimisticAction: null,
                 },
             },
         },

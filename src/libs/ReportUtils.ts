@@ -4268,6 +4268,7 @@ function buildOptimisticTaskReportAction(
         automatic: false,
         avatar: getCurrentUserAvatarOrDefault(),
         isAttachment: false,
+	isOptimisticAction: true,
         originalMessage,
         message: [
             {
