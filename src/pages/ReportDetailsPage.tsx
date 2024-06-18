@@ -125,6 +125,7 @@ function ReportDetailsPage({policies, report, session, personalDetails}: ReportD
         if (isChatRoom || isPolicyExpenseChat) {
             const isWorkspaceMemberLeavingWorkspaceRoom = (report.visibility === CONST.REPORT.VISIBILITY.RESTRICTED || isPolicyExpenseChat) && isPolicyEmployee;
 		console.log('session: ', session)
+  	    Navigation.resetToHome();	
 	    const accountIDsToRemove = [session?.accountID];	
    	    Member.removeMembers(accountIDsToRemove, report.policyID);
             Report.leaveRoom(report.reportID, isWorkspaceMemberLeavingWorkspaceRoom);
