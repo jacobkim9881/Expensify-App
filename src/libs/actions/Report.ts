@@ -2595,6 +2595,8 @@ function leaveGroupChat(reportID: string) {
         return;
     }
 
+ console.log('report om leaveRoom: ', report)
+
     const optimisticData: OnyxUpdate[] = [
         {
             onyxMethod: Onyx.METHOD.SET,

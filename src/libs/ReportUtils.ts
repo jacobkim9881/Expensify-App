@@ -1253,7 +1253,10 @@ function isJoinRequestInAdminRoom(report: OnyxEntry<Report>): boolean {
     // Account manager/guide should not have the workspace join request pinned to their LHN,
     // since they are not a part of the company, and should not action it on their behalf.
     if (report.policyID) {
+	//console.log('isJoinRequestInAdminRoom: ', report)
         const policy = getPolicy(report.policyID);
+	//console.log('isJoinRequestInAdminRoom policy: ', policy)
+	//console.log('isJoinRequestInAdminRoom isExpensifyTeam(currentUserPersonalDetails: ', PolicyUtils.isExpensifyTeam(currentUserPersonalDetails?.login))
         if (!PolicyUtils.isExpensifyTeam(policy.owner) && PolicyUtils.isExpensifyTeam(currentUserPersonalDetails?.login)) {
             return false;
         }
@@ -5781,6 +5784,11 @@ function isGroupChatAdmin(report: OnyxEntry<Report>, accountID: number) {
  */
 function getMoneyRequestOptions(report: OnyxEntry<Report>, policy: OnyxEntry<Policy>, reportParticipants: number[], filterDeprecatedTypes = false): IOUType[] {
     // In any thread or task report, we do not allow any new expenses yet
+/*
+	if (getReportNotificationPreference(report) === CONST.REPORT.NOTIFICATION_PREFERENCE.HIDDEN) {
+	    return [];
+    }
+    */
     if (isChatThread(report) || isTaskReport(report) || isInvoiceReport(report) || isSystemChat(report)) {
         return [];
     }

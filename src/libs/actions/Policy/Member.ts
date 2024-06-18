@@ -223,6 +223,8 @@ function removeMembers(accountIDs: number[], policyID: string) {
         return;
     }
 
+console.log('sessionAccountID: ', sessionAccountID)
+console.log('accountIDs: ', accountIDs)
     const policyKey = `${ONYXKEYS.COLLECTION.POLICY}${policyID}` as const;
     const policy = getPolicy(policyID);
 

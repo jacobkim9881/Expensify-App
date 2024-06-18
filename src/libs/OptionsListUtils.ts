@@ -1968,6 +1968,11 @@ function getOptions(
                 continue;
             }
 
+		/*
+	    if (reportOption.item?.notificationPreference === CONST.REPORT.NOTIFICATION_PREFERENCE.HIDDEN) {
+		continue;
+	    }
+*/
             // If we're excluding threads, check the report to see if it has a single participant and if the participant is already selected
             if (
                 !includeThreads &&

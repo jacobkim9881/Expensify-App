@@ -152,6 +152,10 @@ function IOURequestStepConfirmation({
     const formHasBeenSubmitted = useRef(false);
 
     useEffect(() => {
+	    console.log('report from src/pages/iou/request/step/IOURequestStepConfirmation.tsx: ', reportReal)
+    }, []);
+
+    useEffect(() => {
         const policyExpenseChat = participants?.find((participant) => participant.isPolicyExpenseChat);
         if (policyExpenseChat?.policyID && policy?.pendingAction !== CONST.RED_BRICK_ROAD_PENDING_ACTION.ADD) {
             openDraftWorkspaceRequest(policyExpenseChat.policyID);
@@ -320,6 +324,7 @@ function IOURequestStepConfirmation({
 
     const createTransaction = useCallback(
         (selectedParticipants: Participant[]) => {
+		console.log('report on src/pages/iou/request/step/IOURequestStepConfirmation.tsx: ', report)
             let splitParticipants = selectedParticipants;
 
             // Filter out participants with an amount equal to O

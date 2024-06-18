@@ -28,6 +28,7 @@ import * as OptionsListUtils from '@libs/OptionsListUtils';
 import * as PolicyUtils from '@libs/PolicyUtils';
 import * as ReportUtils from '@libs/ReportUtils';
 import * as Report from '@userActions/Report';
+import * as Member from '@userActions/Policy/Member';
 import ConfirmModal from '@src/components/ConfirmModal';
 import CONST from '@src/CONST';
 import type {TranslationPaths} from '@src/languages/types';
@@ -121,8 +122,11 @@ function ReportDetailsPage({policies, report, session, personalDetails}: ReportD
     }, [report?.reportID, isOffline, isPrivateNotesFetchTriggered, isSelfDM]);
 
     const leaveChat = useCallback(() => {
-        if (isChatRoom) {
+        if (isChatRoom || isPolicyExpenseChat) {
             const isWorkspaceMemberLeavingWorkspaceRoom = (report.visibility === CONST.REPORT.VISIBILITY.RESTRICTED || isPolicyExpenseChat) && isPolicyEmployee;
+		console.log('session: ', session)
+	    const accountIDsToRemove = [session?.accountID];	
+   	    Member.removeMembers(accountIDsToRemove, report.policyID);
             Report.leaveRoom(report.reportID, isWorkspaceMemberLeavingWorkspaceRoom);
             return;
         }
