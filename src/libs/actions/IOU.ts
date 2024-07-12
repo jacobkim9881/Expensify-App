@@ -1572,14 +1572,30 @@ function getDeleteTrackExpenseInformation(
     const allReports = ReportConnection.getAllReports();
     // STEP 1: Get all collections we're updating
     const chatReport = allReports?.[`${ONYXKEYS.COLLECTION.REPORT}${chatReportID}`] ?? null;
+	/*
+	chatReport.lastActorAccountID = parseInt(chatReport.lastActorAccountID);
+	let t1est = chatReport.participants;
+	let t2est = {}
+	for ( const proper in t1est) {
+	//chatReport.participants = {parseInt(proper) : chatReport.participants};
+Object.defineProperty(t1est, parseInt(proper),
+        Object.getOwnPropertyDescriptor(t1est, proper));
+    delete t1est[proper];
+chatReport.participants = t1est;
+console.log('t1est: ', t1est)
+	}
+	*/
+	console.log('chatReport.participants: ' ,chatReport.participants)
+		chatReport.participants = {"17224717": {"hidden": false}};
     const transaction = allTransactions[`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`];
     const transactionViolations = allTransactionViolations[`${ONYXKEYS.COLLECTION.TRANSACTION_VIOLATIONS}${transactionID}`];
-    const transactionThreadID = reportAction.childReportID;
+    const transactionThreadID = JSON.stringify(reportAction.childReportID);
     let transactionThread = null;
     if (transactionThreadID) {
         transactionThread = allReports?.[`${ONYXKEYS.COLLECTION.REPORT}${transactionThreadID}`] ?? null;
     }
 
+	console.log('getDeleteTrackExpenseInformation: ', chatReport, transaction, transactionViolations, transactionThreadID )
     // STEP 2: Decide if we need to:
     // 1. Delete the transactionThread - delete if there are no visible comments in the thread and we're not moving the transaction
     // 2. Update the moneyRequestPreview to show [Deleted expense] - update if the transactionThread exists AND it isn't being deleted and we're not moving the transaction
@@ -1954,6 +1970,7 @@ function getMoneyRequestInformation(
     } else {
         iouReport = IOUUtils.updateIOUOwnerAndTotal(iouReport, payeeAccountID, amount, currency);
     }
+	console.log('iouReport: ', iouReport)
     // STEP 3: Build optimistic receipt and transaction
     const receiptObject: Receipt = {};
     let filename;
@@ -2023,6 +2040,8 @@ function getMoneyRequestInformation(
             linkedTrackedExpenseReportAction,
         );
 
+	console.log('chatReport: ' , chatReport)
+
     let reportPreviewAction = shouldCreateNewMoneyRequestReport ? null : getReportPreviewAction(chatReport.reportID, iouReport.reportID);
 
     if (reportPreviewAction) {
@@ -2031,6 +2050,7 @@ function getMoneyRequestInformation(
         reportPreviewAction = ReportUtils.buildOptimisticReportPreview(chatReport, iouReport, comment, optimisticTransaction);
         chatReport.lastVisibleActionCreated = reportPreviewAction.created;
 
+	    console.log('reportPreviewAction: ', reportPreviewAction)
         // Generated ReportPreview action is a parent report action of the iou report.
         // We are setting the iou report's parentReportActionID to display subtitle correctly in IOU page when offline.
         iouReport.parentReportActionID = reportPreviewAction.reportActionID;
@@ -3235,6 +3255,7 @@ function convertTrackedExpenseToRequest(
     created: string,
     receipt?: Receipt,
 ) {
+	console.log('convertTrackedExpenseToRequest: ', payerAccountID, payerEmail, chatReportID, transactionID, actionableWhisperReportActionID, createdChatReportActionID, moneyRequestReportID, moneyRequestCreatedReportActionID, moneyRequestPreviewReportActionID, linkedTrackedExpenseReportAction, linkedTrackedExpenseReportID, transactionThreadReportID, reportPreviewReportActionID, onyxData, amount, currency, comment, merchant, created, receipt)
     const {optimisticData, successData, failureData} = onyxData;
 
     const {
@@ -3256,6 +3277,28 @@ function convertTrackedExpenseToRequest(
     successData?.push(...moveTransactionSuccessData);
     failureData?.push(...moveTransactionFailureData);
 
+	//let transactionThread = null;
+	 //if (transactionThreadID) {transactionThread = allReports?.[`${ONYXKEYS.COLLECTION.REPORT}${transactionThreadID}`] ?? null;}
+	const allReports = ReportConnection.getAllReports();
+const transaction = allTransactions[`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`];
+ const actionableWhisperReportAction = ReportActionsUtils.getReportAction(chatReportID, actionableWhisperReportActionID);
+let moneyRequestReport =  allReports?.[`${ONYXKEYS.COLLECTION.REPORT}${moneyRequestReportID}`] ?? null;
+//iouAction.reportActionID
+let moneyRequestPreviewReportAction = ReportActionsUtils.getReportAction(moneyRequestReportID, moneyRequestPreviewReportActionID);
+let transactionThreadReport = allReports?.[`${ONYXKEYS.COLLECTION.REPORT}${transactionThreadReportID}`];
+	let modifiedExpenseReportAction = ReportActionsUtils.getReportAction(transactionThreadReportID, moneyRequestReportID);
+	let reportPreviewReportAction =  ReportActionsUtils.getReportAction(chatReportID, reportPreviewReportActionID);
+
+	//console.log('transactionThread: ', transactionThread)
+	console.log('transaction: ', transaction)
+		console.log('actionableWhisperReportAction: ', actionableWhisperReportAction)
+			console.log('moneyRequestReport: ', moneyRequestReport)
+				console.log('moneyRequestPreviewReportAction: ' , moneyRequestPreviewReportAction)
+					console.log('transactionThreadReport: ', transactionThreadReport)
+console.log('modifiedExpenseReportAction: ', modifiedExpenseReportAction)
+	console.log('reportPreviewReportAction: ', reportPreviewReportAction)
+
+
     const parameters = {
         amount,
         currency,
@@ -3276,6 +3319,8 @@ function convertTrackedExpenseToRequest(
         modifiedExpenseReportActionID,
         reportPreviewReportActionID,
     };
+	console.log('parameters: ', parameters)
+	console.log('optimisticData: ', {optimisticData, successData, failureData});
     API.write(WRITE_COMMANDS.CONVERT_TRACKED_EXPENSE_TO_REQUEST, parameters, {optimisticData, successData, failureData});
 }
 
@@ -3466,7 +3511,8 @@ function requestMoney(
     const currentChatReport = isMoneyRequestReport ? getReportOrDraftReport(report?.chatReportID) : report;
     const moneyRequestReportID = isMoneyRequestReport ? report?.reportID : '';
     const isMovingTransactionFromTrackExpense = IOUUtils.isMovingTransactionFromTrackExpense(action);
-
+console.log('isMovingTransactionFromTrackExpense: ', isMovingTransactionFromTrackExpense)
+console.log('action: ', action)
     const {
         payerAccountID,
         payerEmail,
