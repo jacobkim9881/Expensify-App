@@ -163,6 +163,8 @@ function IOURequestStepConfirmation({
     }, [transactionID, defaultBillable]);
 
     useEffect(() => {
+	    console.log('reportReal: ' ,reportReal)
+	    console.log('reportDraft: ', reportDraft)
         if (!transaction?.category) {
             return;
         }
@@ -175,6 +177,7 @@ function IOURequestStepConfirmation({
     const defaultCategory = policyDistance?.defaultCategory ?? '';
 
     useEffect(() => {
+	    console.log('transaction at confirm: ', transaction)
         if (requestType !== CONST.IOU.REQUEST_TYPE.DISTANCE || !!transaction?.category) {
             return;
         }

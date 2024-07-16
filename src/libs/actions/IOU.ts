@@ -1596,6 +1596,7 @@ console.log('t1est: ', t1est)
     }
 
 	console.log('getDeleteTrackExpenseInformation: ', chatReport, transaction, transactionViolations, transactionThreadID )
+	console.log('actionableWhisperReportActionID: ', actionableWhisperReportActionID)
     // STEP 2: Decide if we need to:
     // 1. Delete the transactionThread - delete if there are no visible comments in the thread and we're not moving the transaction
     // 2. Update the moneyRequestPreview to show [Deleted expense] - update if the transactionThread exists AND it isn't being deleted and we're not moving the transaction
@@ -1929,45 +1930,56 @@ function getMoneyRequestInformation(
     let isNewChatReport = false;
     let chatReport = !isEmptyObject(parentChatReport) && parentChatReport?.reportID ? parentChatReport : null;
 
+	console.log('payerAccountID: ', payerAccountID)
+	console.log('payeeAccountID: ', payeeAccountID)
+	console.log('chatReport at getMoneyRequestInformation: ' , chatReport)
     const allReports = ReportConnection.getAllReports();
     // If this is a policyExpenseChat, the chatReport must exist and we can get it from Onyx.
     // report is null if the flow is initiated from the global create menu. However, participant always stores the reportID if it exists, which is the case for policyExpenseChats
     if (!chatReport && isPolicyExpenseChat) {
         chatReport = allReports?.[`${ONYXKEYS.COLLECTION.REPORT}${participant.reportID}`] ?? null;
+	    console.log('chatReport with isPolicyExpenseChat : ', chatReport)
     }
 
     if (!chatReport) {
         chatReport = ReportUtils.getChatByParticipants([payerAccountID, payeeAccountID]) ?? null;
+	    console.log('chatReport ReportUtils.getChatByParticipants: ', chatReport)
     }
 
     // If we still don't have a report, it likely doens't exist and we need to build an optimistic one
     if (!chatReport) {
         isNewChatReport = true;
         chatReport = ReportUtils.buildOptimisticChatReport([payerAccountID, payeeAccountID]);
+	    console.log('chatReport ReportUtils.buildOptimisticChatReport: ', chatReport)
     }
 
     // STEP 2: Get the Expense/IOU report. If the moneyRequestReportID has been provided, we want to add the transaction to this specific report.
     // If no such reportID has been provided, let's use the chatReport.iouReportID property. In case that is not present, build a new optimistic Expense/IOU report.
     let iouReport: OnyxInputValue<OnyxTypes.Report> = null;
+	console.log('moneyRequestReportID?: ', moneyRequestReportID)
     if (moneyRequestReportID) {
         iouReport = allReports?.[`${ONYXKEYS.COLLECTION.REPORT}${moneyRequestReportID}`] ?? null;
     } else {
         iouReport = allReports?.[`${ONYXKEYS.COLLECTION.REPORT}${chatReport.iouReportID}`] ?? null;
     }
 
+	console.log('iou as moneyRequestReportID or chatReport.iouReportID: ', iouReport)
     const shouldCreateNewMoneyRequestReport = ReportUtils.shouldCreateNewMoneyRequestReport(iouReport, chatReport);
 
     if (!iouReport || shouldCreateNewMoneyRequestReport) {
+	    console.log('shouldCreateNewMoneyRequestReport')
         iouReport = isPolicyExpenseChat
             ? ReportUtils.buildOptimisticExpenseReport(chatReport.reportID, chatReport.policyID ?? '-1', payeeAccountID, amount, currency)
             : ReportUtils.buildOptimisticIOUReport(payeeAccountID, payerAccountID, amount, chatReport.reportID, currency);
     } else if (isPolicyExpenseChat) {
+	    console.log('isPolicyExpenseChat');
         iouReport = {...iouReport};
         if (iouReport?.currency === currency && typeof iouReport.total === 'number') {
             // Because of the Expense reports are stored as negative values, we subtract the total from the amount
             iouReport.total -= amount;
         }
     } else {
+	    console.log('else ')
         iouReport = IOUUtils.updateIOUOwnerAndTotal(iouReport, payeeAccountID, amount, currency);
     }
 	console.log('iouReport: ', iouReport)
@@ -2095,6 +2107,8 @@ function getMoneyRequestInformation(
         optimisticNextStep,
     );
 
+	console.log('optimisticData at buildOnyxDataForMoneyRequest: ', optimisticData)
+	console.log('chatReport: ', chatReport)
     return {
         payerAccountID,
         payerEmail,
@@ -3202,6 +3216,7 @@ const getConvertTrackedExpenseInformation = (
     successData?.push(...deleteSuccessData);
     failureData?.push(...deleteFailureData);
 
+	console.log('optimisticData as ...deleteOptimisticData: ', ...deleteOptimisticData)
     // Build modified expense report action with the transaction changes
     const modifiedExpenseReportAction = ReportUtils.buildOptimisticMovedTrackedExpenseModifiedReportAction(transactionThreadReportID, moneyRequestReportID);
 
@@ -3320,8 +3335,11 @@ console.log('modifiedExpenseReportAction: ', modifiedExpenseReportAction)
         reportPreviewReportActionID,
     };
 	console.log('parameters: ', parameters)
-	console.log('optimisticData: ', {optimisticData, successData, failureData});
+	console.log('optimisticData: ', optimisticData);
+	console.log('successData: ', successData)
+	setTimeout(() => {
     API.write(WRITE_COMMANDS.CONVERT_TRACKED_EXPENSE_TO_REQUEST, parameters, {optimisticData, successData, failureData});
+	}, 1000);
 }
 
 function categorizeTrackedExpense(

@@ -687,6 +687,8 @@ function getLastVisibleMessage(
     const message = getReportActionMessage(lastVisibleAction);
 
     if (message && isReportMessageAttachment(message)) {
+	   console.log('message && isReportMessageAttachment(message): ', message && isReportMessageAttachment(message))
+	    console.log('CONST.ATTACHMENT_MESSAGE_TEXT lastMessageText: ', CONST.ATTACHMENT_MESSAGE_TEXT)
         return {
             lastMessageTranslationKey: CONST.TRANSLATION_KEYS.ATTACHMENT,
             lastMessageText: CONST.ATTACHMENT_MESSAGE_TEXT,

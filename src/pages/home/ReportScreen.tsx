@@ -456,7 +456,7 @@ function ReportScreen({
     }, [isLoadingApp, finishedLoadingApp, report.reportID, isOptimisticDelete, reportMetadata?.isLoadingInitialReportActions, userLeavingStatus, shouldHideReport, currentReportIDFormRoute]);
 
     const fetchReport = useCallback(() => {
-        Report.openReport(reportIDFromRoute, reportActionIDFromRoute);
+	    //Report.openReport(reportIDFromRoute, reportActionIDFromRoute);
     }, [reportIDFromRoute, reportActionIDFromRoute]);
 
     useEffect(() => {

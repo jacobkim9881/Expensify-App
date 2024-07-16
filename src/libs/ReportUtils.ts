@@ -5555,6 +5555,11 @@ function getChatByParticipants(newParticipantList: number[], reports: OnyxCollec
     return Object.values(reports ?? {}).find((report) => {
         const participantAccountIDs = Object.keys(report?.participants ?? {});
 
+	   console.log('participantAccountIDs: ', participantAccountIDs)
+	    console.log('participantAccountIDs.length: ', participantAccountIDs.length)
+	    //console.log('reports: ', reports)
+	    console.log('sortedNewParticipantList: ', sortedNewParticipantList)
+	    console.log('participantAccountIDs.map(Number).sort(): ', participantAccountIDs.map(Number).sort())
         // If the report has been deleted, or there are no participants (like an empty #admins room) then skip it
         if (
             participantAccountIDs.length === 0 ||
