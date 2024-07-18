@@ -26,7 +26,7 @@ function save(requestToPersist: Request) {
     const requests = [...persistedRequests, requestToPersist];
     persistedRequests = requests;
     Onyx.set(ONYXKEYS.PERSISTED_REQUESTS, requests).then(() => {
-        Log.info(`[SequentialQueue] '${requestToPersist.command}' command queued. Queue length is ${getLength()}`);
+        Log.info(`[SequentialQueue] '${requestToPersist.command}' command queued. Queue length is ${getLength()} edit`);
     });
 }
 

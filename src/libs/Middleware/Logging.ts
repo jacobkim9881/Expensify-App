@@ -34,10 +34,24 @@ function logRequestDetails(message: string, request: Request, response?: Respons
 
     Log.info(message, false, logParams);
 }
+function eachRecursive(obj)
+{
+    for (var k in obj)
+    {
+	    console.log('k: ', typeof k);
+        if (typeof obj[k] == "object" && obj[k] !== null)
+            eachRecursive(obj[k]);
+        else {return};
+            // do something... 
+    }
+}
+
 
 const Logging: Middleware = (response, request) => {
     const startTime = Date.now();
     logRequestDetails('Making API request', request);
+//	console.log('Logging request: ', request)
+//	eachRecursive(request)
     return response
         .then((data) => {
             logRequestDetails(`Finished API request in ${Date.now() - startTime}ms`, request, data);
