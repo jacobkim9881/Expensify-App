@@ -50,12 +50,26 @@ const addSkewList: string[] = [SIDE_EFFECT_REQUEST_COMMANDS.OPEN_REPORT, SIDE_EF
  */
 const APICommandRegex = /\/api\/([^&?]+)\??.*/;
 
+function eachRecursive(obj)
+{
+    for (var k in obj)
+    {
+	    console.log('k: ', typeof k);
+        if (typeof obj[k] == "object" && obj[k] !== null)
+            eachRecursive(obj[k]);
+        else {return};
+            // do something... 
+    }
+}
+
 /**
  * Send an HTTP request, and attempt to resolve the json response.
  * If there is a network error, we'll set the application offline.
  */
 function processHTTPRequest(url: string, method: RequestType = 'get', body: FormData | null = null, abortSignal: AbortSignal | undefined = undefined): Promise<Response> {
     const startTime = new Date().valueOf();
+	console.log('processHTTPRequest: ', body)
+	eachRecursive(body);
     return fetch(url, {
         // We hook requests to the same Controller signal, so we can cancel them all at once
         signal: abortSignal,
@@ -63,6 +77,7 @@ function processHTTPRequest(url: string, method: RequestType = 'get', body: Form
         body,
     })
         .then((response) => {
+		console.log('processHTTPRequest response1: ', response)
             // We are calculating the skew to minimize the delay when posting the messages
             const match = url.match(APICommandRegex)?.[1];
             if (match && addSkewList.includes(match) && response.headers) {

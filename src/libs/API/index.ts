@@ -53,7 +53,7 @@ function prepareRequest<TCommand extends ApiCommand>(command: TCommand, type: Ap
         Log.info('[API] Applying optimistic data', false, {command, type});
         Onyx.update(optimisticData);
     }
-
+console.log('API request0: ')
     const isWriteRequest = type === CONST.API_REQUEST_TYPE.WRITE;
 
     // Prepare the data we'll send to the API
@@ -65,7 +65,7 @@ function prepareRequest<TCommand extends ApiCommand>(command: TCommand, type: Ap
         // is sent back to the requesting client in the response data instead, which prevents a replay effect in the UI. See https://github.com/Expensify/App/issues/12775.
         pusherSocketID: isWriteRequest ? Pusher.getPusherSocketID() : undefined,
     };
-
+console.log('API request1: ')
     // Assemble all request metadata (used by middlewares, and for persisted requests stored in Onyx)
     const request: SetRequired<OnyxRequest, 'data'> = {
         command,
@@ -78,7 +78,7 @@ function prepareRequest<TCommand extends ApiCommand>(command: TCommand, type: Ap
         request.data.shouldRetry = true;
         request.data.canCancel = true;
     }
-
+console.log('API request: ', request)
     return request;
 }
 

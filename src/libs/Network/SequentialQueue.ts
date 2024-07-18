@@ -117,6 +117,7 @@ function process(): Promise<void> {
 
 function flush() {
     // When the queue is paused, return early. This will keep an requests in the queue and they will get flushed again when the queue is unpaused
+	console.log('flushed') 
     if (isQueuePaused) {
         Log.info('[SequentialQueue] Unable to flush. Queue is paused.');
         return;
