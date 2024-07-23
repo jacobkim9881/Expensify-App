@@ -5565,14 +5565,14 @@ function getSystemChat(): OnyxEntry<Report> {
  */
 function getChatByParticipants(newParticipantList: number[], reports: OnyxCollection<Report> = ReportConnection.getAllReports(), shouldIncludeGroupChats = false): OnyxEntry<Report> {
     const sortedNewParticipantList = newParticipantList.sort();
+	    //console.log('reports: ', reports)
     return Object.values(reports ?? {}).find((report) => {
         const participantAccountIDs = Object.keys(report?.participants ?? {});
 
-	   console.log('participantAccountIDs: ', participantAccountIDs)
-	    console.log('participantAccountIDs.length: ', participantAccountIDs.length)
-	    //console.log('reports: ', reports)
-	    console.log('sortedNewParticipantList: ', sortedNewParticipantList)
-	    console.log('participantAccountIDs.map(Number).sort(): ', participantAccountIDs.map(Number).sort())
+	   //console.log('participantAccountIDs: ', participantAccountIDs)
+	    //console.log('participantAccountIDs.length: ', participantAccountIDs.length)
+	    //console.log('sortedNewParticipantList: ', sortedNewParticipantList)
+	    //console.log('participantAccountIDs.map(Number).sort(): ', participantAccountIDs.map(Number).sort())
         // If the report has been deleted, or there are no participants (like an empty #admins room) then skip it
         if (
             participantAccountIDs.length === 0 ||
@@ -5586,6 +5586,7 @@ function getChatByParticipants(newParticipantList: number[], reports: OnyxCollec
             return false;
         }
 
+	    console.log('report sortedParticipantsAccountIDs = participantAccountIDs.map(Number).sort(): ', report)
         const sortedParticipantsAccountIDs = participantAccountIDs.map(Number).sort();
 
         // Only return the chat if it has all the participants
