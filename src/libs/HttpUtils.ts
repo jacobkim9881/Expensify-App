@@ -54,7 +54,7 @@ function eachRecursive(obj)
 {
     for (var k in obj)
     {
-	    console.log('k: ', typeof k);
+	    console.log('k: ', typeof k, ', val: ', obj[k]);
         if (typeof obj[k] == "object" && obj[k] !== null)
             eachRecursive(obj[k]);
         else {return};
@@ -66,9 +66,9 @@ function eachRecursive(obj)
  * Send an HTTP request, and attempt to resolve the json response.
  * If there is a network error, we'll set the application offline.
  */
-function processHTTPRequest(url: string, method: RequestType = 'get', body: FormData | null = null, abortSignal: AbortSignal | undefined = undefined): Promise<Response> {
+async function processHTTPRequest(url: string, method: RequestType = 'get', body: FormData | null = null, abortSignal: AbortSignal | undefined = undefined): Promise<Response> {
     const startTime = new Date().valueOf();
-	console.log('processHTTPRequest: ', body)
+	await console.log('processHTTPRequest: ', body)
 	eachRecursive(body);
     return fetch(url, {
         // We hook requests to the same Controller signal, so we can cancel them all at once
@@ -174,17 +174,23 @@ function processHTTPRequest(url: string, method: RequestType = 'get', body: Form
  * @param shouldUseSecure should we use the secure server
  */
 function xhr(command: string, data: Record<string, unknown>, type: RequestType = CONST.NETWORK.METHOD.POST, shouldUseSecure = false): Promise<Response> {
+	console.log('command: ', command, ', type: ', type, ', shouldUseSecure: ', shouldUseSecure)
     const formData = new FormData();
     Object.keys(data).forEach((key) => {
         if (typeof data[key] === 'undefined') {
+		console.log("data[key] === 'undefined'")
             return;
         }
         formData.append(key, data[key] as string | Blob);
     });
 
+	console.log('formData at xhr: ', formData)
     const url = ApiUtils.getCommandURL({shouldUseSecure, command});
 
+	console.log('url: ', url)
     const abortSignalController = data.canCancel ? abortControllerMap.get(command as AbortCommand) ?? abortControllerMap.get(ABORT_COMMANDS.All) : undefined;
+	console.log('abortSignalController: ', abortSignalController)
+	console.log('abortSignalController?.signal: ', abortSignalController?.signal)
     return processHTTPRequest(url, type, formData, abortSignalController?.signal);
 }
 

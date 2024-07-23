@@ -107,6 +107,7 @@ function Expensify({
         if (isCheckingPublicRoom) {
             return;
         }
+console.log('src/Expensify.tsx, setAttemptedToOpenPublicRoom')
         setAttemptedToOpenPublicRoom(true);
     }, [isCheckingPublicRoom]);
 

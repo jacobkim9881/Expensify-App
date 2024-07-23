@@ -226,6 +226,7 @@ function AuthScreens({session, lastOpenedPublicRoomID, initialLastUpdateIDApplie
 
         NetworkConnection.listenForReconnect();
         NetworkConnection.onReconnect(handleNetworkReconnect);
+console.log('src/libs/Navigation/AppNavigator/AuthScreens.tsx, PusherConnectionManager.init ')
         PusherConnectionManager.init();
         Pusher.init({
             appKey: CONFIG.PUSHER.APP_KEY,

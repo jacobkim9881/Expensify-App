@@ -1589,6 +1589,24 @@ function getDeleteTrackExpenseInformation(
     const allReports = ReportConnection.getAllReports();
     // STEP 1: Get all collections we're updating
     const chatReport = allReports?.[`${ONYXKEYS.COLLECTION.REPORT}${chatReportID}`] ?? null;
+<<<<<<< Updated upstream
+=======
+	/*
+	chatReport.lastActorAccountID = parseInt(chatReport.lastActorAccountID);
+	let t1est = chatReport.participants;
+	let t2est = {}
+	for ( const proper in t1est) {
+	//chatReport.participants = {parseInt(proper) : chatReport.participants};
+Object.defineProperty(t1est, parseInt(proper),
+        Object.getOwnPropertyDescriptor(t1est, proper));
+    delete t1est[proper];
+chatReport.participants = t1est;
+console.log('t1est: ', t1est)
+	}
+	*/
+	console.log('chatReport.participants: ' ,chatReport.participants)
+		//chatReport.participants = {"17224717": {"hidden": false}};
+>>>>>>> Stashed changes
     const transaction = allTransactions[`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`];
     const transactionViolations = allTransactionViolations[`${ONYXKEYS.COLLECTION.TRANSACTION_VIOLATIONS}${transactionID}`];
     const transactionThreadID = reportAction.childReportID;
@@ -3273,7 +3291,33 @@ function convertTrackedExpenseToRequest(
     successData?.push(...moveTransactionSuccessData);
     failureData?.push(...moveTransactionFailureData);
 
+<<<<<<< Updated upstream
     const parameters = {
+=======
+	//let transactionThread = null;
+	 //if (transactionThreadID) {transactionThread = allReports?.[`${ONYXKEYS.COLLECTION.REPORT}${transactionThreadID}`] ?? null;}
+	const allReports = ReportConnection.getAllReports();
+const transaction = allTransactions[`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`];
+ const actionableWhisperReportAction = ReportActionsUtils.getReportAction(chatReportID, actionableWhisperReportActionID);
+let moneyRequestReport =  allReports?.[`${ONYXKEYS.COLLECTION.REPORT}${moneyRequestReportID}`] ?? null;
+//iouAction.reportActionID
+let moneyRequestPreviewReportAction = ReportActionsUtils.getReportAction(moneyRequestReportID, moneyRequestPreviewReportActionID);
+let transactionThreadReport = allReports?.[`${ONYXKEYS.COLLECTION.REPORT}${transactionThreadReportID}`];
+	let modifiedExpenseReportAction = ReportActionsUtils.getReportAction(transactionThreadReportID, moneyRequestReportID);
+	let reportPreviewReportAction =  ReportActionsUtils.getReportAction(chatReportID, reportPreviewReportActionID);
+
+	//console.log('transactionThread: ', transactionThread)
+	console.log('transaction: ', transaction)
+		console.log('actionableWhisperReportAction: ', actionableWhisperReportAction)
+			console.log('moneyRequestReport: ', moneyRequestReport)
+				console.log('moneyRequestPreviewReportAction: ' , moneyRequestPreviewReportAction)
+					console.log('transactionThreadReport: ', transactionThreadReport)
+console.log('modifiedExpenseReportAction: ', modifiedExpenseReportAction)
+	console.log('reportPreviewReportAction: ', reportPreviewReportAction)
+
+
+    let parameters = {
+>>>>>>> Stashed changes
         amount,
         currency,
         comment,
@@ -3293,7 +3337,19 @@ function convertTrackedExpenseToRequest(
         modifiedExpenseReportActionID,
         reportPreviewReportActionID,
     };
+<<<<<<< Updated upstream
     API.write(WRITE_COMMANDS.CONVERT_TRACKED_EXPENSE_TO_REQUEST, parameters, {optimisticData, successData, failureData});
+=======
+	console.log('parameters: ', parameters)
+	console.log('optimisticData: ', optimisticData);
+	console.log('successData: ', successData)
+	console.log('failureData: ', failureData)
+	parameters = JSON.parse(JSON.stringify(parameters))
+	let testData = {optimisticData, successData, failureData}
+	testData = JSON.parse(JSON.stringify(testData))
+    API.write(WRITE_COMMANDS.CONVERT_TRACKED_EXPENSE_TO_REQUEST, parameters, testData);
+    //API.write(WRITE_COMMANDS.CONVERT_TRACKED_EXPENSE_TO_REQUEST, parameters, {optimisticData, successData, failureData});
+>>>>>>> Stashed changes
 }
 
 function categorizeTrackedExpense(
@@ -3453,7 +3509,7 @@ function shareTrackedExpense(
 /**
  * Submit expense to another user
  */
-function requestMoney(
+async function requestMoney(
     report: OnyxEntry<OnyxTypes.Report>,
     amount: number,
     currency: string,
@@ -3483,7 +3539,13 @@ function requestMoney(
     const currentChatReport = isMoneyRequestReport ? getReportOrDraftReport(report?.chatReportID) : report;
     const moneyRequestReportID = isMoneyRequestReport ? report?.reportID : '';
     const isMovingTransactionFromTrackExpense = IOUUtils.isMovingTransactionFromTrackExpense(action);
+<<<<<<< Updated upstream
 
+=======
+	console.log('report at requestMoney: ', report)
+console.log('isMovingTransactionFromTrackExpense: ', isMovingTransactionFromTrackExpense)
+console.log('action: ', action)
+>>>>>>> Stashed changes
     const {
         payerAccountID,
         payerEmail,
@@ -3523,6 +3585,10 @@ function requestMoney(
         linkedTrackedExpenseReportAction,
     );
     const activeReportID = isMoneyRequestReport ? report?.reportID : chatReport.reportID;
+	console.log('activeReportID isMoneyRequestReport: ', isMoneyRequestReport)
+	console.log('activeReportID: ', isMoneyRequestReport ? report?.reportID : chatReport.reportID)
+	console.log('report?.reportID: ', report?.reportID)
+	console.log('chatReport.reportID: ', chatReport.reportID)
 
     switch (action) {
         case CONST.IOU.ACTION.SUBMIT: {
@@ -3584,11 +3650,12 @@ function requestMoney(
             };
 
             // eslint-disable-next-line rulesdir/no-multiple-api-calls
-            API.write(WRITE_COMMANDS.REQUEST_MONEY, parameters, onyxData);
+           setTimeout(() => API.write(WRITE_COMMANDS.REQUEST_MONEY, parameters, onyxData), 5000);
         }
     }
 
     Navigation.dismissModal(activeReportID);
+	console.log('activeReportID at Navigation.dismissModal: ', activeReportID)
     if (activeReportID) {
         Report.notifyNewAction(activeReportID, payeeAccountID);
     }
@@ -3801,6 +3868,7 @@ function trackExpense(
             if (actionableWhisperReportActionIDParam) {
                 parameters.actionableWhisperReportActionID = actionableWhisperReportActionIDParam;
             }
+		console.log('expenseTrack parameters: ', parameters)
             API.write(WRITE_COMMANDS.TRACK_EXPENSE, parameters, onyxData);
         }
     }

@@ -13,6 +13,7 @@ function makeXHR(request: Request): Promise<Response | void> {
         // If we're using the Supportal token and this is not a Supportal request
         // let's just return a promise that will resolve itself.
         if (NetworkStore.isSupportAuthToken() && !NetworkStore.isSupportRequest(request.command)) {
+		console.log(' return a promise that will resolve itself: ')
             return new Promise<void>((resolve) => {
                 resolve();
             });

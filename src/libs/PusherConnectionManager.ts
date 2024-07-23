@@ -15,6 +15,7 @@ function init() {
      */
     Pusher.registerCustomAuthorizer((channel) => ({
         authorize: (socketId: string, callback: ChannelAuthorizationCallback) => {
+		console.log('src/libs/PusherConnectionManager.ts, Session.authenticatePusher')
             Session.authenticatePusher(socketId, channel.name, callback);
         },
     }));

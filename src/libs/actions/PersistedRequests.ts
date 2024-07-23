@@ -25,6 +25,7 @@ function getLength(): number {
 function save(requestToPersist: Request) {
     const requests = [...persistedRequests, requestToPersist];
     persistedRequests = requests;
+	console.log('persistedRequests: ', persistedRequests)
     Onyx.set(ONYXKEYS.PERSISTED_REQUESTS, requests).then(() => {
         Log.info(`[SequentialQueue] '${requestToPersist.command}' command queued. Queue length is ${getLength()} edit`);
     });

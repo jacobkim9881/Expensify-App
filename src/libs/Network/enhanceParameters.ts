@@ -56,6 +56,7 @@ export default function enhanceParameters(command: string, parameters: Record<st
     finalParameters.appversion = pkg.version;
 
     finalParameters.clientUpdateID = lastUpdateIDAppliedToClient;
+	console.log('finalParameters:', finalParameters)
 
     return finalParameters;
 }

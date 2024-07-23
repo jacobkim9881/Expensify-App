@@ -31,8 +31,12 @@ function dismissModalWithReport(targetReport: OnyxEntry<Report>, navigationRef: 
         return;
     }
 
+	console.log('targetReport: ', targetReport)
+	console.log('navigationRef: ', navigationRef)
     const state = navigationRef.getState();
     const lastRoute = state.routes.at(-1);
+	console.log('state: ', state)
+	console.log('lastRoute: ', lastRoute)
     switch (lastRoute?.name) {
         case NAVIGATORS.FULL_SCREEN_NAVIGATOR:
         case NAVIGATORS.LEFT_MODAL_NAVIGATOR:
@@ -44,6 +48,9 @@ function dismissModalWithReport(targetReport: OnyxEntry<Report>, navigationRef: 
         case SCREENS.WORKSPACE_AVATAR:
         case SCREENS.REPORT_AVATAR:
         case SCREENS.CONCIERGE:
+		    console.log('lastRoute?.name: ', lastRoute?.name)
+		    console.log('targetReport?.reportID: ', targetReport?.reportID)
+		    console.log('getTopmostReportId(state): ', getTopmostReportId(state))
             // If we are not in the target report, we need to navigate to it after dismissing the modal
             if (targetReport?.reportID !== getTopmostReportId(state)) {
                 const reportState = getStateFromPath(ROUTES.REPORT_WITH_ID.getRoute(targetReport?.reportID ?? '-1'));
@@ -51,6 +58,9 @@ function dismissModalWithReport(targetReport: OnyxEntry<Report>, navigationRef: 
                 const policyMemberAccountIDs = getPolicyEmployeeAccountIDs(policyID);
                 const shouldOpenAllWorkspace = isEmptyObject(targetReport) ? true : !doesReportBelongToWorkspace(targetReport, policyMemberAccountIDs, policyID);
 
+		    console.log('shouldOpenAllWorkspace: ', shouldOpenAllWorkspace)
+		    console.log('policyID: ', policyID)
+		    console.log('StackNavigationAction: ', getActionFromState(reportState, linkingConfig.config))
                 if (shouldOpenAllWorkspace) {
                     switchPolicyID(navigationRef, {route: ROUTES.HOME});
                 } else {

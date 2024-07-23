@@ -742,6 +742,7 @@ const reauthenticatePusher = throttle(
 function authenticatePusher(socketID: string, channelName: string, callback: ChannelAuthorizationCallback) {
     Log.info('[PusherAuthorizer] Attempting to authorize Pusher', false, {channelName});
 
+console.log('Attempting to authorize Pushe socketID: ', socketID)	
     const params: AuthenticatePusherParams = {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         socket_id: socketID,
