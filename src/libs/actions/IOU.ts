@@ -3354,7 +3354,18 @@ let transactionThreadReport = allReports?.[`${ONYXKEYS.COLLECTION.REPORT}${trans
 					console.log('transactionThreadReport: ', transactionThreadReport)
 console.log('modifiedExpenseReportAction: ', modifiedExpenseReportAction)
 	console.log('reportPreviewReportAction: ', reportPreviewReportAction)
-
+function eachRecursive(obj)
+{
+    for (var k in obj)
+    {
+	    //console.log('k: ', typeof k);
+	    console.log(typeof k, ' ', k, ' : ', obj[k]);
+        if (typeof obj[k] == "object" && obj[k] !== null)
+            eachRecursive(obj[k]);
+        else {continue};
+            // do something... 
+    }
+}
 
     const parameters = {
         amount,
@@ -3377,7 +3388,8 @@ console.log('modifiedExpenseReportAction: ', modifiedExpenseReportAction)
         reportPreviewReportActionID,
     };
 	console.log('parameters: ', parameters)
-	console.log('optimisticData: ', optimisticData);
+//	console.log('optimisticData: ', optimisticData);
+	eachRecursive(optimisticData)
 	console.log('successData: ', successData)
 	setTimeout(() => {
     API.write(WRITE_COMMANDS.CONVERT_TRACKED_EXPENSE_TO_REQUEST, parameters, {optimisticData, successData, failureData});
