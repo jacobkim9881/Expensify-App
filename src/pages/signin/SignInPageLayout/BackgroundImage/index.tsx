@@ -6,19 +6,8 @@ import MobileBackgroundImage1 from '@assets/images/home-background--mobile.png';
 import useThemeStyles from '@hooks/useThemeStyles';
 import type BackgroundImageProps from './types';
 import {View, Image, StyleSheet} from 'react-native';
-import { lazy } from 'react';
 
-const MobileBackgroundImage = lazy(() => import('@assets/images/home-background--mobile.svg'));
 
-const styles = StyleSheet.create({
-  container: {
-    paddingTop: 50,
-  },
-  stretch: {
-    width: 350,
-    height: 700,
-  },
-});
 
 function BackgroundImage({width, transitionDuration, isSmallScreen = false}: BackgroundImageProps) {
     const styles = useThemeStyles();
@@ -40,31 +29,8 @@ const [svgHeight, setHeight] = useState(0);
                                    width:img.offsetWidth}})));
 		console.log('img: ', img)
     };
-	const test1 = React.useEffect(() => {
-		console.log('hihi');
-		//console.log(MobileBackgroundImage)
-		//console.log('Image: ', Image)
-		console.log('image2: ', test3)
-		console.log('width: ', width);
-		//const {pngHeight, pngWidth} = pngDimention;
-		//const getBackgroundHeight = pngHeight / (width * pngWidth);
-		const getBackgroundHeight = (width * 540) / 800;
-		setHeight(getBackgroundHeight);
-		//console.log('{pngHeight, pngWidth}: ', {pngHeight, pngWidth});	
-		console.log('ref: ', ref)
-		setTimeout(async() => {
-		if (await MobileBackgroundImage) {
-		console.log('height: ', ref.current)
-			setShowSvg(true);}
-		}, 5000)
-	}, []);
-	const test2 = React.useCallback(() => {
-		console.log('afd');
-	}, []);
 	const test3 =  (
 		<Image
-			ref={ref}
-			onLoad={getDimention}
 		    //source={require('./home-background--mobile.png')}
 		 source={MobileBackgroundImage1}
 		 style={{
@@ -82,16 +48,7 @@ const [svgHeight, setHeight] = useState(0);
                 />
 
 	);
-	const test4 = (
-		<MobileBackgroundImage
-                    width={width}
-		    style={
-			   styles.signInBackground	    }
-		    display={showSvg ?'block' : 'none'}
-                />
 
-	);
-	
     return (
         <Animatable.View
             style={styles.signInBackground}
@@ -99,10 +56,7 @@ const [svgHeight, setHeight] = useState(0);
             duration={transitionDuration}
     >
 	    {test3}
-	{
-		showSvg ? test4 : null
-	}
-	
+
 
 {/*
             {isSmallScreen ? (
