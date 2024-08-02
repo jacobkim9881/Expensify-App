@@ -1489,6 +1489,8 @@ const styles = (theme: ThemeColors) =>
             bottom: 0,
             left: 0,
             minHeight: 700,
+	top: 0
+
         },
 
         signInPageInner: {
