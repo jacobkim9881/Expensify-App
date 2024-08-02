@@ -2,12 +2,13 @@ import React, {useState} from 'react';
 import * as Animatable from 'react-native-animatable';
 import DesktopBackgroundImage from '@assets/images/home-background--desktop.svg';
 import MobileBackgroundImage1 from '@assets/images/home-background--mobile.png';
-import MobileBackgroundImage from '@assets/images/home-background--mobile.svg';
+//import MobileBackgroundImage from '@assets/images/home-background--mobile.svg';
 import useThemeStyles from '@hooks/useThemeStyles';
 import type BackgroundImageProps from './types';
 import {View, Image, StyleSheet} from 'react-native';
 import { lazy } from 'react';
 
+const MobileBackgroundImage = lazy(() => import('@assets/images/home-background--mobile.svg'));
 
 const styles = StyleSheet.create({
   container: {
@@ -51,11 +52,11 @@ const [svgHeight, setHeight] = useState(0);
 		setHeight(getBackgroundHeight);
 		//console.log('{pngHeight, pngWidth}: ', {pngHeight, pngWidth});	
 		console.log('ref: ', ref)
-		setTimeout(() => {
-
+		setTimeout(async() => {
+		if (await MobileBackgroundImage) {
 		console.log('height: ', ref.current)
-			setShowSvg(true);
-		}, 1000)
+			setShowSvg(true);}
+		}, 5000)
 	}, []);
 	const test2 = React.useCallback(() => {
 		console.log('afd');
@@ -81,7 +82,7 @@ const [svgHeight, setHeight] = useState(0);
                 />
 
 	);
-	const test4 = lazy((
+	const test4 = (
 		<MobileBackgroundImage
                     width={width}
 		    style={
@@ -89,7 +90,7 @@ const [svgHeight, setHeight] = useState(0);
 		    display={showSvg ?'block' : 'none'}
                 />
 
-	));
+	);
 	
     return (
         <Animatable.View
@@ -99,6 +100,7 @@ const [svgHeight, setHeight] = useState(0);
     >
 	    {test3}
 	{
+		showSvg ? test4 : null
 	}
 	
 
