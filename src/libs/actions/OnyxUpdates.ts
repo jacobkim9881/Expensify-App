@@ -166,6 +166,7 @@ function doesClientNeedToBeUpdated(previousUpdateID = 0, clientLastUpdateID = 0)
         Log.info('We do not have lastUpdateIDFromClient, client needs updating');
         return true;
     }
+	console.log('lastUpdateIDFromClient: ', lastUpdateIDFromClient, ', previousUpdateID: ', previousUpdateID);
     if (lastUpdateIDFromClient < previousUpdateID) {
         Log.info('lastUpdateIDFromClient is less than the previousUpdateID received, client needs updating', false, {lastUpdateIDFromClient, previousUpdateID});
         return true;

@@ -3423,7 +3423,7 @@ function getReportActionMessage(reportAction: OnyxEntry<ReportAction>, reportID?
     }
 
     if (reportAction.actionName === CONST.REPORT.ACTIONS.TYPE.UNHOLD) {
-        return Localize.translateLocal('iou.unheldExpense');
+       return Localize.translateLocal('iou.unheldExpense');
     }
     if (ReportActionsUtils.isApprovedOrSubmittedReportAction(reportAction)) {
         return ReportActionsUtils.getReportActionMessageText(reportAction);
@@ -4980,7 +4980,8 @@ function buildOptimisticUnHoldReportAction(created = DateUtils.getDBTime()): Opt
             {
                 type: CONST.REPORT.MESSAGE.TYPE.TEXT,
                 style: 'normal',
-                text: Localize.translateLocal('iou.unheldExpense'),
+                text: "Asking to server holding this report.",
+                //text: Localize.translateLocal('iou.unheldExpense'),
             },
         ],
         person: [
