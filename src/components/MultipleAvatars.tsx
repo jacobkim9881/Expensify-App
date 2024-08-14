@@ -79,6 +79,8 @@ function MultipleAvatars({
     shouldShowTooltip = true,
     shouldUseCardBackground = false,
     maxAvatarsInRow = CONST.AVATAR_ROW_SIZE.DEFAULT,
+	report='',
+	itemlist=false
 }: MultipleAvatarsProps) {
     const theme = useTheme();
     const styles = useThemeStyles();
@@ -137,32 +139,24 @@ function MultipleAvatars({
         return [firstRow, secondRow];
     }, [icons, maxAvatarsInRow, shouldDisplayAvatarsInRows]);
 
+		React.useEffect(() => {
+if(!itemlist) {return}
+			console.log('maxAvatarsInRow: ', maxAvatarsInRow)
+			console.log('report:' , report)
+			console.log('avatarRows: ', avatarRows)
+			console.log('icons: ', icons);
+			console.log('shouldStackHorizontally: ', shouldStackHorizontally)
+
+	}, []);
+
+
+
     if (!icons.length) {
         return null;
     }
 
     if (icons.length === 1 && !shouldStackHorizontally) {
-        return (
-            <UserDetailsTooltip
-                accountID={Number(icons[0].id)}
-                icon={icons[0]}
-                fallbackUserDetails={{
-                    displayName: icons[0].name,
-                }}
-            >
-                <View style={avatarContainerStyles}>
-                    <Avatar
-                        source={icons[0].source}
-                        size={size}
-                        fill={icons[0].fill}
-                        name={icons[0].name}
-                        avatarID={icons[0].id}
-                        type={icons[0].type}
-                        fallbackIcon={icons[0].fallbackIcon}
-                    />
-                </View>
-            </UserDetailsTooltip>
-        );
+
     }
 
     const oneAvatarSize = StyleUtils.getAvatarStyle(size);
@@ -175,9 +169,11 @@ function MultipleAvatars({
         avatarContainerStyles = StyleUtils.combineStyles([styles.alignItemsCenter, styles.flexRow, StyleUtils.getHeight(height)]);
     }
 
-    return shouldStackHorizontally ? (
+	if (itemlist && shouldStackHorizontally) {
+
+    return (
         avatarRows.map((avatars, rowIndex) => (
-            <View
+           <View
                 style={avatarContainerStyles}
                 /* eslint-disable-next-line react/no-array-index-key */
                 key={`avatarRow-${rowIndex}`}
@@ -209,6 +205,7 @@ function MultipleAvatars({
                                 avatarID={icon.id}
                                 type={icon.type}
                                 fallbackIcon={icon.fallbackIcon}
+				rIndex={rowIndex}
                             />
                         </View>
                     </UserDetailsTooltip>
@@ -247,7 +244,32 @@ function MultipleAvatars({
                 )}
             </View>
         ))
-    ) : (
+    );
+	} else if(icons.length === 1 && !shouldStackHorizontally) {
+        return (
+            <UserDetailsTooltip
+                accountID={Number(icons[0].id)}
+                icon={icons[0]}
+                fallbackUserDetails={{
+                    displayName: icons[0].name,
+                }}
+            >
+                <View style={avatarContainerStyles}>
+                    <Avatar
+                        source={icons[0].source}
+                        size={size}
+                        fill={icons[0].fill}
+                        name={icons[0].name}
+                        avatarID={icons[0].id}
+                        type={icons[0].type}
+                        fallbackIcon={icons[0].fallbackIcon}
+                    />
+                </View>
+            </UserDetailsTooltip>
+        );
+
+    } else if (!shouldStackHorizontally) {
+return (	    
         <View style={avatarContainerStyles}>
             <View style={[singleAvatarStyle, icons[0].type === CONST.ICON_TYPE_WORKSPACE && StyleUtils.getAvatarBorderRadius(size, icons[0].type)]}>
                 <UserDetailsTooltip
@@ -305,8 +327,10 @@ function MultipleAvatars({
                     )}
                 </View>
             </View>
-        </View>
+    </View>
     );
+}
+
 }
 
 MultipleAvatars.displayName = 'MultipleAvatars';

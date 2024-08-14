@@ -1108,7 +1108,10 @@ function isWorkspaceTaskReport(report: OnyxEntry<Report>): boolean {
     if (!isTaskReport(report)) {
         return false;
     }
+
+	//console.log('report parentid: ', report?.parentReportID);
     const parentReport = ReportConnection.getAllReports()?.[`${ONYXKEYS.COLLECTION.REPORT}${report?.parentReportID}`];
+	//console.log('parentReport: ', parentReport);
     return isPolicyExpenseChat(parentReport);
 }
 
@@ -2089,6 +2092,13 @@ function getIcons(
     policy?: OnyxInputOrEntry<Policy>,
     invoiceReceiverPolicy?: OnyxInputOrEntry<Policy>,
 ): Icon[] {
+//	console.log('getIcons
+//	console.log('getIcons defaultIcon: ', defaultIcon)
+//	console.log('getIcons personalDetails: ', personalDetails)
+//	console.log('getIcons report: ', report);
+//	console.log('getIcons policy: ', policy);
+//	console.log('getIcons invoiceReceiverPolicy: ',invoiceReceiverPolicy)
+
     if (isEmptyObject(report)) {
         const fallbackIcon: Icon = {
             source: defaultIcon ?? FallbackAvatar,
@@ -2098,6 +2108,12 @@ function getIcons(
         };
         return [fallbackIcon];
     }
+
+      //  const otherParticipantsAccountIDs = Object.keys(report.participants ?? {})
+    //        .map(Number)
+  //          .filter((accountID) => accountID !== currentUserAccountID);
+//        return getIconsForParticipants(otherParticipantsAccountIDs, personalDetails);
+
     if (isExpenseRequest(report)) {
         const parentReportAction = ReportActionsUtils.getParentReportAction(report);
         const workspaceIcon = getWorkspaceIcon(report, policy);
@@ -2178,6 +2194,7 @@ function getIcons(
             }
         }
 
+	    console.log('icons at one of isAdminRoom(report) || isAnnounceRoom(report) || isChatRoom(report) || isArchivedRoom(r || getReportNameValuePairs: ', icons)
         return icons;
     }
     if (isPolicyExpenseChat(report) || isExpenseReport(report)) {
@@ -2260,14 +2277,85 @@ function getIcons(
         return icons;
     }
 
+
     if (isOneOnOneChat(report)) {
         const otherParticipantsAccountIDs = Object.keys(report.participants ?? {})
             .map(Number)
             .filter((accountID) => accountID !== currentUserAccountID);
+	    console.log('icons at isOneOnOneChat: ', getIconsForParticipants(otherParticipantsAccountIDs, personalDetails));
         return getIconsForParticipants(otherParticipantsAccountIDs, personalDetails);
     }
 
-    const participantAccountIDs = Object.keys(report.participants ?? {}).map(Number);
+
+    const participantAccountIDs = Object.keys(report.participants ?? {}).filter(val => Number && !isNaN(val));
+  let deletedName = [];
+  let sameName = [];
+let created = report?.lastActionType === CONST.REPORT.ACTIONS.TYPE.CREATED; 
+let targetObj = getIconsForParticipants(participantAccountIDs, personalDetails);
+let hasSameParticipantsID = Object.entries(getIconsForParticipants(participantAccountIDs, personalDetails)).map(([idx1, val1]) => {
+
+  Object.entries(getIconsForParticipants(participantAccountIDs, personalDetails)).map(([idx2, val2]) => { 
+    if (val2.name && val1.name === val2.name || val2.id === currentUserAccountID) {
+
+  if (!deletedName.includes(val2.name)) {
+	if(sameName.some((same) => same.name === val2.name && same.id !== val2.id)) {	
+	//if(sameName.includes(val2.name)) {  
+		console.log('delete this: ', report?.participants[val2.id])
+  delete report?.participants[val2.id];
+  deletedName.push(val2.name)
+	} else {
+	//sameName.push(val2.name);
+	sameName.push(targetObj.idx2);
+	}
+}
+
+} 
+ 
+ })
+})
+
+/*
+let hasSameParticipantsID = Object.entries(report?.participants ?? {}).map(([accountID1, account]) => {
+
+  Object.entries(report?.participants ?? {}).map(([accountID2, account2]) => { 
+//   if (account.name == account2.name && account2.name !== accountID1) {
+    if (account.name === account2.name || account2.name === accountID1) {
+  //accountIDs.push(accountID2); 
+  //accountIDs[accountID1] = account;
+
+  if (!deletedName.includes(account2.name)) {
+	if(sameName.includes(account2.name)) {  
+  delete report?.participants[accountID1];
+  deletedName.push(account2.name)
+	} else {
+	sameName.push(account2.name);
+	}
+}
+
+  if(!deletedName.includes(account.name)) {
+}
+} 
+ 
+ })
+})
+*/
+console.log('left participants: ', report?.participants);
+
+    //const participantAccountIDs = Object.keys(report.participants ?? {}).map(Number);
+
+	let test12= participantAccountIDs.filter((accountID) => accountID !== currentUserAccountID);
+
+	console.log('filtered participantAccountIDs.filter: ', test12);
+
+	console.log('!isChatRoom(report): ', !isChatRoom(report))
+	console.log('!isExpenseRequest(report): ', !isExpenseRequest(report))
+	console.log('!isMoneyRequestReport(report: ', !isMoneyRequestReport(report))
+	console.log('!isPolicyExpenseChat(report): ', !isPolicyExpenseChat(report))
+	console.log('!isTaskReport(report): ', !isTaskReport(report))
+	console.log('!isIOUReport(report): ', !isIOUReport(report))
+	console.log('isDM(report): ', isDM(report))
+console.log('icons at else if: ', getIconsForParticipants(participantAccountIDs, personalDetails));
+console.log('report: ', report);
     return getIconsForParticipants(participantAccountIDs, personalDetails);
 }
 

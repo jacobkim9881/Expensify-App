@@ -67,6 +67,7 @@ function Avatar({
     type,
     name = '',
     avatarID,
+	rIndex=''
 }: AvatarProps) {
     const theme = useTheme();
     const styles = useThemeStyles();
@@ -78,6 +79,13 @@ function Avatar({
     useEffect(() => {
         setImageError(false);
     }, [originalSource]);
+    
+	useEffect(() => {
+		console.log('rIndex: ', rIndex)
+		console.log('userAccountID: ', userAccountID)
+		//console.log('source at components/Avatar.tsx: ', UserUtils.getAvatar(originalSource, userAccountID));
+		//	console.log('originalSource at components/Avatar.tsx: ', originalSource);
+    }, []);
 
     const isWorkspace = type === CONST.ICON_TYPE_WORKSPACE;
     const userAccountID = isWorkspace ? undefined : (avatarID as number);

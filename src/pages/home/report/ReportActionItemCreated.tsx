@@ -48,12 +48,24 @@ function ReportActionItemCreated({report, personalDetails, policy, reportID}: Re
     }
 
     let icons = ReportUtils.getIcons(report, personalDetails, null, '', -1, undefined, invoiceReceiverPolicy);
+	//	let icons = [];
+		React.useEffect(() => {
+			let test1 = ReportUtils.getIcons(report, personalDetails, null, '', -1, undefined, invoiceReceiverPolicy);
+
+			//console.log('icons: ', test1);
+			//console.log('icons: ', icons);
+//icons = test1;
+			console.log('report: ', report);
+
+	}, []);
     const shouldDisableDetailPage = ReportUtils.shouldDisableDetailPage(report);
 
+	/*	
     if (ReportUtils.isInvoiceRoom(report) && ReportUtils.isCurrentUserInvoiceReceiver(report)) {
         icons = [...icons].reverse();
     }
 
+	 */
     return (
         <OfflineWithFeedback
             pendingAction={report?.pendingFields?.addWorkspaceRoom ?? report?.pendingFields?.createChat}
@@ -81,6 +93,8 @@ function ReportActionItemCreated({report, personalDetails, policy, reportID}: Re
                                 shouldStackHorizontally
                                 shouldDisplayAvatarsInRows={shouldUseNarrowLayout}
                                 maxAvatarsInRow={shouldUseNarrowLayout ? CONST.AVATAR_ROW_SIZE.DEFAULT : CONST.AVATAR_ROW_SIZE.LARGE_SCREEN}
+				report={report}
+				itemlist={true}
                             />
                         </PressableWithoutFeedback>
                     </OfflineWithFeedback>
