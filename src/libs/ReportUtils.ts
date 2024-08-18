@@ -2089,6 +2089,7 @@ function getIcons(
     policy?: OnyxInputOrEntry<Policy>,
     invoiceReceiverPolicy?: OnyxInputOrEntry<Policy>,
 ): Icon[] {
+	console.log('report at geticons: ', report);
     if (isEmptyObject(report)) {
         const fallbackIcon: Icon = {
             source: defaultIcon ?? FallbackAvatar,
