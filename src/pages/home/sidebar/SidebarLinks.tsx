@@ -117,8 +117,9 @@ function SidebarLinks({onLinkClick, insets, optionListItems, isLoading, priority
             if ((option.reportID === Navigation.getTopmostReportId() && !reportActionID) || (shouldUseNarrowLayout && isActiveReport(option.reportID) && !reportActionID)) {
                 return;
             }
-            Navigation.navigate(ROUTES.REPORT_WITH_ID.getRoute(option.reportID));
-            onLinkClick();
+             //Navigation.navigate(ROUTES.REPORT_WITH_ID.getRoute(option.reportID));
+		Navigation.navigate(ROUTES.REPORT_WITH_ID.getRoute(option.reportID, undefined, CONST.REFERRER.NOTIFICATION));
+             //onLinkClick();
         },
         [shouldUseNarrowLayout, isActiveReport, onLinkClick],
     );
