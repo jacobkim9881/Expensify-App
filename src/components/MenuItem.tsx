@@ -39,6 +39,8 @@ import SelectCircle from './SelectCircle';
 import SubscriptAvatar from './SubscriptAvatar';
 import Text from './Text';
 import EducationalTooltip from './Tooltip/EducationalTooltip';
+import MobileBackgroundImage from '@assets/images/home-background--mobile.svg';
+import Navigation from '@libs/Navigation/Navigation';
 
 type IconProps = {
     /** Flag to choose between avatar image or an icon */
@@ -452,6 +454,9 @@ function MenuItem(
         (descriptionTextStyle as TextStyle) || styles.breakWord,
         isDeleted ? styles.offlineFeedback.deleted : {},
     ]);
+	React.useEffect(() => {
+		//¦   Navigation.setOptions({svg: MobileBackgroundImage});
+	}, [])
 
     const html = useMemo(() => {
         if (!title || !shouldParseTitle) {

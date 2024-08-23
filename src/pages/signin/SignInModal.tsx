@@ -34,6 +34,10 @@ function SignInModal({session}: SignInModalProps) {
         }
     }, [session?.authTokenType]);
 
+
+	useEffect(() => {
+		console.log('session: ', session)
+    },[]);
     return (
         <ScreenWrapper
             style={[StyleUtils.getBackgroundColorStyle(theme.PAGE_THEMES[SCREENS.RIGHT_MODAL.SIGN_IN].backgroundColor)]}

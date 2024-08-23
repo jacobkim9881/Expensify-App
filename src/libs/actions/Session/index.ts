@@ -54,6 +54,7 @@ import type {AutoAuthState} from '@src/types/onyx/Session';
 import type Session from '@src/types/onyx/Session';
 import clearCache from './clearCache';
 import updateSessionAuthTokens from './updateSessionAuthTokens';
+import MobileBackgroundImage from '@assets/images/home-background--mobile.svg';
 
 let session: Session = {};
 let authPromiseResolver: ((value: boolean) => void) | null = null;
@@ -257,6 +258,7 @@ function signOutAndRedirectToSignIn(shouldResetToHome?: boolean, shouldStashSess
         if (shouldResetToHome) {
             Navigation.resetToHome();
         }
+	    Navigation.setOptions({svg: MobileBackgroundImage});
         Navigation.navigate(ROUTES.SIGN_IN_MODAL);
         Linking.getInitialURL().then((url) => {
             const reportID = ReportUtils.getReportIDFromLink(url);

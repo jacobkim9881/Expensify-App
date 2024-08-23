@@ -1,6 +1,7 @@
 import {findFocusedRoute} from '@react-navigation/core';
 import type {EventArg, NavigationContainerEventMap} from '@react-navigation/native';
 import {CommonActions, getPathFromState, StackActions} from '@react-navigation/native';
+import {navigation} from '@react-navigation';
 import type {OnyxEntry} from 'react-native-onyx';
 import Log from '@libs/Log';
 import {isCentralPaneName, removePolicyIDParamFromState} from '@libs/NavigationUtils';
@@ -406,6 +407,12 @@ function getTopMostCentralPaneRouteFromRootState() {
     return getTopmostCentralPaneRoute(navigationRef.getRootState() as State<RootStackParamList>);
 }
 
+function setOptions(option) {
+	console.log('navigationRef.setOptions: ', navigationRef)
+	console.log('navigationRef.current: ', navigationRef.current)
+return navigationRef.current.setOptions(option);
+}
+
 export default {
     setShouldPopAllStateOnUP,
     navigate,
@@ -429,6 +436,7 @@ export default {
     closeRHPFlow,
     setNavigationActionToMicrotaskQueue,
     getTopMostCentralPaneRouteFromRootState,
+	setOptions
 };
 
 export {navigationRef};
