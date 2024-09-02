@@ -129,8 +129,8 @@ function AttachmentPickerWithMenuItems({
     const moneyRequestOptions = useMemo(() => {
         const selectOption = (onSelected: () => void, shouldRestrictAction: boolean) => {
             if (shouldRestrictAction && policy && SubscriptionUtils.shouldRestrictUserBillableActions(policy.id)) {
-                Navigation.navigate(ROUTES.RESTRICTED_ACTION.getRoute(policy.id));
-                return;
+                 //Navigation.navigate(ROUTES.RESTRICTED_ACTION.getRoute(policy.id));
+                 //return;
             }
 
             onSelected();
