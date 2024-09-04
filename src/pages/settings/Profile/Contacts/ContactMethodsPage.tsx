@@ -1,6 +1,7 @@
 import type {StackScreenProps} from '@react-navigation/stack';
 import {Str} from 'expensify-common';
-import React, {useCallback} from 'react';
+import React, {useEffect, useCallback} from 'react';
+//import React, {useCallback} from 'react';
 import {View} from 'react-native';
 import type {OnyxEntry} from 'react-native-onyx';
 import {withOnyx} from 'react-native-onyx';
@@ -40,6 +41,10 @@ function ContactMethodsPage({loginList, session, route}: ContactMethodsPageProps
     const loginNames = Object.keys(loginList ?? {});
     const navigateBackTo = route?.params?.backTo;
 
+
+	useEffect(() => {
+console.log('route: ', route, ', loginList: ', loginList);
+	}, []);
     // Sort the login names by placing the one corresponding to the default contact method as the first item before displaying the contact methods.
     // The default contact method is determined by checking against the session email (the current login).
     const sortedLoginNames = loginNames.sort((loginName) => (loginList?.[loginName].partnerUserID === session?.email ? -1 : 1));

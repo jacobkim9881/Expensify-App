@@ -127,6 +127,8 @@ function BaseValidateCodeForm({
     );
 
     useEffect(() => {
+	    console.log('account: ', account)
+	    console.log('contactMethod: ', contactMethod, ', hasMagicCodeBeenSent: ', hasMagicCodeBeenSent, ', loginList: ', loginList, ', pendingContact: ', pendingContact)
         Session.clearAccountMessages();
         if (!validateLoginError) {
             return;

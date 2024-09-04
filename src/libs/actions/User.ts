@@ -274,6 +274,7 @@ function clearContactMethod(contactMethod: string) {
  * Clears any possible stored errors for a specific field on a contact method
  */
 function clearContactMethodErrors(contactMethod: string, fieldName: string) {
+let lgnlist =  Onyx.get(ONYXKEYS.LOGIN_LIST)
     Onyx.merge(ONYXKEYS.LOGIN_LIST, {
         [contactMethod]: {
             errorFields: {
@@ -496,6 +497,8 @@ function validateLogin(accountID: number, validateCode: string) {
  * Validates a secondary login / contact method
  */
 function validateSecondaryLogin(loginList: OnyxEntry<LoginList>, contactMethod: string, validateCode: string) {
+	console.log('validateSecondaryLogin currentEmail: ', currentEmail)
+	console.log('loginList?.[currentEmail].validatedDate: ', loginList?.[currentEmail].validatedDate)
     const optimisticData: OnyxUpdate[] = [
         {
             onyxMethod: Onyx.METHOD.MERGE,
