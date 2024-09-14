@@ -260,6 +260,11 @@ function ReportActionItem({
         [action.reportActionID, reactionListRef],
     );
 
+
+	useEffect(() => {
+console.log('action at src/pages/home/report/ReportActionItem.tsx: ', action)
+	}, [])
+
     useEffect(() => {
         // We need to hide EmojiPicker when this is a deleted parent action
         if (!isDeletedParentAction || !EmojiPickerAction.isActive(action.reportActionID)) {

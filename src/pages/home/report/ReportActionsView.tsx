@@ -160,8 +160,11 @@ function ReportActionsView({
 
         const actions = [...allReportActions];
         const lastAction = allReportActions[allReportActions.length - 1];
+	    const isInvitedMsg = lastAction["originalMessage"]?.["resolution"] && lastAction["originalMessage"]?.["resolution"] === "invited" ? true : false;
+	const editedLastAction = isInvitedMsg ? allReportActions[allReportActions.length - 2] : lastAction;    
+	if(!ReportActionsUtils.isCreatedAction(editedLastAction)) { 
 
-        if (!ReportActionsUtils.isCreatedAction(lastAction)) {
+	//if (!ReportActionsUtils.isCreatedAction(lastAction)) {
             const optimisticCreatedAction = ReportUtils.buildOptimisticCreatedReportAction(String(report?.ownerAccountID), DateUtils.subtractMillisecondsFromDateTime(lastAction.created, 1));
             optimisticCreatedAction.pendingAction = null;
             actions.push(optimisticCreatedAction);
@@ -247,6 +250,15 @@ function ReportActionsView({
         // currentReportActionID is needed to trigger batching once the report action has been positioned
         // eslint-disable-next-line react-compiler/react-compiler, react-hooks/exhaustive-deps
     }, [reportActionID, combinedReportActions, indexOfLinkedAction, currentReportActionID]);
+
+
+
+    useEffect(() => {
+	    console.log('combinedReportActions: ', combinedReportActions)
+	    console.log('reportActions: ', reportActions);
+	    console.log('last action: ', allReportActions[allReportActions.length - 1])
+	    console.log('allReportActions: ', allReportActions)
+    }, [])
 
     const reportActionIDMap = useMemo(() => {
         const reportActionIDs = allReportActions.map((action) => action.reportActionID);

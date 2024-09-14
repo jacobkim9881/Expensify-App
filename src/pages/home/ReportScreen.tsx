@@ -304,6 +304,11 @@ function ReportScreen({route, currentReportID = '', navigation}: ReportScreenPro
     const isTopMostReportId = currentReportID === reportIDFromRoute;
     const didSubscribeToReportLeavingEvents = useRef(false);
 
+
+	useEffect(() => {
+console.log('reportActions: src/pages/home/ReportScreen.tsx ', reportActions)
+	}, [])
+
     useEffect(() => {
         if (!report.reportID || shouldHideReport) {
             wasReportAccessibleRef.current = false;

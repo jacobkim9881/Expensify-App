@@ -208,6 +208,12 @@ function ReportActionsList({
      * - marks a message as read/unread
      * - reads a new message as it is received
      */
+
+
+    useEffect(() => {
+console.log('sortedVisibleReportActions: ', sortedVisibleReportActions);
+    }, [])
+
     const [unreadMarkerTime, setUnreadMarkerTime] = useState(report.lastReadTime ?? '');
     useEffect(() => {
         setUnreadMarkerTime(report.lastReadTime ?? '');
