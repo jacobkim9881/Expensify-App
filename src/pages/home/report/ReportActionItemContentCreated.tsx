@@ -47,7 +47,7 @@ type ReportActionItemContentCreatedProps = {
     shouldHideThreadDividerLine: boolean;
 };
 
-function ReportActionItemContentCreated({contextValue, parentReportAction, transactionID, draftMessage, shouldHideThreadDividerLine}: ReportActionItemContentCreatedProps) {
+function ReportActionItemContentCreated({contextValue, parentReportAction, transactionID, draftMessage, shouldHideThreadDividerLine, isCreateContentItemRendered, setContentCreateItemRenderedTrue}: ReportActionItemContentCreatedProps) {
     const styles = useThemeStyles();
     const {translate} = useLocalize();
 
@@ -73,6 +73,16 @@ function ReportActionItemContentCreated({contextValue, parentReportAction, trans
             ),
         [shouldHideThreadDividerLine, report.reportID, styles.reportHorizontalRule],
     );
+
+	React.useEffect(() => {
+console.log('isCreateContentItemRendered: ', isCreateContentItemRendered.current);
+
+	if (!isCreateContentItemRendered.current) {
+
+		}
+console.log('isCreateContentItemRendered: ', isCreateContentItemRendered);
+console.log('contextValue: ', contextValue)
+	}, []);
 
     if (ReportActionsUtils.isTransactionThread(parentReportAction)) {
         const isReversedTransaction = ReportActionsUtils.isReversedTransaction(parentReportAction);
@@ -146,7 +156,11 @@ function ReportActionItemContentCreated({contextValue, parentReportAction, trans
         );
     }
 
+
+	    if(!isCreateContentItemRendered.current) {
     if (ReportUtils.isExpenseReport(report) || ReportUtils.isIOUReport(report) || ReportUtils.isInvoiceReport(report)) {
+
+setContentCreateItemRenderedTrue();
         return (
             <OfflineWithFeedback pendingAction={action.pendingAction}>
                 {!isEmptyObject(transactionThreadReport?.reportID) ? (
@@ -178,6 +192,7 @@ function ReportActionItemContentCreated({contextValue, parentReportAction, trans
             </OfflineWithFeedback>
         );
     }
+	    }
 
     return (
         <ReportActionItemCreated

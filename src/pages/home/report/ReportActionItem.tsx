@@ -174,6 +174,8 @@ function ReportActionItem({
     hideThreadReplies = false,
     shouldDisplayContextMenu = true,
     parentReportActionForTransactionThread,
+	isCreateContentItemRendered,
+	setContentCreateItemRenderedTrue
 }: ReportActionItemProps) {
     const {translate} = useLocalize();
     const {shouldUseNarrowLayout} = useResponsiveLayout();
@@ -259,6 +261,11 @@ function ReportActionItem({
         },
         [action.reportActionID, reactionListRef],
     );
+
+
+    useEffect(() => {
+console.log('parentReportAction at reportActionItem: ', parentReportAction)
+    }, [])
 
     useEffect(() => {
         // We need to hide EmojiPicker when this is a deleted parent action
@@ -850,6 +857,8 @@ function ReportActionItem({
                 transactionID={transactionID}
                 draftMessage={draftMessage}
                 shouldHideThreadDividerLine={shouldHideThreadDividerLine}
+		isCreateContentItemRendered={isCreateContentItemRendered}
+		setContentCreateItemRenderedTrue={setContentCreateItemRenderedTrue}
             />
         );
     }

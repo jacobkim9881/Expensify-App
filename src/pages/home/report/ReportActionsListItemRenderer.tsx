@@ -70,6 +70,8 @@ function ReportActionsListItemRenderer({
     isFirstVisibleReportAction = false,
     shouldUseThreadDividerLine = false,
     parentReportActionForTransactionThread,
+isCreateContentItemRendered,	
+	setContentCreateItemRenderedTrue
 }: ReportActionsListItemRendererProps) {
     const shouldDisplayParentAction =
         reportAction.actionName === CONST.REPORT.ACTIONS.TYPE.CREATED &&
@@ -183,6 +185,8 @@ function ReportActionsListItemRenderer({
             index={index}
             isFirstVisibleReportAction={isFirstVisibleReportAction}
             shouldUseThreadDividerLine={shouldUseThreadDividerLine}
+	    isCreateContentItemRendered={isCreateContentItemRendered}
+            setContentCreateItemRenderedTrue={setContentCreateItemRenderedTrue}
         />
     );
 }

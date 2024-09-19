@@ -185,8 +185,12 @@ function ReportActionsList({
     const readActionSkipped = useRef(false);
     const hasHeaderRendered = useRef(false);
     const hasFooterRendered = useRef(false);
+    const isCreateContentItemRendered = useRef(false);
     const linkedReportActionID = route?.params?.reportActionID ?? '-1';
 
+	const setContentCreateItemRenderedTrue = () => {
+	isCreateContentItemRendered.current = true;
+	}
     const sortedVisibleReportActions = useMemo(
         () =>
             sortedReportActions.filter(
@@ -530,6 +534,8 @@ function ReportActionsList({
                 shouldDisplayReplyDivider={sortedVisibleReportActions.length > 1}
                 isFirstVisibleReportAction={firstVisibleReportActionID === reportAction.reportActionID}
                 shouldUseThreadDividerLine={shouldUseThreadDividerLine}
+		isCreateContentItemRendered={isCreateContentItemRendered}
+		setContentCreateItemRenderedTrue={setContentCreateItemRenderedTrue}
             />
         ),
         [
