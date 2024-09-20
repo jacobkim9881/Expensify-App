@@ -1,5 +1,5 @@
 import lodashIsEqual from 'lodash/isEqual';
-import React, {memo, useMemo} from 'react';
+import React, {memo, useMemo, useRef, useEffect} from 'react';
 import {View} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
 import type {OnyxEntry} from 'react-native-onyx';
@@ -72,6 +72,19 @@ function ReportActionItemContentCreated({
 
     const transactionCurrency = TransactionUtils.getCurrency(transaction);
 
+    useEffect(() => () => {
+    if (isCreateContentItemRendered.current) {
+        setContentCreateItemRenderedTrue();
+	    countR.current = countR.current + 1;
+    } 
+    }, [])
+
+	const countR = useRef(0);
+    React.useEffect(() => {
+	    console.log('isCreateContentItemRendered: ', isCreateContentItemRendered);
+	    console.log('countR: ', countR.current);
+    }, [])
+
     const renderThreadDivider = useMemo(
         () =>
             shouldHideThreadDividerLine ? (
@@ -90,6 +103,7 @@ function ReportActionItemContentCreated({
 
     if (!isCreateContentItemRendered.current) {
         setContentCreateItemRenderedTrue();
+	    countR.current = countR.current + 1;
     } else {
         return;
     }

@@ -188,7 +188,7 @@ function ReportActionsList({
     const isCreateContentItemRendered = useRef(false);
     const linkedReportActionID = route?.params?.reportActionID ?? '-1';
     const setContentCreateItemRenderedTrue = () => {
-        isCreateContentItemRendered.current = true;
+        isCreateContentItemRendered.current = !isCreateContentItemRendered.current;
     };
     const sortedVisibleReportActions = useMemo(
         () =>
