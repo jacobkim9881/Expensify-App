@@ -90,8 +90,6 @@ function isEmpty(report: OnyxTypes.Report): boolean {
 }
 
 function getParentReportAction(parentReportActions: OnyxEntry<OnyxTypes.ReportActions>, parentReportActionID: string | undefined): OnyxEntry<OnyxTypes.ReportAction> {
-	console.log('parentReportActions: ', parentReportActions)
-	console.log('parentReportActionID: ', parentReportActionID)
     if (!parentReportActions || !parentReportActionID) {
         return;
     }
@@ -138,8 +136,6 @@ function ReportScreen({route, currentReportID = '', navigation}: ReportScreenPro
     const permissions = useDeepCompareRef(reportOnyx?.permissions);
 
     useEffect(() => {
-	    console.log('reportOnyx: ', reportOnyx)
-	    
         // Don't update if there is a reportID in the params already
         if (route.params.reportID) {
             const reportActionID = route?.params?.reportActionID;

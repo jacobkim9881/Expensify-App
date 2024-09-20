@@ -45,9 +45,23 @@ type ReportActionItemContentCreatedProps = {
 
     /** Flag to show, hide the thread divider line */
     shouldHideThreadDividerLine: boolean;
+
+    isCreateContentItemRendered: {
+        current: boolean;
+    };
+
+    setContentCreateItemRenderedTrue: () => void;
 };
 
-function ReportActionItemContentCreated({contextValue, parentReportAction, transactionID, draftMessage, shouldHideThreadDividerLine, isCreateContentItemRendered, setContentCreateItemRenderedTrue}: ReportActionItemContentCreatedProps) {
+function ReportActionItemContentCreated({
+    contextValue,
+    parentReportAction,
+    transactionID,
+    draftMessage,
+    shouldHideThreadDividerLine,
+    isCreateContentItemRendered,
+    setContentCreateItemRenderedTrue,
+}: ReportActionItemContentCreatedProps) {
     const styles = useThemeStyles();
     const {translate} = useLocalize();
 
@@ -74,15 +88,11 @@ function ReportActionItemContentCreated({contextValue, parentReportAction, trans
         [shouldHideThreadDividerLine, report.reportID, styles.reportHorizontalRule],
     );
 
-	React.useEffect(() => {
-console.log('isCreateContentItemRendered: ', isCreateContentItemRendered.current);
-
-	if (!isCreateContentItemRendered.current) {
-
-		}
-console.log('isCreateContentItemRendered: ', isCreateContentItemRendered);
-console.log('contextValue: ', contextValue)
-	}, []);
+    if (!isCreateContentItemRendered.current) {
+        setContentCreateItemRenderedTrue();
+    } else {
+        return;
+    }
 
     if (ReportActionsUtils.isTransactionThread(parentReportAction)) {
         const isReversedTransaction = ReportActionsUtils.isReversedTransaction(parentReportAction);
@@ -156,11 +166,7 @@ console.log('contextValue: ', contextValue)
         );
     }
 
-
-	    if(!isCreateContentItemRendered.current) {
     if (ReportUtils.isExpenseReport(report) || ReportUtils.isIOUReport(report) || ReportUtils.isInvoiceReport(report)) {
-
-setContentCreateItemRenderedTrue();
         return (
             <OfflineWithFeedback pendingAction={action.pendingAction}>
                 {!isEmptyObject(transactionThreadReport?.reportID) ? (
@@ -192,7 +198,6 @@ setContentCreateItemRenderedTrue();
             </OfflineWithFeedback>
         );
     }
-	    }
 
     return (
         <ReportActionItemCreated

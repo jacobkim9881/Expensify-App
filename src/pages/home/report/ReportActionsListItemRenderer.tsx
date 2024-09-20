@@ -52,6 +52,10 @@ type ReportActionsListItemRendererProps = {
 
     /** If the thread divider line will be used */
     shouldUseThreadDividerLine?: boolean;
+
+    isCreateContentItemRendered: boolean;
+
+    setContentCreateItemRenderedTrue: () => void;
 };
 
 function ReportActionsListItemRenderer({
@@ -70,8 +74,8 @@ function ReportActionsListItemRenderer({
     isFirstVisibleReportAction = false,
     shouldUseThreadDividerLine = false,
     parentReportActionForTransactionThread,
-isCreateContentItemRendered,	
-	setContentCreateItemRenderedTrue
+    isCreateContentItemRendered,
+    setContentCreateItemRenderedTrue,
 }: ReportActionsListItemRendererProps) {
     const shouldDisplayParentAction =
         reportAction.actionName === CONST.REPORT.ACTIONS.TYPE.CREATED &&
@@ -185,7 +189,7 @@ isCreateContentItemRendered,
             index={index}
             isFirstVisibleReportAction={isFirstVisibleReportAction}
             shouldUseThreadDividerLine={shouldUseThreadDividerLine}
-	    isCreateContentItemRendered={isCreateContentItemRendered}
+            isCreateContentItemRendered={isCreateContentItemRendered}
             setContentCreateItemRenderedTrue={setContentCreateItemRenderedTrue}
         />
     );
