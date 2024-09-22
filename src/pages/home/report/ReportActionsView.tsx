@@ -123,6 +123,11 @@ function ReportActionsView({
         Report.openReport(reportID, reportActionID);
     };
 
+	const isCreateContentItemRendered = useRef(0);
+	const setContentCreateItemRenderedTrue = () => {
+		isCreateContentItemRendered.current = isCreateContentItemRendered.current + 1;
+	}
+
     useEffect(() => {
         // When we linked to message - we do not need to wait for initial actions - they already exists
         if (!reportActionID || !isOffline) {
@@ -161,7 +166,7 @@ function ReportActionsView({
         const actions = [...allReportActions];
         const lastAction = allReportActions[allReportActions.length - 1];
 
-        if (!ReportActionsUtils.isCreatedAction(lastAction)) {
+        if (!ReportActionsUtils.isCreatedAction(lastAction) && !isCreateContentItemRendered) {
             const optimisticCreatedAction = ReportUtils.buildOptimisticCreatedReportAction(String(report?.ownerAccountID), DateUtils.subtractMillisecondsFromDateTime(lastAction.created, 1));
             optimisticCreatedAction.pendingAction = null;
             actions.push(optimisticCreatedAction);
@@ -492,6 +497,8 @@ function ReportActionsView({
                 listID={listID}
                 onContentSizeChange={onContentSizeChange}
                 shouldEnableAutoScrollToTopThreshold={shouldEnableAutoScroll}
+		isCreateContentItemRendered={isCreateContentItemRendered}
+		setContentCreateItemRenderedTrue={setContentCreateItemRenderedTrue}
             />
             <UserTypingEventListener report={report} />
             <PopoverReactionList ref={reactionListRef} />

@@ -72,12 +72,7 @@ function ReportActionItemContentCreated({
 
     const transactionCurrency = TransactionUtils.getCurrency(transaction);
 
-	const countR = useRef(0);
-    React.useEffect(() => {
-	    countR.current = countR.current + 1;
-	    console.log('isCreateContentItemRendered: ', isCreateContentItemRendered);
-	    console.log('countR: ', countR.current);
-    }, [])
+setContentCreateItemRenderedTrue();
 
     const renderThreadDivider = useMemo(
         () =>
@@ -94,12 +89,6 @@ function ReportActionItemContentCreated({
             ),
         [shouldHideThreadDividerLine, report.reportID, styles.reportHorizontalRule],
     );
-
-    if (!isCreateContentItemRendered.current && countR.current === 1) {
-        setContentCreateItemRenderedTrue();
-    } else {
-        return;
-    }
 
     if (ReportActionsUtils.isTransactionThread(parentReportAction)) {
         const isReversedTransaction = ReportActionsUtils.isReversedTransaction(parentReportAction);
