@@ -72,15 +72,9 @@ function ReportActionItemContentCreated({
 
     const transactionCurrency = TransactionUtils.getCurrency(transaction);
 
-    useEffect(() => () => {
-    if (isCreateContentItemRendered.current) {
-        setContentCreateItemRenderedTrue();
-	    countR.current = countR.current + 1;
-    } 
-    }, [])
-
 	const countR = useRef(0);
     React.useEffect(() => {
+	    countR.current = countR.current + 1;
 	    console.log('isCreateContentItemRendered: ', isCreateContentItemRendered);
 	    console.log('countR: ', countR.current);
     }, [])
@@ -101,9 +95,8 @@ function ReportActionItemContentCreated({
         [shouldHideThreadDividerLine, report.reportID, styles.reportHorizontalRule],
     );
 
-    if (!isCreateContentItemRendered.current) {
+    if (!isCreateContentItemRendered.current && countR.current === 1) {
         setContentCreateItemRenderedTrue();
-	    countR.current = countR.current + 1;
     } else {
         return;
     }
