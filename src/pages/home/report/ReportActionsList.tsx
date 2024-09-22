@@ -99,9 +99,7 @@ type ReportActionsListProps = WithCurrentUserPersonalDetailsProps & {
     /** Should enable auto scroll to top threshold */
     shouldEnableAutoScrollToTopThreshold?: boolean;
 
-isCreateContentItemRendered: boolean;
-
-	setContentCreateItemRenderedTrue: () => void;
+    setContentCreateItemRenderedTrue: () => void;
 };
 
 const VERTICAL_OFFSET_THRESHOLD = 200;
@@ -158,8 +156,7 @@ function ReportActionsList({
     onContentSizeChange,
     shouldEnableAutoScrollToTopThreshold,
     parentReportActionForTransactionThread,
-	isCreateContentItemRendered,
-	setContentCreateItemRenderedTrue,
+    setContentCreateItemRenderedTrue,
 }: ReportActionsListProps) {
     const personalDetailsList = usePersonalDetails() || CONST.EMPTY_OBJECT;
     const styles = useThemeStyles();
@@ -535,7 +532,6 @@ function ReportActionsList({
                 shouldDisplayReplyDivider={sortedVisibleReportActions.length > 1}
                 isFirstVisibleReportAction={firstVisibleReportActionID === reportAction.reportActionID}
                 shouldUseThreadDividerLine={shouldUseThreadDividerLine}
-                isCreateContentItemRendered={isCreateContentItemRendered}
                 setContentCreateItemRenderedTrue={setContentCreateItemRenderedTrue}
             />
         ),
@@ -552,6 +548,7 @@ function ReportActionsList({
             shouldUseThreadDividerLine,
             firstVisibleReportActionID,
             unreadMarkerReportActionID,
+            setContentCreateItemRenderedTrue,
         ],
     );
 

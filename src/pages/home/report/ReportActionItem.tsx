@@ -151,8 +151,6 @@ type ReportActionItemProps = {
     /** Whether context menu should be displayed */
     shouldDisplayContextMenu?: boolean;
 
-    isCreateContentItemRendered: boolean;
-
     setContentCreateItemRenderedTrue: () => void;
 } & ReportActionItemOnyxProps;
 
@@ -178,7 +176,6 @@ function ReportActionItem({
     hideThreadReplies = false,
     shouldDisplayContextMenu = true,
     parentReportActionForTransactionThread,
-    isCreateContentItemRendered,
     setContentCreateItemRenderedTrue,
 }: ReportActionItemProps) {
     const {translate} = useLocalize();
@@ -856,7 +853,6 @@ function ReportActionItem({
                 transactionID={transactionID}
                 draftMessage={draftMessage}
                 shouldHideThreadDividerLine={shouldHideThreadDividerLine}
-                isCreateContentItemRendered={isCreateContentItemRendered}
                 setContentCreateItemRenderedTrue={setContentCreateItemRenderedTrue}
             />
         );

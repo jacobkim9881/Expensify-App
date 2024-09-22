@@ -46,10 +46,6 @@ type ReportActionItemContentCreatedProps = {
     /** Flag to show, hide the thread divider line */
     shouldHideThreadDividerLine: boolean;
 
-    isCreateContentItemRendered: {
-        current: boolean;
-    };
-
     setContentCreateItemRenderedTrue: () => void;
 };
 
@@ -59,7 +55,6 @@ function ReportActionItemContentCreated({
     transactionID,
     draftMessage,
     shouldHideThreadDividerLine,
-    isCreateContentItemRendered,
     setContentCreateItemRenderedTrue,
 }: ReportActionItemContentCreatedProps) {
     const styles = useThemeStyles();
@@ -72,7 +67,7 @@ function ReportActionItemContentCreated({
 
     const transactionCurrency = TransactionUtils.getCurrency(transaction);
 
-setContentCreateItemRenderedTrue();
+    setContentCreateItemRenderedTrue();
 
     const renderThreadDivider = useMemo(
         () =>
