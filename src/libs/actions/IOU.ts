@@ -5823,7 +5823,7 @@ function cleanUpMoneyRequest(transactionID: string, reportAction: OnyxTypes.Repo
  * @param isSingleTransactionView - whether we are in the transaction thread report
  * @return the url to navigate back once the money request is deleted
  */
-function deleteMoneyRequest(transactionID: string, reportAction: OnyxTypes.ReportAction, isSingleTransactionView = false) {
+function deleteMoneyRequest(transactionID: string, reportAction: OnyxTypes.ReportAction, isSingleTransactionView = false, actions1) {
     // STEP 1: Calculate and prepare the data
     const {
         shouldDeleteTransactionThread,
@@ -5841,6 +5841,16 @@ function deleteMoneyRequest(transactionID: string, reportAction: OnyxTypes.Repor
         urlToNavigateBack,
     } = prepareToCleanUpMoneyRequest(transactionID, reportAction, isSingleTransactionView);
 
+//console.log('transactionThread: ', transactionThread)
+console.log('updatedReportPreviewAction: ', updatedReportPreviewAction)
+console.log('shouldDeleteTransactionThread: ', shouldDeleteTransactionThread)
+	console.log('updatedReportAction: ', updatedReportAction)
+	console.log('updatedIOUReport: ' , updatedIOUReport)
+	console.log('chatReport: ', chatReport)
+	console.log('transaction: ',transaction)
+	console.log('iouReport: ', iouReport)
+	console.log('reportPreviewAction: ', reportPreviewAction)
+	console.log('urlToNavigateBack: ', urlToNavigateBack)
     // STEP 2: Build Onyx data
     // The logic mostly resembles the cleanUpMoneyRequest function
     const optimisticData: OnyxUpdate[] = [

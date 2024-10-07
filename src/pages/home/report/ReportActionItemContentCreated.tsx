@@ -1,5 +1,5 @@
 import lodashIsEqual from 'lodash/isEqual';
-import React, {memo, useMemo} from 'react';
+import React, {memo, useMemo, useRef} from 'react';
 import {View} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
 import type {OnyxEntry} from 'react-native-onyx';
@@ -26,6 +26,7 @@ import {isEmptyObject} from '@src/types/utils/EmptyObject';
 import AnimatedEmptyStateBackground from './AnimatedEmptyStateBackground';
 import ReportActionItemCreated from './ReportActionItemCreated';
 import ReportActionItemSingle from './ReportActionItemSingle';
+import useReportScrollManager from '@hooks/useReportScrollManager';
 
 type ReportActionItemContentCreatedProps = {
     /**  The context value containing the report and action data, along with the show context menu props */
@@ -57,6 +58,30 @@ function ReportActionItemContentCreated({contextValue, parentReportAction, trans
     const [transaction] = useOnyx(`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID ?? '-1'}`);
 
     const transactionCurrency = TransactionUtils.getCurrency(transaction);
+
+	const isVisited = useRef(false);
+	let requestViewRef = useRef(null);
+
+  React.useEffect(() => {
+	  console.log('ReportUtils.isExpenseReport(report): ', ReportUtils.isExpenseReport(report))
+	  console.log('ReportUtils.isIOUReport(report): ', ReportUtils.isIOUReport(report))
+	  console.log('ReportUtils.isInvoiceReport(report) : ', ReportUtils.isInvoiceReport(report))
+	  console.log('isVisited: ', isVisited)
+
+    if (ReportUtils.isExpenseReport(report) || ReportUtils.isIOUReport(report) || ReportUtils.isInvoiceReport(report)) {
+	  if (!isVisited.current && requestViewRef.current && !isEmptyObject(transactionThreadReport?.reportID)) {
+	    console.log('requestViewRef: ', requestViewRef)
+		    isVisited.current = true;
+		  //requestViewRef.current.scrollIntoView({ behavior: "smooth" });
+	    console.log('isVisited.current: ', isVisited);
+	    
+	    }
+	  }
+
+  }, [requestViewRef])
+
+	const reportScrollManager = useReportScrollManager();
+
 
     const renderThreadDivider = useMemo(
         () =>
@@ -147,6 +172,12 @@ function ReportActionItemContentCreated({contextValue, parentReportAction, trans
     }
 
     if (ReportUtils.isExpenseReport(report) || ReportUtils.isIOUReport(report) || ReportUtils.isInvoiceReport(report)) {
+
+	    if (!isVisited.current && !isEmptyObject(transactionThreadReport?.reportID) && requestViewRef.current) {
+		    //requestViewRef.current.scrollIntoView({ behavior: "smooth" });
+		    //reportScrollManager.scrollToBottom();
+		    //isVisited.current = true;
+	    }
         return (
             <OfflineWithFeedback pendingAction={action.pendingAction}>
                 {!isEmptyObject(transactionThreadReport?.reportID) ? (
@@ -159,21 +190,35 @@ function ReportActionItemContentCreated({contextValue, parentReportAction, trans
                             shouldHideThreadDividerLine={shouldHideThreadDividerLine}
                         />
                         <ShowContextMenuContext.Provider value={contextValue}>
-                            <View>
+                            <View 
+				    onLayout={() => {
+
+					    //requestViewRef.current.scrollIntoView();
+				    }}	   
+		   >  
                                 <MoneyRequestView
                                     report={transactionThreadReport}
                                     shouldShowAnimatedBackground={false}
+				    ref={(ref) => {
+					    requestViewRef = ref;
+					    //ref.scrollIntoView({ behavior: "smooth" })
+						     isVisited.current = true;
+
+				    }}
                                 />
                                 {renderThreadDivider}
                             </View>
                         </ShowContextMenuContext.Provider>
                     </>
                 ) : (
+			<>
                     <MoneyReportView
                         report={report}
                         policy={policy}
                         shouldHideThreadDividerLine={shouldHideThreadDividerLine}
                     />
+
+   </>
                 )}
             </OfflineWithFeedback>
         );

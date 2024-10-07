@@ -300,6 +300,17 @@ function ReportActionsList({
 
     const [isFloatingMessageCounterVisible, setIsFloatingMessageCounterVisible] = useState(false);
 
+
+
+    useEffect(() => {
+	    console.log('scrollingVerticalOffset.current: ', scrollingVerticalOffset.current)
+	    console.log('previousLastIndex.current: ', previousLastIndex.current)
+	    console.log('lastActionIndex: ', lastActionIndex)
+		    console.log('reportActionSize.current: ', reportActionSize.current)
+			    console.log('sortedVisibleReportActions.length: ', sortedVisibleReportActions.length)
+				    console.log('hasNewestReportAction: ', hasNewestReportAction)
+    }, [])
+
     useEffect(() => {
         if (
             scrollingVerticalOffset.current < AUTOSCROLL_TO_TOP_THRESHOLD &&

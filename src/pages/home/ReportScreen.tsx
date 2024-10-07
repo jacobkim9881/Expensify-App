@@ -265,6 +265,10 @@ function ReportScreen({route, currentReportID = '', navigation}: ReportScreenPro
     const policy = policies?.[`${ONYXKEYS.COLLECTION.POLICY}${report?.policyID ?? '-1'}`];
     const isTopMostReportId = currentReportID === reportIDFromRoute;
     const didSubscribeToReportLeavingEvents = useRef(false);
+    useEffect(() => {
+console.log('reportActions: ', reportActions)
+   }, []);
+
 
     useEffect(() => {
         if (!report?.reportID || shouldHideReport) {
