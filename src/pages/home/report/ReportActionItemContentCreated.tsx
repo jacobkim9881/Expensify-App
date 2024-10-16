@@ -85,6 +85,8 @@ function ReportActionItemContentCreated({
         [shouldHideThreadDividerLine, report.reportID, styles.reportHorizontalRule],
     );
 
+    const contextMenuValue = useMemo(() => ({...contextValue, isDisabled: true}), [contextValue]);
+
     if (ReportActionsUtils.isTransactionThread(parentReportAction)) {
         const isReversedTransaction = ReportActionsUtils.isReversedTransaction(parentReportAction);
 
@@ -115,15 +117,17 @@ function ReportActionItemContentCreated({
         }
 
         return (
-            <ShowContextMenuContext.Provider value={contextValue}>
-                <View>
-                    <MoneyRequestView
-                        report={report}
-                        shouldShowAnimatedBackground
-                    />
-                    {renderThreadDivider}
-                </View>
-            </ShowContextMenuContext.Provider>
+            <OfflineWithFeedback pendingAction={action.pendingAction}>
+                <ShowContextMenuContext.Provider value={contextMenuValue}>
+                    <View>
+                        <MoneyRequestView
+                            report={report}
+                            shouldShowAnimatedBackground
+                        />
+                        {renderThreadDivider}
+                    </View>
+                </ShowContextMenuContext.Provider>
+            </OfflineWithFeedback>
         );
     }
 
@@ -166,10 +170,11 @@ function ReportActionItemContentCreated({
                             report={report}
                             policy={policy}
                             isCombinedReport
+                            pendingAction={action.pendingAction}
                             shouldShowTotal={transaction ? transactionCurrency !== report.currency : false}
                             shouldHideThreadDividerLine={shouldHideThreadDividerLine}
                         />
-                        <ShowContextMenuContext.Provider value={contextValue}>
+                        <ShowContextMenuContext.Provider value={contextMenuValue}>
                             <View>
                                 <MoneyRequestView
                                     report={transactionThreadReport}
@@ -183,6 +188,7 @@ function ReportActionItemContentCreated({
                     <MoneyReportView
                         report={report}
                         policy={policy}
+                        pendingAction={action.pendingAction}
                         shouldHideThreadDividerLine={shouldHideThreadDividerLine}
                     />
                 )}
