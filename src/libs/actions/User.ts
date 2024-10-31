@@ -50,6 +50,8 @@ import * as Link from './Link';
 import * as Report from './Report';
 import * as Session from './Session';
 
+import * as QueuedOnyxUpdates from './QueuedOnyxUpdates';
+
 let currentUserAccountID = -1;
 let currentEmail = '';
 Onyx.connect({
@@ -878,12 +880,15 @@ function subscribeToUserEvents() {
         }
         // The data for the update is an object, containing updateIDs from the server and an array of onyx updates (this array is the same format as the original format above)
         // Example: {lastUpdateID: 1, previousUpdateID: 0, updates: [{onyxMethod: 'whatever', key: 'foo', value: 'bar'}]}
+	console.log('pushJSON.lastUpdateID: ', pushJSON.lastUpdateID)
+	    console.log('pushJSON.previousUpdateID: ', pushJSON.previousUpdateID)
         const updates = {
             type: CONST.ONYX_UPDATE_TYPES.PUSHER,
             lastUpdateID: Number(pushJSON.lastUpdateID || 0),
             updates: pushJSON.updates ?? [],
             previousUpdateID: Number(pushJSON.previousUpdateID || 0),
         };
+	    console.log('updates at subscribeToUserEvents: ', updates)
         applyOnyxUpdatesReliably(updates);
     });
 
@@ -902,6 +907,7 @@ function subscribeToUserEvents() {
                 return;
             }
 
+		//const onyxUpdatePromise = ( !isUpdateFromBE ? Onyx.update(pushJSON) : QueuedOnyxUpdates.queueOnyxUpdates(pushJSON) ).then(() => {
             const onyxUpdatePromise = Onyx.update(pushJSON).then(() => {
                 triggerNotifications(pushJSON);
             });

@@ -9,11 +9,14 @@ let queuedOnyxUpdates: OnyxUpdate[] = [];
  * @param updates Onyx updates to queue for later
  */
 function queueOnyxUpdates(updates: OnyxUpdate[]): Promise<void> {
+	console.log('updates at queueOnyxUpdates: ', updates)
     queuedOnyxUpdates = queuedOnyxUpdates.concat(updates);
+	console.log('queuedOnyxUpdates: ', queuedOnyxUpdates)
     return Promise.resolve();
 }
 
 function flushQueue(): Promise<void> {
+	console.log('flushQueue(): ', queuedOnyxUpdates)
     return Onyx.update(queuedOnyxUpdates).then(() => {
         queuedOnyxUpdates = [];
     });

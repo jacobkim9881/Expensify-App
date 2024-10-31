@@ -29,6 +29,10 @@ function applyHTTPSOnyxUpdates(request: Request, response: Response) {
     console.debug('[OnyxUpdateManager] Applying https update');
     // For most requests we can immediately update Onyx. For write requests we queue the updates and apply them after the sequential queue has flushed to prevent a replay effect in
     // the UI. See https://github.com/Expensify/App/issues/12775 for more info.
+	console.log('request?.data?.apiRequestType: ', request?.data?.apiRequestType)
+	console.log('request: ', request)
+	console.log('response: ', response)
+    //const updateHandler: (updates: OnyxUpdate[]) => Promise<unknown> = QueuedOnyxUpdates.queueOnyxUpdates;
     const updateHandler: (updates: OnyxUpdate[]) => Promise<unknown> = request?.data?.apiRequestType === CONST.API_REQUEST_TYPE.WRITE ? QueuedOnyxUpdates.queueOnyxUpdates : Onyx.update;
 
     // First apply any onyx data updates that are being sent back from the API. We wait for this to complete and then
@@ -105,6 +109,13 @@ function apply({lastUpdateID, type, request, response, updates}: OnyxUpdatesFrom
 function apply({lastUpdateID, type, request, response, updates}: OnyxUpdatesFromServer): Promise<void | Response> | undefined {
     Log.info(`[OnyxUpdateManager] Applying update type: ${type} with lastUpdateID: ${lastUpdateID}`, false, {command: request?.command});
 
+	console.log('updates from applyPusherOnyxUpdates: ', updates)
+	const isUpdateFromBE = updates?.eventType === "onyxApiUpdate" ? true : false;
+	console.log('updates?.updates?.eventType: ', updates?.eventType)
+	console.log('isUpdateFromBE: ', isUpdateFromBE)
+	console.log('updates?.updates?.data: ', updates?.data)
+
+
     if (lastUpdateID && lastUpdateIDAppliedToClient && Number(lastUpdateID) <= lastUpdateIDAppliedToClient) {
         Log.info('[OnyxUpdateManager] Update received was older than or the same as current state, returning without applying the updates other than successData and failureData');
 
@@ -123,6 +134,7 @@ function apply({lastUpdateID, type, request, response, updates}: OnyxUpdatesFrom
             return applyHTTPSOnyxUpdates(request, responseWithoutOnyxData);
         }
 
+ return updates?.data ? QueuedOnyxUpdates.queueOnyxUpdates(updates?.data) : null;
         return Promise.resolve();
     }
     if (lastUpdateID && (lastUpdateIDAppliedToClient === undefined || Number(lastUpdateID) > lastUpdateIDAppliedToClient)) {
