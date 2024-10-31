@@ -9,6 +9,7 @@ import isNumber from 'lodash/isNumber';
 import lodashMaxBy from 'lodash/maxBy';
 import type {OnyxCollection, OnyxEntry, OnyxUpdate} from 'react-native-onyx';
 import Onyx from 'react-native-onyx';
+import {withOnyx} from 'react-native-onyx';
 import type {SvgProps} from 'react-native-svg';
 import type {OriginalMessageIOU, OriginalMessageModifiedExpense} from 'src/types/onyx/OriginalMessage';
 import type {TupleToUnion, ValueOf} from 'type-fest';
@@ -610,6 +611,7 @@ Onyx.connect({
     key: ONYXKEYS.COLLECTION.TRANSACTION,
     waitForCollectionCallback: true,
     callback: (value) => {
+	    console.log('allTransactions connect')
         if (!value) {
             return;
         }
@@ -3350,6 +3352,7 @@ function getTransactionReportName(reportAction: OnyxEntry<ReportAction | Optimis
 
     const transaction = getLinkedTransaction(reportAction);
 
+	console.log('transaction: ',transaction)
     if (isEmptyObject(transaction)) {
         // Transaction data might be empty on app's first load, if so we fallback to Expense/Track Expense
         return ReportActionsUtils.isTrackExpenseAction(reportAction) ? Localize.translateLocal('iou.trackExpense') : Localize.translateLocal('iou.expense');
@@ -3471,6 +3474,7 @@ function getReportPreviewMessage(
         linkedTransaction = getLinkedTransaction(iouReportAction);
     }
 
+	console.log('linkedTransaction: ', linkedTransaction)
     if (!isEmptyObject(linkedTransaction) && TransactionUtils.hasReceipt(linkedTransaction) && TransactionUtils.isReceiptBeingScanned(linkedTransaction)) {
         return Localize.translateLocal('iou.receiptScanning');
     }

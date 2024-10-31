@@ -400,6 +400,7 @@ function getOptionData({
     const lastActorDisplayName = OptionsListUtils.getLastActorDisplayName(lastActorDetails, hasMultipleParticipants);
 
     let lastMessageTextFromReport = lastMessageTextFromReportProp;
+	console.log('sidebar: lastMessageTextFromReport: ', lastMessageTextFromReport)
     if (!lastMessageTextFromReport) {
         lastMessageTextFromReport = OptionsListUtils.getLastMessageTextForReport(report, lastActorDetails, policy);
     }
