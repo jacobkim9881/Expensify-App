@@ -71,8 +71,6 @@ function applyHTTPSOnyxUpdates(request: Request, response: Response) {
 }
 
 function applyPusherOnyxUpdates(updates: OnyxUpdateEvent[]) {
-	console.log('QueuedOnyxUpdates.queueOnyxUpdates(updates[0].data at  applyPusherOnyxUpdates');
- updates ? QueuedOnyxUpdates.queueOnyxUpdates(updates[0].data) : null;
     pusherEventsPromise = pusherEventsPromise.then(() => {
         console.debug('[OnyxUpdateManager] Applying pusher update');
     });
@@ -82,7 +80,6 @@ function applyPusherOnyxUpdates(updates: OnyxUpdateEvent[]) {
         .then(() => {
             console.debug('[OnyxUpdateManager] Done applying Pusher update');
         });
-
 
     return pusherEventsPromise;
 }
@@ -111,13 +108,13 @@ function apply({lastUpdateID, type, request, response, updates}: Merge<OnyxUpdat
 function apply({lastUpdateID, type, request, response, updates}: OnyxUpdatesFromServer): Promise<Response>;
 function apply({lastUpdateID, type, request, response, updates}: OnyxUpdatesFromServer): Promise<void | Response> | undefined {
     Log.info(`[OnyxUpdateManager] Applying update type: ${type} with lastUpdateID: ${lastUpdateID}`, false, {command: request?.command});
-if(updates) {
-	console.log('updates from applyPusherOnyxUpdates: ', updates);
-	const isUpdateFromBE = updates[0].eventType === "onyxApiUpdate" ? true : false;
-	console.log('updates?.updates?.eventType: ', updates[0].eventType)
+
+	console.log('updates from applyPusherOnyxUpdates: ', updates)
+	const isUpdateFromBE = updates?.eventType === "onyxApiUpdate" ? true : false;
+	console.log('updates?.updates?.eventType: ', updates?.eventType)
 	console.log('isUpdateFromBE: ', isUpdateFromBE)
-	console.log('updates?.updates?.data: ', updates[0].data)
-}
+	console.log('updates?.updates?.data: ', updates?.data)
+
 
     if (lastUpdateID && lastUpdateIDAppliedToClient && Number(lastUpdateID) <= lastUpdateIDAppliedToClient) {
         Log.info('[OnyxUpdateManager] Update received was older than or the same as current state, returning without applying the updates other than successData and failureData');
@@ -137,19 +134,16 @@ if(updates) {
             return applyHTTPSOnyxUpdates(request, responseWithoutOnyxData);
         }
 
-	    console.log('QueuedOnyxUpdates.queueOnyxUpdates(updates[0].data)')
- return updates ? QueuedOnyxUpdates.queueOnyxUpdates(updates[0].data) : Promise.resolve();
+ return updates?.data ? QueuedOnyxUpdates.queueOnyxUpdates(updates?.data) : null;
         return Promise.resolve();
     }
     if (lastUpdateID && (lastUpdateIDAppliedToClient === undefined || Number(lastUpdateID) > lastUpdateIDAppliedToClient)) {
-	    console.log('(lastUpdateID && (lastUpdateIDAppliedToClient === undefined || Number(lastUpdateID) > lastUpdateIDAppliedToClient))')
         Onyx.merge(ONYXKEYS.ONYX_UPDATES_LAST_UPDATE_ID_APPLIED_TO_CLIENT, Number(lastUpdateID));
     }
     if (type === CONST.ONYX_UPDATE_TYPES.HTTPS && request && response) {
         return applyHTTPSOnyxUpdates(request, response);
     }
     if (type === CONST.ONYX_UPDATE_TYPES.PUSHER && updates) {
-	    console.log('(type === CONST.ONYX_UPDATE_TYPES.PUSHER && updates)')
         return applyPusherOnyxUpdates(updates);
     }
     if (type === CONST.ONYX_UPDATE_TYPES.AIRSHIP && updates) {
