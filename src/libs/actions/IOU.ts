@@ -3188,6 +3188,7 @@ function updateMoneyRequestDistance({
     }
     const {params, onyxData} = data;
 
+	console.log('updateMoneyRequestDistance: ', data)
     const recentServerValidatedWaypoints = getRecentWaypoints().filter((item) => !item.pendingAction);
     onyxData?.failureData?.push({
         onyxMethod: Onyx.METHOD.SET,
@@ -7942,6 +7943,9 @@ function setSplitShares(transaction: OnyxEntry<OnyxTypes.Transaction>, amount: n
     if (!transaction) {
         return;
     }
+	console.log('setSplitShares')
+	console.log('currency: ', currency)
+	console.log('amount: ', amount)
     const oldAccountIDs = Object.keys(transaction.splitShares ?? {}).map((key) => Number(key));
 
     // Create an array containing unique IDs of the current transaction participants and the new ones

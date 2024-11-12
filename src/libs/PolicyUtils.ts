@@ -579,6 +579,8 @@ function getReimburserAccountID(policy: OnyxEntry<Policy>): number {
 }
 
 function getPersonalPolicy() {
+	console.log('allPolicies: ' ,allPolicies)
+	console.log('.outputCurrency: ', Object.values(allPolicies ?? {}).find((policy) => policy?.type === CONST.POLICY.TYPE.PERSONAL).outputCurrency)
     return Object.values(allPolicies ?? {}).find((policy) => policy?.type === CONST.POLICY.TYPE.PERSONAL);
 }
 

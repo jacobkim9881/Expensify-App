@@ -306,6 +306,8 @@ function MoneyRequestConfirmationList({
     const routeError = Object.values(transaction?.errorFields?.route ?? {}).at(0);
 
     useEffect(() => {
+	    console.log('transaction : ', transaction)
+	    console.log('iouAmount: ', iouAmount)
         if (shouldDisplayFieldError && didConfirmSplit) {
             setFormError('iou.error.genericSmartscanFailureMessage');
             return;

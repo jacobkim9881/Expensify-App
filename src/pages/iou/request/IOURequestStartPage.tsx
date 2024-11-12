@@ -162,7 +162,15 @@ function IOURequestStartPage({
                                     <TopTab.Screen name={CONST.TAB_REQUEST.DISTANCE}>
                                         {() => (
                                             <TabScreenWithFocusTrapWrapper>
+						    {
+							    /*
                                                 <IOURequestStepDistance route={route} />
+						      */
+						    }
+						    <IOURequestStepDistance 
+report={report}
+transaction={transaction}
+							    route={route} />
                                             </TabScreenWithFocusTrapWrapper>
                                         )}
                                     </TopTab.Screen>

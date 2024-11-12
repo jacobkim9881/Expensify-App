@@ -63,6 +63,7 @@ function getMileageRates(policy: OnyxInputOrEntry<Policy>, includeDisabledRates 
             enabled: rate.enabled,
         };
     });
+	console.log('getMileageRates: ', mileageRates)
 
     return mileageRates;
 }
@@ -90,6 +91,12 @@ function getDefaultMileageRate(policy: OnyxInputOrEntry<Policy>): MileageRate | 
 
     const distanceRate = mileageRates.find((rate) => rate.name === CONST.CUSTOM_UNITS.DEFAULT_RATE) ?? mileageRates.at(0) ?? ({} as MileageRate);
 
+	console.log('getDefaultMileageRate')
+	console.log('customUnitRateID: ', distanceRate.customUnitRateID)
+	console.log('rate: ', distanceRate.rate)
+	console.log('currency: ', distanceRate.currency)
+	console.log('unit: ', distanceUnit.attributes.unit)
+	console.log('name: ', distanceRate.name)
     return {
         customUnitRateID: distanceRate.customUnitRateID,
         rate: distanceRate.rate,
@@ -236,13 +243,21 @@ function ensureRateDefined(rate: number | undefined): asserts rate is number {
  * @param currency
  * @returns The rate and unit in MileageRate object.
  */
-function getRateForP2P(currency: string, transaction: OnyxEntry<Transaction>): MileageRate {
+function getRateForP2P(currency: string, transaction: OnyxEntry<Transaction>, test1, test2, test3): MileageRate {
     const currencyWithExistingRate = CONST.CURRENCY_TO_DEFAULT_MILEAGE_RATE[currency] ? currency : CONST.CURRENCY.USD;
     const mileageRate = CONST.CURRENCY_TO_DEFAULT_MILEAGE_RATE[currencyWithExistingRate];
     ensureRateDefined(mileageRate.rate);
 
     // Ensure the rate is updated when the currency changes, otherwise use the stored rate
     const rate = TransactionUtils.getCurrency(transaction) === currency ? transaction?.comment?.customUnit?.defaultP2PRate ?? mileageRate.rate : mileageRate.rate;
+	console.log('getRateForP2P')
+		console.log('test1 : ', test1)
+	console.log('test2 : ', test2)
+	console.log('test3 : ', test3)
+	console.log('transaction: ', transaction)
+	console.log('mileageRate in func: ', mileageRate)
+console.log('currencyWithExistingRate: ', currencyWithExistingRate)
+console.log('rate: ', rate)
     return {
         ...mileageRate,
         currency: currencyWithExistingRate,
@@ -258,9 +273,26 @@ function getRateForP2P(currency: string, transaction: OnyxEntry<Transaction>): M
  * @param rate - Rate used for calculating the expense amount
  * @returns The computed expense amount (rounded) in "cents".
  */
-function getDistanceRequestAmount(distance: number, unit: Unit, rate: number): number {
+//function getDistanceRequestAmount(distance: number, unit: Unit, rate: number, currency): number {
+function getDistanceRequestAmount(distance: number, unit: Unit, rate: number, currency, test1, test2, test3, test4, test5): number {
+	const currencyUnit = Math.min(100, CurrencyUtils.getCurrencyUnit(currency));
     const convertedDistance = convertDistanceUnit(distance, unit);
     const roundedDistance = parseFloat(convertedDistance.toFixed(2));
+const amount = roundedDistance * rate
+
+	console.log('currencyUnit: ', currencyUnit)
+	console.log('currency: ', currency)
+	console.log('convertedDistance: ', convertedDistance)
+	console.log('roundedDistance: ', roundedDistance)
+	console.log('amount: ', amount)
+	console.log('getDistanceRequestAmount: ', Math.round((amount / 100) * currencyUnit))
+	console.log('test1 : ', test1)
+	console.log('test2 : ', test2)
+	console.log('test3 : ', test3)
+	console.log('test4 : ', test4)
+	console.log('test5 : ', test5)
+	//return  Math.round((amount / 100) * 100);
+	//return  Math.round((amount / 100) * currencyUnit);
     return Math.round(roundedDistance * rate);
 }
 

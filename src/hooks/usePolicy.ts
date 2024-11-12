@@ -9,8 +9,10 @@ function getPolicyIDOrDefault(policyID?: string) {
     return policyID;
 }
 
-function usePolicy(policyID?: string) {
+function usePolicy(policyID?: string, test) {
     const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${getPolicyIDOrDefault(policyID)}`);
+console.log('policy: ', policy)
+	console.log('report: ', test)
     return policy;
 }
 

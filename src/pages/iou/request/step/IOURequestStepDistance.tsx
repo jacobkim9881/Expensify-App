@@ -67,7 +67,7 @@ function IOURequestStepDistance({
     const {translate} = useLocalize();
     const [reportNameValuePairs] = useOnyx(`${ONYXKEYS.COLLECTION.REPORT_NAME_VALUE_PAIRS}${report?.reportID ?? -1}`);
     const [transactionBackup] = useOnyx(`${ONYXKEYS.COLLECTION.TRANSACTION_BACKUP}${transactionID}`);
-    const policy = usePolicy(report?.policyID);
+    const policy = usePolicy(report?.policyID, report);
     const [personalDetails] = useOnyx(ONYXKEYS.PERSONAL_DETAILS_LIST);
     const [skipConfirmation] = useOnyx(`${ONYXKEYS.COLLECTION.SKIP_CONFIRMATION}${transactionID}`);
     const [optimisticWaypoints, setOptimisticWaypoints] = useState<WaypointCollection | null>(null);
@@ -137,14 +137,16 @@ function IOURequestStepDistance({
 
             const mileageRates = DistanceRequestUtils.getMileageRates(IOUpolicy);
             const defaultMileageRate = DistanceRequestUtils.getDefaultMileageRate(IOUpolicy);
-            const mileageRate: MileageRate = TransactionUtils.isCustomUnitRateIDForP2P(transaction)
-                ? DistanceRequestUtils.getRateForP2P(policyCurrency, transaction)
+            const mileageRate = TransactionUtils.isCustomUnitRateIDForP2P(transaction)
+		//const mileageRate: MileageRate = TransactionUtils.isCustomUnitRateIDForP2P(transaction)
+		//? DistanceRequestUtils.getRateForP2P(policyCurrency, transaction)
+                ? DistanceRequestUtils.getRateForP2P(policyCurrency, transaction, TransactionUtils.isCustomUnitRateIDForP2P(transaction), mileageRates?.[customUnitRateID], defaultMileageRate)
                 : mileageRates?.[customUnitRateID] ?? defaultMileageRate;
 
             const {unit, rate} = mileageRate ?? {};
             const distance = TransactionUtils.getDistanceInMeters(transaction, unit);
             const currency = mileageRate?.currency ?? policyCurrency;
-            const amount = DistanceRequestUtils.getDistanceRequestAmount(distance, unit ?? CONST.CUSTOM_UNITS.DISTANCE_UNIT_MILES, rate ?? 0);
+            const amount = DistanceRequestUtils.getDistanceRequestAmount(distance, unit ?? CONST.CUSTOM_UNITS.DISTANCE_UNIT_MILES, rate ?? 0, currency, policy?.outputCurrency, PolicyUtils.getPersonalPolicy()?.outputCurrency, policy, mileageRate, mileageRate?.currency);
             IOU.setMoneyRequestAmount(transactionID, amount, currency);
 
             const participantAccountIDs: number[] | undefined = participants?.map((participant) => Number(participant.accountID ?? -1));
