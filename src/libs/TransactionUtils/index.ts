@@ -677,6 +677,9 @@ function didReceiptScanSucceed(transaction: OnyxEntry<Transaction>): boolean {
  * Check if the transaction has a non-smartscanning receipt and is missing required fields
  */
 function hasMissingSmartscanFields(transaction: OnyxInputOrEntry<Transaction>): boolean {
+	if(!!(transaction && !isDistanceRequest(transaction) && !isReceiptBeingScanned(transaction) && areRequiredFieldsEmpty(transaction))) {
+console.log('hasMissingSmartscanFields')
+	}
     return !!(transaction && !isDistanceRequest(transaction) && !isReceiptBeingScanned(transaction) && areRequiredFieldsEmpty(transaction));
 }
 
@@ -844,6 +847,10 @@ function isDuplicate(transactionID: string, checkDismissed = false): boolean {
  * Check if transaction is on hold
  */
 function isOnHold(transaction: OnyxEntry<Transaction>): boolean {
+         if(transaction?.comment) {
+         console.log('!!transaction.comment?.hold: ', !!transaction.comment?.hold, ', isDuplicate(transaction.transactionID, true): ', isDuplicate(transaction.transactionID, true))
+}
+
     if (!transaction) {
         return false;
     }
@@ -866,6 +873,9 @@ function isOnHoldByTransactionID(transactionID: string): boolean {
  * Checks if any violations for the provided transaction are of type 'violation'
  */
 function hasViolation(transactionID: string, transactionViolations: OnyxCollection<TransactionViolations>, showInReview?: boolean): boolean {
+	if(!!transactionViolations?.[ONYXKEYS.COLLECTION.TRANSACTION_VIOLATIONS + transactionID]?.some((violation: TransactionViolation) => violation.type === CONST.VIOLATION_TYPES.VIOLATION && (showInReview === undefined || showInReview === (violation.showInReview ?? false)),)) {
+console.log('hasViolation')
+	}
     return !!transactionViolations?.[ONYXKEYS.COLLECTION.TRANSACTION_VIOLATIONS + transactionID]?.some(
         (violation: TransactionViolation) => violation.type === CONST.VIOLATION_TYPES.VIOLATION && (showInReview === undefined || showInReview === (violation.showInReview ?? false)),
     );
@@ -875,6 +885,9 @@ function hasViolation(transactionID: string, transactionViolations: OnyxCollecti
  * Checks if any violations for the provided transaction are of type 'notice'
  */
 function hasNoticeTypeViolation(transactionID: string, transactionViolations: OnyxCollection<TransactionViolation[]>, showInReview?: boolean): boolean {
+	if(!!transactionViolations?.[ONYXKEYS.COLLECTION.TRANSACTION_VIOLATIONS + transactionID]?.some((violation: TransactionViolation) => violation.type === CONST.VIOLATION_TYPES.NOTICE && (showInReview === undefined || showInReview === (violation.showInReview ?? false)),)) {
+console.log('hasNoticeTypeViolation')
+	}
     return !!transactionViolations?.[ONYXKEYS.COLLECTION.TRANSACTION_VIOLATIONS + transactionID]?.some(
         (violation: TransactionViolation) => violation.type === CONST.VIOLATION_TYPES.NOTICE && (showInReview === undefined || showInReview === (violation.showInReview ?? false)),
     );
@@ -1018,6 +1031,9 @@ type FieldsToChange = {
 };
 
 function removeSettledAndApprovedTransactions(transactionIDs: string[]) {
+	if(transactionIDs.filter((transactionID) =>!ReportUtils.isSettled(allTransactions?.[`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`]?.reportID) &&!ReportUtils.isReportApproved(allTransactions?.[`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`]?.reportID))) {
+console.log('duplicates removeSettledAndApprovedTransactions: ', transactionIDs.filter((transactionID) =>!ReportUtils.isSettled(allTransactions?.[`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`]?.reportID) &&!ReportUtils.isReportApproved(allTransactions?.[`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`]?.reportID)).length)
+	}
     return transactionIDs.filter(
         (transactionID) =>
             !ReportUtils.isSettled(allTransactions?.[`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`]?.reportID) &&
@@ -1217,6 +1233,10 @@ function buildTransactionsMergeParams(reviewDuplicates: OnyxEntry<ReviewDuplicat
     };
 }
 
+function test1(test2, name) {
+console.log(name, ': ', test2)
+}
+
 export {
     buildOptimisticTransaction,
     calculateTaxAmount,
@@ -1300,6 +1320,7 @@ export {
     getCardName,
     hasReceiptSource,
     shouldShowAttendees,
+	test1,
 };
 
 export type {TransactionChanges};

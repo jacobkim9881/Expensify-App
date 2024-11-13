@@ -128,6 +128,9 @@ function MoneyRequestPreviewContent({
 
     const isFullySettled = isSettled && !isSettlementOrApprovalPartial;
     const isFullyApproved = isApproved && !isSettlementOrApprovalPartial;
+	TransactionUtils.test1(transaction, 'transaction')
+	TransactionUtils.test1(isFullySettled, 'isFullySettled')
+	TransactionUtils.test1(isFullyApproved, 'isFullyApproved')
 
     // Get transaction violations for given transaction id from onyx, find duplicated transactions violations and get duplicates
     const allDuplicates = useMemo(
