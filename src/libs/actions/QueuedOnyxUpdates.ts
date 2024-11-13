@@ -22,4 +22,8 @@ function flushQueue(): Promise<void> {
     });
 }
 
-export {queueOnyxUpdates, flushQueue};
+function isEmpty() {
+    return queuedOnyxUpdates.length === 0;
+}
+
+export {queueOnyxUpdates, flushQueue, isEmpty};
