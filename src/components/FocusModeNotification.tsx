@@ -1,4 +1,5 @@
-import React, {useEffect} from 'react';
+//import React, {useEffect} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import useEnvironment from '@hooks/useEnvironment';
 import useLocalize from '@hooks/useLocalize';
 import useThemeStyles from '@hooks/useThemeStyles';
@@ -17,6 +18,8 @@ function FocusModeNotification() {
     useEffect(() => {
         User.updateChatPriorityMode(CONST.PRIORITY_MODE.GSD, true);
     }, []);
+const [shouldHandleNavigationBack, setShouldHandleNavigationBack] = useState(false)
+
     const href = `${environmentURL}/settings/preferences/priority-mode`;
     return (
         <ConfirmModal
@@ -24,6 +27,19 @@ function FocusModeNotification() {
             confirmText={translate('common.buttonConfirm')}
             onConfirm={User.clearFocusModeNotification}
             shouldShowCancelButton={false}
+	  shouldHandleNavigationBack={shouldHandleNavigationBack} 
+	  onKeyPress={(e) => {
+		  const key = e.nativeEvent.key.toLowerCase();
+		  console.log('hi')
+		  alert('hi')
+		if(key === "backspace") {
+
+		  alert('1hi')
+                            User.clearFocusModeNotification();
+		  console.log('h1i')
+setShouldHandleNavigationBack(true)
+		}
+	  }}
             prompt={
                 <Text>
                     {translate('focusModeUpdateModal.prompt')}
