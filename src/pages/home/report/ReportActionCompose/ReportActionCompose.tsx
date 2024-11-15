@@ -54,6 +54,7 @@ import AttachmentPickerWithMenuItems from './AttachmentPickerWithMenuItems';
 import ComposerWithSuggestions from './ComposerWithSuggestions';
 import type {ComposerRef, ComposerWithSuggestionsProps} from './ComposerWithSuggestions/ComposerWithSuggestions';
 import SendButton from './SendButton';
+import useWindowDimensions from '@hooks/useWindowDimensions';
 
 type SuggestionsRef = {
     resetSuggestions: () => void;
@@ -119,6 +120,7 @@ function ReportActionCompose({
     const {translate} = useLocalize();
     // eslint-disable-next-line rulesdir/prefer-shouldUseNarrowLayout-instead-of-isSmallScreenWidth
     const {isSmallScreenWidth, isMediumScreenWidth, shouldUseNarrowLayout} = useResponsiveLayout();
+	 const {windowWidth} = useWindowDimensions();
     const {isOffline} = useNetwork();
     const actionButtonRef = useRef<View | HTMLDivElement | null>(null);
     const currentUserPersonalDetails = useCurrentUserPersonalDetails();
@@ -319,6 +321,21 @@ function ReportActionCompose({
         [],
     );
 
+	const [isWidthUnchanged, setWidthUnchanged ]= useState(true)
+	//const isWidthUnchanged = useRef(true)
+	//const [initialWidth, setInitialWidth] = useState(1);
+	const initialWidth = useRef(windowWidth)
+	useEffect(() => {
+		console.log('initialWidth: ', initialWidth)
+		console.log('windowWidth: ', windowWidth)
+		console.log('initialWidth !== windowWidth: ', initialWidth.current !== windowWidth)
+
+			console.log('isWidthUnchanged: ', isWidthUnchanged)
+		if(initialWidth.current !== windowWidth) {
+			setWidthUnchanged(false)
+			//isWidthUnchanged.current = false
+		}
+    }, [windowWidth])
     useEffect(() => {
         const unsubscribe = navigation.addListener('blur', () => {
             setShouldHideEducationalTooltip(true);
@@ -414,11 +431,13 @@ function ReportActionCompose({
                 <OfflineWithFeedback
                     shouldDisableOpacity
                     pendingAction={pendingAction}
-                    style={isComposerFullSize ? styles.chatItemFullComposeRow : {}}
+		    //style={isComposerFullSize ? styles.chatItemFullComposeRow : {}}
+                    style={styles.searchTopBarStyle.left}
                     contentContainerStyle={isComposerFullSize ? styles.flex1 : {}}
                 >
                     <EducationalTooltip
-                        shouldRender={!shouldHideEducationalTooltip && shouldShowEducationalTooltip}
+			    resetRender={isWidthUnchanged}
+                        shouldRender={isWidthUnchanged ? true : false}
                         renderTooltipContent={renderWorkspaceChatTooltip}
                         shouldUseOverlay
                         onHideTooltip={User.dismissWorkspaceTooltip}

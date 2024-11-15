@@ -26,6 +26,12 @@ function BaseEducationalTooltip({children, onHideTooltip, shouldRender = false, 
     const shouldShow = !modal?.willAlertModalBecomeVisible && !modal?.isVisible && shouldRender;
 
     useEffect(() => {
+console.log('props.resetRender: ', props.resetRender)
+            closeTooltip();
+            return;
+ 
+    }, [props.resetRender])
+    useEffect(() => {
         if (!shouldRender) {
             return;
         }
@@ -70,6 +76,7 @@ function BaseEducationalTooltip({children, onHideTooltip, shouldRender = false, 
             return;
         }
 
+		console.log('shouldShow: ', shouldShow)
         // If the modal is open, hide the tooltip immediately and clear the timeout
         if (!shouldShow) {
             closeTooltip();
