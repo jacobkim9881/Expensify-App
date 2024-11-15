@@ -1,4 +1,5 @@
-import React from 'react';
+//import React from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {View} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
 import Animated, {clamp, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, withTiming} from 'react-native-reanimated';
@@ -21,6 +22,7 @@ import ROUTES from '@src/ROUTES';
 import SCREENS from '@src/SCREENS';
 import SearchSelectionModeHeader from './SearchSelectionModeHeader';
 import SearchTypeMenu from './SearchTypeMenu';
+import Log from '@src/libs/Log';
 
 const TOO_CLOSE_TO_TOP_DISTANCE = 10;
 const TOO_CLOSE_TO_BOTTOM_DISTANCE = 10;
@@ -33,12 +35,32 @@ function SearchPageBottomTab() {
     const activeCentralPaneRoute = useActiveCentralPaneRoute();
     const styles = useThemeStyles();
     const [selectionMode] = useOnyx(ONYXKEYS.MOBILE_SELECTION_MODE);
+    const [isSelectionMode, setSelectionMode] = useState(selectionMode);
+    const [resetList, setResetList] = useState(1);
 
     const scrollOffset = useSharedValue(0);
+   const contentSizeHeight = useSharedValue(0);
     const topBarOffset = useSharedValue<number>(variables.searchHeaderHeight);
     const topBarAnimatedStyle = useAnimatedStyle(() => ({
         top: topBarOffset.value,
     }));
+
+	//!selectionMode ? setSelectionMode(false) : setSelectionMode (true)
+	if(selectionMode && topBarOffset.value < 80) {
+		//if(windowHeight - contentSizeHeight.value > 100 && topBarOffset.value < 80) {
+		topBarOffset.value = variables.searchHeaderHeight
+		//setResetList(Math.random());
+	} 
+	//topBarOffset.value = selectionMode && windowHeight - contentSizeHeight.value > 100 && topBarOffset.value < 80 ? variables.searchHeaderHeight : topBarOffset.value; 
+
+  useEffect(() => {
+Log.info('selectionMode: ', selectionMode)
+
+	  Log.info('isSelectionMode,: ', isSelectionMode)
+	 console.log('selectionMode: ', selectionMode)
+	  console.log('isSelectionMode,: ', isSelectionMode)
+
+  }, []);
 
     const scrollHandler = useAnimatedScrollHandler({
         onScroll: (event) => {
@@ -49,6 +71,12 @@ function SearchPageBottomTab() {
             const currentOffset = contentOffset.y;
             const isScrollingDown = currentOffset > scrollOffset.value;
             const distanceScrolled = currentOffset - scrollOffset.value;
+	console.log('currentOffset: ', currentOffset)	
+		console.log('scrollOffset.value: ', scrollOffset.value)
+		console.log('topBarOffset.value: ', topBarOffset.value)
+		console.log('contentSize.height: ', contentSize.height)
+		console.log('windowHeight: ', windowHeight)
+		console.log('layoutMeasurement,: ', layoutMeasurement)
             if (isScrollingDown && contentOffset.y > TOO_CLOSE_TO_TOP_DISTANCE) {
                 // eslint-disable-next-line react-compiler/react-compiler
                 topBarOffset.value = clamp(topBarOffset.value - distanceScrolled, variables.minimalTopBarOffset, variables.searchHeaderHeight);
@@ -56,6 +84,7 @@ function SearchPageBottomTab() {
                 topBarOffset.value = withTiming(variables.searchHeaderHeight, {duration: ANIMATION_DURATION_IN_MS});
             }
             scrollOffset.value = currentOffset;
+		contentSizeHeight.value = contentSize.height;
         },
     });
 
@@ -129,6 +158,7 @@ function SearchPageBottomTab() {
             )}
             {shouldUseNarrowLayout && (
                 <Search
+		    reset={resetList}
                     isSearchScreenFocused={isActiveCentralPaneRoute}
                     queryJSON={queryJSON}
                     onSearchListScroll={scrollHandler}
