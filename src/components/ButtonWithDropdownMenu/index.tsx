@@ -61,6 +61,10 @@ function ButtonWithDropdownMenu<IValueType>({
     const nullCheckRef = (ref: MutableRefObject<View | null>) => ref ?? null;
 
     useEffect(() => {
+console.log('optiosn: ', options)
+    }, [])
+
+    useEffect(() => {
         if (!dropdownAnchor.current) {
             return;
         }

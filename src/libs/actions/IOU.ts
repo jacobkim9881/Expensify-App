@@ -6767,7 +6767,14 @@ function canApproveIOU(iouReport: OnyxTypes.OnyxInputOrEntry<OnyxTypes.Report>, 
             isTransactionBeingScanned = true;
         }
     }
-
+if(isCurrentUserManager && !isOpenExpenseReport && !isApproved && !iouSettled && !isArchivedReport && !isTransactionBeingScanned) {
+	console.log('isCurrentUserManager && !isOpenExpenseReport && !isApproved && !iouSettled && !isArchivedReport && !isTransactionBeingScanned; ', isCurrentUserManager && !isOpenExpenseReport && !isApproved && !iouSettled && !isArchivedReport && !isTransactionBeingScanned)
+	console.log('isCurrentUserManager: ', isCurrentUserManager)
+	console.log('isOpenExpenseReport: ', isOpenExpenseReport)
+	console.log('iouReport: ', iouReport)
+	console.log('managerID: ', managerID)
+	console.log('userAccountID: ', userAccountID)
+}
     return isCurrentUserManager && !isOpenExpenseReport && !isApproved && !iouSettled && !isArchivedReport && !isTransactionBeingScanned;
 }
 
