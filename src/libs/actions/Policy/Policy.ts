@@ -1509,6 +1509,8 @@ function generateCustomUnitID(): string {
 
 function buildOptimisticDistanceRateCustomUnits(reportCurrency?: string): OptimisticCustomUnits {
     const currency = reportCurrency ?? allPersonalDetails?.[sessionAccountID]?.localCurrencyCode ?? CONST.CURRENCY.USD;
+console.log('buildOptimisticDistanceRateCustomUnits reportCurrency : ',	reportCurrency)
+	console.log('allPersonalDetails?.[sessionAccountID]?.localCurrencyCode : ', allPersonalDetails?.[sessionAccountID]?.localCurrencyCode )
     const customUnitID = generateCustomUnitID();
     const customUnitRateID = generateCustomUnitID();
 
@@ -2165,6 +2167,8 @@ function createWorkspaceFromIOUPayment(iouReport: OnyxEntry<Report>): WorkspaceF
     if (!ReportUtils.isIOUReportUsingReport(iouReport)) {
         return;
     }
+	console.log('createWorkspaceFromIOUPayment iouReport: ', iouReport)
+	console.log('iouReport.currency: ', iouReport.currency)
 
     // Generate new variables for the policy
     const policyID = generatePolicyID();
@@ -2562,6 +2566,7 @@ function createWorkspaceFromIOUPayment(iouReport: OnyxEntry<Report>): WorkspaceF
         reportActionID: movedReportAction.reportActionID,
     };
 
+	console.log('optimisticData,: ', optimisticData)
     API.write(WRITE_COMMANDS.CREATE_WORKSPACE_FROM_IOU_PAYMENT, params, {optimisticData, successData, failureData});
 
     return {policyID, workspaceChatReportID: memberData.workspaceChatReportID, reportPreviewReportActionID: reportPreview?.reportActionID, adminsChatReportID};
