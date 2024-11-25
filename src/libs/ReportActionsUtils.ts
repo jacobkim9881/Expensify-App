@@ -140,7 +140,8 @@ function getReportActionMessage(reportAction: PartialReportAction) {
 }
 
 function isDeletedParentAction(reportAction: OnyxInputOrEntry<ReportAction>): boolean {
-    return (getReportActionMessage(reportAction)?.isDeletedParentAction ?? false) && (reportAction?.childVisibleActionCount ?? 0) > 0;
+const tempIsDeletedParentAction = reportAction?.originalMessage?.isDeletedParentAction;	
+    return (getReportActionMessage(reportAction)?.isDeletedParentAction ?? tempIsDeletedParentAction ?? : false) && (reportAction?.childVisibleActionCount ?? 0) > 0;
 }
 
 function isReversedTransaction(reportAction: OnyxInputOrEntry<ReportAction | OptimisticIOUReportAction>) {

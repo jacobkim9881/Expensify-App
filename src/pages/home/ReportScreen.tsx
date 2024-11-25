@@ -563,6 +563,10 @@ function ReportScreen({route, currentReportID = '', navigation}: ReportScreenPro
             isClosedTopLevelPolicyRoom ||
             (prevIsDeletedParentAction && !isDeletedParentAction)
         ) {
+		console.log('isDeletedParentAction: ', isDeletedParentAction)
+		console.log('prevIsDeletedParentAction: ', prevIsDeletedParentAction)
+		console.log('parentReportAction: ', parentReportAction)
+
             // Early return if the report we're passing isn't in a focused state. We only want to navigate to Concierge if the user leaves the room from another device or gets removed from the room while the report is in a focused state.
             // Prevent auto navigation for report in RHP
             if (!isFocused || isInNarrowPaneModal) {
