@@ -2825,6 +2825,7 @@ function getReasonAndReportActionThatRequiresAttention(
  * @param parentReportAction (the report action the current report is a thread of)
  */
 function requiresAttentionFromCurrentUser(optionOrReport: OnyxEntry<Report> | OptionData, parentReportAction?: OnyxEntry<ReportAction>) {
+console.log('getReasonAndReportActionThatRequiresAttention(optionOrReport, parentReportAction): ', getReasonAndReportActionThatRequiresAttention(optionOrReport, parentReportAction))
     return !!getReasonAndReportActionThatRequiresAttention(optionOrReport, parentReportAction);
 }
 
@@ -6515,6 +6516,7 @@ function reasonForReportToBeInOptionList({
 
     const parentReportAction = isThread(report) ? allReportActions?.[`${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${report.parentReportID}`]?.[report.parentReportActionID] : undefined;
 
+	console.log('reasonForReportToBeInOptionList ......................report,: ', report)
     if (
         !report?.reportID ||
         !report?.type ||
@@ -6621,6 +6623,7 @@ function reasonForReportToBeInOptionList({
     }
 
     if (isSelfDM(report)) {
+	    onsole.log('reasonForReportToBeInOptionList .........isSelfDM.............report: ', report)
         return includeSelfDM ? CONST.REPORT_IN_LHN_REASONS.IS_SELF_DM : null;
     }
 

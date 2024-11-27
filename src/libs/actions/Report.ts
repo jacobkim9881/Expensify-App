@@ -1105,6 +1105,9 @@ function navigateToAndOpenReport(
             );
         }
     }
+
+	console.log('navigateToAndOpenReport................................')
+	console.log('report : ', report)
     const report = isEmptyObject(chat) ? newChat : chat;
 
     // We want to pass newChat here because if anything is passed in that param (even an existing chat), we will try to create a chat on the server

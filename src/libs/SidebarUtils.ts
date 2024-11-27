@@ -229,6 +229,12 @@ function getOrderedReportIDs(
 
     const LHNReports = [...pinnedAndGBRReports, ...errorReports, ...draftReports, ...nonArchivedReports, ...archivedReports].map((report) => report?.reportID ?? '-1');
 
+	console.log('/.........................CLHNReports: ', LHNReports)
+	console.log('.......................nonArchivedReports', nonArchivedReports)
+	console.log('..................... pinnedAndGBRReports.: ', pinnedAndGBRReports)
+	console.log('......................errorReports: ', errorReports)
+	console.log('......................draftReports: ', draftReports)
+	console.log('......................archivedReports: ', archivedReports)
     return LHNReports;
 }
 
@@ -379,6 +385,9 @@ function getOptionData({
     result.chatType = report.chatType;
     result.isDeletedParentAction = report.isDeletedParentAction;
     result.isSelfDM = ReportUtils.isSelfDM(report);
+	if(ReportUtils.isSelfDM(report)) {
+		console.log('ReportUtils.isSelfDM(report)......................>: ', ReportUtils.isSelfDM(report))
+	}
     result.tooltipText = ReportUtils.getReportParticipantsTitle(visibleParticipantAccountIDs);
     result.hasOutstandingChildTask = report.hasOutstandingChildTask;
     result.hasParentAccess = report.hasParentAccess;

@@ -99,6 +99,7 @@ function tryFocusModeUpdate() {
 
         const validReports = [];
         const allReports = ReportConnection.getAllReports();
+console.log('tryFocusModeUpdate....................... allReports: ', allReports)
         Object.keys(allReports ?? {}).forEach((key) => {
             const report = allReports?.[key];
             if (!report) {
