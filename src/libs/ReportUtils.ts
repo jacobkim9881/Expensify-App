@@ -3983,7 +3983,7 @@ function getReportName(
             return ReportActionsUtils.getMessageOfOldDotReportAction(parentReportAction);
         }
 
-        if (parentReportActionMessage?.isDeletedParentAction) {
+        if (ReportActionsUtils.isDeletedParentAction(parentReportAction)) {
             return Localize.translateLocal('parentReportAction.deletedMessage');
         }
 
