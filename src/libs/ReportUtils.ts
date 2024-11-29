@@ -3918,6 +3918,7 @@ function getReportName(
     parentReportActionParam?: OnyxInputOrEntry<ReportAction>,
     personalDetails?: Partial<PersonalDetailsList>,
     invoiceReceiverPolicy?: OnyxEntry<Policy>,
+	test = 0
 ): string {
     const reportID = report?.reportID;
     const cacheKey = getCacheKey(report);
@@ -3937,6 +3938,10 @@ function getReportName(
     } else {
         parentReportAction = isThread(report) ? allReportActions?.[`${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${report.parentReportID}`]?.[report.parentReportActionID] : undefined;
     }
+	if(test === 1) {
+	console.log('parentReportActionParam: .............', parentReportActionParam)
+	console.log('parentReportAction................: ', parentReportAction)
+	}
     const parentReportActionMessage = ReportActionsUtils.getReportActionMessage(parentReportAction);
 
     if (
@@ -3983,7 +3988,10 @@ function getReportName(
             return ReportActionsUtils.getMessageOfOldDotReportAction(parentReportAction);
         }
 
-        if (parentReportActionMessage?.isDeletedParentAction) {
+	    const isDeletedParentAction = ReportActionsUtils.isDeletedParentAction(parentReportAction, test); 
+        //if (parentReportActionMessage?.isDeletedParentAction) {
+        if (isDeletedParentAction) {
+		if(test === 1) {console.log('parentReportActionMessage?.isDeletedParentAction//////////////////')}
             return Localize.translateLocal('parentReportAction.deletedMessage');
         }
 
@@ -4083,6 +4091,7 @@ function getReportName(
         reportNameCache.set(cacheKey, {lastVisibleActionCreated: report?.lastVisibleActionCreated ?? '', reportName: formattedName});
     }
 
+if(test === 1) {console.log('.......................formattedName: ', formattedName)}
     return formattedName;
 }
 

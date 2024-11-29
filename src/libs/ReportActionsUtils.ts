@@ -139,9 +139,11 @@ function getReportActionMessage(reportAction: PartialReportAction) {
     return Array.isArray(reportAction?.message) ? reportAction.message.at(0) : reportAction?.message;
 }
 
-function isDeletedParentAction(reportAction: OnyxInputOrEntry<ReportAction>): boolean {
+function isDeletedParentAction(reportAction: OnyxInputOrEntry<ReportAction>, test = 0): boolean {
+//function isDeletedParentAction(reportAction: OnyxInputOrEntry<ReportAction>): boolean {
+if (test === 1) {console.log('reportAction.......................: ', reportAction)}
 const tempIsDeletedParentAction = reportAction?.originalMessage?.isDeletedParentAction;	
-    return (getReportActionMessage(reportAction)?.isDeletedParentAction ?? tempIsDeletedParentAction ?? : false) && (reportAction?.childVisibleActionCount ?? 0) > 0;
+    return (getReportActionMessage(reportAction)?.isDeletedParentAction ?? tempIsDeletedParentAction ?? false) && (reportAction?.childVisibleActionCount ?? 0) > 0;
 }
 
 function isReversedTransaction(reportAction: OnyxInputOrEntry<ReportAction | OptimisticIOUReportAction>) {
