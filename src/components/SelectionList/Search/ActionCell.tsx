@@ -48,6 +48,10 @@ function ActionCell({
     const StyleUtils = useStyleUtils();
     const {isOffline} = useNetwork();
 
+	React.useEffect(() => {
+		console.log('action....................:', action)
+
+	}, [])
     const text = translate(actionTranslationsMap[action]);
 
     const shouldUseViewAction = action === CONST.SEARCH.ACTION_TYPES.VIEW || (parentAction === CONST.SEARCH.ACTION_TYPES.PAID && action === CONST.SEARCH.ACTION_TYPES.PAID);

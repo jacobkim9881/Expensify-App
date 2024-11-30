@@ -265,6 +265,9 @@ function TransactionListItemRow({
     const StyleUtils = useStyleUtils();
     const theme = useTheme();
 
+	React.useEffect(() => {
+console.log('TransactionListItemRow..................... item: ', item)
+	}, [])
     if (!isLargeScreenWidth) {
         return (
             <View style={containerStyle}>

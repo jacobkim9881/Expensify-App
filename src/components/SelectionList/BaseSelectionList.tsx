@@ -138,6 +138,11 @@ function BaseSelectionList<TItem extends ListItem>(
     const {singleExecution} = useSingleExecution();
     const [itemHeights, setItemHeights] = useState<Record<string, number>>({});
 
+
+	useEffect(() => {
+console.log('src/components/SelectionList/BaseSelectionList.tsx..........................:sections: ', sections)
+	}, [])
+
     const onItemLayout = (event: LayoutChangeEvent, itemKey: string | null | undefined) => {
         if (!itemKey) {
             return;

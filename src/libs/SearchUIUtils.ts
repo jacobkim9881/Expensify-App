@@ -257,6 +257,8 @@ function getAction(data: OnyxTypes.SearchResults['data'], key: string): SearchTr
     const transaction = isTransaction ? data[key] : undefined;
     const report = isTransaction ? data[`${ONYXKEYS.COLLECTION.REPORT}${transaction?.reportID}`] : data[key];
 
+	//console.log('getAction........................transaction: ', transaction)
+	//console.log('getAction........................report: ', report)
     if (ReportUtils.isSettled(report)) {
         return CONST.SEARCH.ACTION_TYPES.PAID;
     }
@@ -286,16 +288,22 @@ function getAction(data: OnyxTypes.SearchResults['data'], key: string): SearchTr
     ) as SearchTransaction[];
 
     const chatReport = data[`${ONYXKEYS.COLLECTION.REPORT}${report?.chatReportID}`] ?? {};
+    const rara = data[`${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${report?.chatReportID}`] ?? {};
     const chatReportRNVP = data[`${ONYXKEYS.COLLECTION.REPORT_NAME_VALUE_PAIRS}${report?.chatReportID}`] ?? undefined;
 
+	console.log('getAction........................REPORT_ACTIONS: ', rara)
     if (
         IOU.canIOUBePaid(report, chatReport, policy, allReportTransactions, false, chatReportRNVP, invoiceReceiverPolicy) &&
         !ReportUtils.hasOnlyHeldExpenses(report.reportID, allReportTransactions)
     ) {
+	   console.log('getAction........................CONST.SEARCH.ACTION_TYPES.PAY')
         return CONST.SEARCH.ACTION_TYPES.PAY;
     }
 
     if (IOU.canApproveIOU(report, policy) && ReportUtils.isAllowedToApproveExpenseReport(report, undefined, policy)) {
+	    console.log('getAction........................CONST.SEARCH.ACTION_TYPES.APPROVE:')
+	    console.log('IOU.canApproveIOU(report, policy): ', IOU.canApproveIOU(report, policy))
+	    console.log('ReportUtils.isAllowedToApproveExpenseReport(report, undefined, policy): ', ReportUtils.isAllowedToApproveExpenseReport(report, undefined, policy))
         return CONST.SEARCH.ACTION_TYPES.APPROVE;
     }
 
@@ -441,6 +449,7 @@ function getSortedSections(type: SearchDataTypes, status: SearchStatus, data: Li
  * Sorts transaction sections based on a specified column and sort order.
  */
 function getSortedTransactionData(data: TransactionListItemType[], sortBy?: SearchColumnType, sortOrder?: SortOrder) {
+console.log('getSortedTransactionData: ...........................data: ', data)
     if (!sortBy || !sortOrder) {
         return data;
     }

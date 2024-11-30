@@ -135,6 +135,7 @@ function Search({queryJSON, onSearchListScroll, isSearchScreenFocused, contentCo
     const previousTransactions = usePrevious(transactions);
 
     useEffect(() => {
+	    console.log('currentSearchResults: ............................' , currentSearchResults)
         if (!currentSearchResults?.search?.type) {
             return;
         }
