@@ -2517,6 +2517,7 @@ function getIcons(
   let sameName = [];
 let created = report?.lastActionType === CONST.REPORT.ACTIONS.TYPE.CREATED; 
 let targetObj = getIconsForParticipants(participantAccountIDs, personalDetails);
+/*
 let hasSameParticipantsID = Object.entries(getIconsForParticipants(participantAccountIDs, personalDetails)).map(([idx1, val1]) => {
 
   Object.entries(getIconsForParticipants(participantAccountIDs, personalDetails)).map(([idx2, val2]) => { 
@@ -2538,7 +2539,7 @@ let hasSameParticipantsID = Object.entries(getIconsForParticipants(participantAc
  
  })
 })
-
+*/
 /*
 let hasSameParticipantsID = Object.entries(report?.participants ?? {}).map(([accountID1, account]) => {
 
