@@ -2493,6 +2493,7 @@ function getIcons(
     }
 
     const participantAccountIDs = Object.keys(report.participants ?? {}).map(Number);
+console.log('left participantAccountIDs.............>: ', participantAccountIDs)
     return getIconsForParticipants(participantAccountIDs, personalDetails);
 }
 
