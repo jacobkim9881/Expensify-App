@@ -14,6 +14,7 @@ import Text from '@components/Text';
 import ThreeDotsMenu from '@components/ThreeDotsMenu';
 import useDeleteSavedSearch from '@hooks/useDeleteSavedSearch';
 import useLocalize from '@hooks/useLocalize';
+import useSafeAreaInsets from '@hooks/useSafeAreaInsets';
 import useSingleExecution from '@hooks/useSingleExecution';
 import useStyleUtils from '@hooks/useStyleUtils';
 import useTheme from '@hooks/useTheme';
@@ -22,7 +23,8 @@ import useWindowDimensions from '@hooks/useWindowDimensions';
 import * as SearchActions from '@libs/actions/Search';
 import Navigation from '@libs/Navigation/Navigation';
 import {getAllTaxRates} from '@libs/PolicyUtils';
-import * as SearchUtils from '@libs/SearchUtils';
+import * as SearchQueryUtils from '@libs/SearchQueryUtils';
+import * as SearchUIUtils from '@libs/SearchUIUtils';
 import variables from '@styles/variables';
 import * as Expensicons from '@src/components/Icon/Expensicons';
 import CONST from '@src/CONST';
@@ -61,6 +63,7 @@ function SearchTypeMenuNarrow({typeMenuItems, activeItemIndex, queryJSON, title,
     const [reports = {}] = useOnyx(ONYXKEYS.COLLECTION.REPORT);
     const taxRates = getAllTaxRates();
     const [cardList = {}] = useOnyx(ONYXKEYS.CARD_LIST);
+    const {bottom} = useSafeAreaInsets();
 
     const [isPopoverVisible, setIsPopoverVisible] = useState(false);
     const buttonRef = useRef<HTMLDivElement>(null);
@@ -68,7 +71,7 @@ function SearchTypeMenuNarrow({typeMenuItems, activeItemIndex, queryJSON, title,
     const openMenu = useCallback(() => setIsPopoverVisible(true), []);
     const closeMenu = useCallback(() => setIsPopoverVisible(false), []);
     const onPress = () => {
-        const values = SearchUtils.buildFilterFormValuesFromQuery(queryJSON, policyCategories, policyTagsLists, currencyList, personalDetails, cardList, reports, taxRates);
+        const values = SearchQueryUtils.buildFilterFormValuesFromQuery(queryJSON, policyCategories, policyTagsLists, currencyList, personalDetails, cardList, reports, taxRates);
         SearchActions.updateAdvancedFilters(values);
         Navigation.navigate(ROUTES.SEARCH_ADVANCED_FILTERS);
     };
@@ -140,7 +143,7 @@ function SearchTypeMenuNarrow({typeMenuItems, activeItemIndex, queryJSON, title,
         shouldShowRightComponent: true,
         rightComponent: (
             <ThreeDotsMenu
-                menuItems={SearchUtils.getOverflowMenu(item.title ?? '', Number(item.hash ?? ''), item.query ?? '', showDeleteModal, true, closeMenu)}
+                menuItems={SearchUIUtils.getOverflowMenu(item.title ?? '', Number(item.hash ?? ''), item.query ?? '', showDeleteModal, true, closeMenu)}
                 anchorPosition={{horizontal: 0, vertical: 380}}
                 anchorAlignment={{
                     horizontal: CONST.MODAL.ANCHOR_ORIGIN_HORIZONTAL.RIGHT,
@@ -208,6 +211,8 @@ function SearchTypeMenuNarrow({typeMenuItems, activeItemIndex, queryJSON, title,
                 onClose={closeMenu}
                 onItemSelected={closeMenu}
                 anchorRef={buttonRef}
+                innerContainerStyle={{paddingBottom: bottom}}
+                scrollContainerStyle={styles.pv4}
                 shouldUseScrollView
             />
             <DeleteConfirmModal />

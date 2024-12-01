@@ -1,4 +1,3 @@
-import type {StackScreenProps} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import type {SectionListData} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
@@ -19,6 +18,7 @@ import useLocalize from '@hooks/useLocalize';
 import useThemeStyles from '@hooks/useThemeStyles';
 import * as DeviceCapabilities from '@libs/DeviceCapabilities';
 import Navigation from '@libs/Navigation/Navigation';
+import type {PlatformStackScreenProps} from '@libs/Navigation/PlatformStackNavigation/types';
 import type {FullScreenNavigatorParamList} from '@libs/Navigation/types';
 import * as OptionsListUtils from '@libs/OptionsListUtils';
 import * as PolicyUtils from '@libs/PolicyUtils';
@@ -35,7 +35,7 @@ import type {Icon} from '@src/types/onyx/OnyxCommon';
 import {isEmptyObject} from '@src/types/utils/EmptyObject';
 
 type WorkspaceWorkflowsApprovalsApproverPageProps = WithPolicyAndFullscreenLoadingProps &
-    StackScreenProps<FullScreenNavigatorParamList, typeof SCREENS.WORKSPACE.WORKFLOWS_APPROVALS_APPROVER>;
+    PlatformStackScreenProps<FullScreenNavigatorParamList, typeof SCREENS.WORKSPACE.WORKFLOWS_APPROVALS_APPROVER>;
 
 type SelectionListApprover = {
     text: string;
@@ -54,6 +54,8 @@ function WorkspaceWorkflowsApprovalsApproverPage({policy, personalDetails, isLoa
     const [searchTerm, debouncedSearchTerm, setSearchTerm] = useDebouncedState('');
     const [approvalWorkflow] = useOnyx(ONYXKEYS.APPROVAL_WORKFLOW);
     const [selectedApproverEmail, setSelectedApproverEmail] = useState<string | undefined>(undefined);
+    const [allApprovers, setAllApprovers] = useState<SelectionListApprover[]>([]);
+    const shouldShowTextInput = allApprovers?.length >= CONST.STANDARD_LIST_ITEM_LIMIT;
 
     // eslint-disable-next-line rulesdir/no-negated-variables
     const shouldShowNotFoundView = (isEmptyObject(policy) && !isLoadingReportData) || !PolicyUtils.isPolicyAdmin(policy) || PolicyUtils.isPendingDeletePolicy(policy);
@@ -115,6 +117,8 @@ function WorkspaceWorkflowsApprovalsApproverPage({policy, personalDetails, isLoa
                 .filter((approver): approver is SelectionListApprover => !!approver);
 
             approvers.push(...availableApprovers);
+            // eslint-disable-next-line react-compiler/react-compiler
+            setAllApprovers(approvers);
         }
 
         const filteredApprovers =
@@ -255,6 +259,8 @@ function WorkspaceWorkflowsApprovalsApproverPage({policy, personalDetails, isLoa
                         footerContent={button}
                         listEmptyContent={listEmptyContent}
                         shouldShowListEmptyContent={shouldShowListEmptyContent}
+                        shouldHighlightSelectedItem
+                        shouldShowTextInput={shouldShowTextInput}
                     />
                 </FullPageNotFoundView>
             </ScreenWrapper>

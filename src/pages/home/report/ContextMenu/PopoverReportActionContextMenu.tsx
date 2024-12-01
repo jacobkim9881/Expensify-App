@@ -1,3 +1,4 @@
+/* eslint-disable react-compiler/react-compiler */
 import type {ForwardedRef} from 'react';
 import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from 'react';
 
@@ -61,6 +62,7 @@ function PopoverReportActionContextMenu(_props: unknown, ref: ForwardedRef<Repor
     const [isChronosReportEnabled, setIsChronosReportEnabled] = useState(false);
     const [isChatPinned, setIsChatPinned] = useState(false);
     const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+    const [isThreadReportParentAction, setIsThreadReportParentAction] = useState(false);
     const [disabledActions, setDisabledActions] = useState<ContextMenuAction[]>([]);
     const [shoudSwitchPositionIfOverflow, setShoudSwitchPositionIfOverflow] = useState(false);
 
@@ -171,6 +173,7 @@ function PopoverReportActionContextMenu(_props: unknown, ref: ForwardedRef<Repor
         shouldCloseOnTarget = false,
         setIsEmojiPickerActive = () => {},
         isOverflowMenu = false,
+        isThreadReportParentActionParam = false,
     ) => {
         const {pageX = 0, pageY = 0} = extractPointerEvent(event);
         contextMenuAnchorRef.current = contextMenuAnchor;
@@ -219,6 +222,7 @@ function PopoverReportActionContextMenu(_props: unknown, ref: ForwardedRef<Repor
             setIsChronosReportEnabled(isChronosReport);
             setIsChatPinned(isPinnedChat);
             setHasUnreadMessages(isUnreadChat);
+            setIsThreadReportParentAction(isThreadReportParentActionParam);
             setShoudSwitchPositionIfOverflow(isOverflowMenu);
         });
     };
@@ -336,7 +340,7 @@ function PopoverReportActionContextMenu(_props: unknown, ref: ForwardedRef<Repor
                 shoudSwitchPositionIfOverflow={shoudSwitchPositionIfOverflow}
             >
                 <BaseReportActionContextMenu
-                    isVisible
+                    isVisible={isPopoverVisible}
                     type={typeRef.current}
                     reportID={reportIDRef.current}
                     reportActionID={reportActionIDRef.current}
@@ -346,6 +350,7 @@ function PopoverReportActionContextMenu(_props: unknown, ref: ForwardedRef<Repor
                     isChronosReport={isChronosReportEnabled}
                     isPinnedChat={isChatPinned}
                     isUnreadChat={hasUnreadMessages}
+                    isThreadReportParentAction={isThreadReportParentAction}
                     anchor={contextMenuTargetNode}
                     contentRef={contentRef}
                     originalReportID={originalReportIDRef.current}

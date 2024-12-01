@@ -34,13 +34,9 @@ import ONYXKEYS from '@src/ONYXKEYS';
 import ROUTES from '@src/ROUTES';
 import type {SelectedParticipant} from '@src/types/onyx/NewGroupChatDraft';
 
-type NewChatPageProps = {
-    isGroupChat?: boolean;
-};
+const excludedGroupEmails: string[] = CONST.EXPENSIFY_EMAILS.filter((value) => value !== CONST.EMAIL.CONCIERGE);
 
-const excludedGroupEmails = CONST.EXPENSIFY_EMAILS.filter((value) => value !== CONST.EMAIL.CONCIERGE);
-
-function useOptions({isGroupChat}: NewChatPageProps) {
+function useOptions() {
     const [searchTerm, debouncedSearchTerm, setSearchTerm] = useDebouncedState('');
     const [selectedOptions, setSelectedOptions] = useState<Array<ListItem & OptionData>>([]);
     const [betas] = useOnyx(ONYXKEYS.BETAS);
@@ -52,40 +48,29 @@ function useOptions({isGroupChat}: NewChatPageProps) {
     });
 
     const defaultOptions = useMemo(() => {
-        const filteredOptions = OptionsListUtils.getFilteredOptions(
-            listOptions.reports ?? [],
-            listOptions.personalDetails ?? [],
-            betas ?? [],
-            '',
-            selectedOptions,
-            isGroupChat ? excludedGroupEmails : [],
-            false,
-            true,
-            false,
-            {},
-            [],
-            false,
-            {},
-            [],
-            true,
-            undefined,
-            undefined,
-            0,
-            undefined,
-            true,
+        const filteredOptions = OptionsListUtils.getOptions(
+            {
+                reports: listOptions.reports ?? [],
+                personalDetails: listOptions.personalDetails ?? [],
+            },
+            {
+                betas: betas ?? [],
+                selectedOptions,
+                maxRecentReportsToShow: 0,
+                includeSelfDM: true,
+            },
         );
         return filteredOptions;
-    }, [betas, isGroupChat, listOptions.personalDetails, listOptions.reports, selectedOptions]);
+    }, [betas, listOptions.personalDetails, listOptions.reports, selectedOptions]);
 
     const options = useMemo(() => {
         const filteredOptions = OptionsListUtils.filterOptions(defaultOptions, debouncedSearchTerm, {
             selectedOptions,
-            excludeLogins: isGroupChat ? excludedGroupEmails : [],
             maxRecentReportsToShow: CONST.IOU.MAX_RECENT_REPORTS_TO_SHOW,
         });
 
         return filteredOptions;
-    }, [debouncedSearchTerm, defaultOptions, isGroupChat, selectedOptions]);
+    }, [debouncedSearchTerm, defaultOptions, selectedOptions]);
     const cleanSearchTerm = useMemo(() => debouncedSearchTerm.trim().toLowerCase(), [debouncedSearchTerm]);
     const headerMessage = useMemo(() => {
         return OptionsListUtils.getHeaderMessage(
@@ -142,24 +127,23 @@ function useOptions({isGroupChat}: NewChatPageProps) {
     };
 }
 
-function NewChatPage({isGroupChat}: NewChatPageProps) {
+function NewChatPage() {
     const {translate} = useLocalize();
     const {isOffline} = useNetwork();
     // We need to use isSmallScreenWidth instead of shouldUseNarrowLayout to show offline indicator on small screen only
+    // eslint-disable-next-line rulesdir/prefer-shouldUseNarrowLayout-instead-of-isSmallScreenWidth
     const {isSmallScreenWidth} = useResponsiveLayout();
     const styles = useThemeStyles();
     const personalData = useCurrentUserPersonalDetails();
-    const {insets} = useStyledSafeAreaInsets();
+    const {insets, safeAreaPaddingBottomStyle} = useStyledSafeAreaInsets();
     const [isSearchingForReports] = useOnyx(ONYXKEYS.IS_SEARCHING_FOR_REPORTS, {initWithStoredValues: false});
     const selectionListRef = useRef<SelectionListHandle>(null);
 
     const {headerMessage, searchTerm, debouncedSearchTerm, setSearchTerm, selectedOptions, setSelectedOptions, recentReports, personalDetails, userToInvite, areOptionsInitialized} =
-        useOptions({
-            isGroupChat,
-        });
+        useOptions();
 
     const [sections, firstKeyForList] = useMemo(() => {
-        const sectionsList: OptionsListUtils.CategorySection[] = [];
+        const sectionsList: OptionsListUtils.Section[] = [];
         let firstKey = '';
 
         const formatResults = OptionsListUtils.formatSectionsFromSearchTerm(debouncedSearchTerm, selectedOptions, recentReports, personalDetails);
@@ -229,7 +213,7 @@ function NewChatPage({isGroupChat}: NewChatPageProps) {
 
     const itemRightSideComponent = useCallback(
         (item: ListItem & OptionsListUtils.Option, isFocused?: boolean) => {
-            if (!!item.isSelfDM || (item.accountID && CONST.NON_ADDABLE_ACCOUNT_IDS.includes(item.accountID))) {
+            if (!!item.isSelfDM || (item.login && excludedGroupEmails.includes(item.login))) {
                 return null;
             }
             /**
@@ -272,14 +256,27 @@ function NewChatPage({isGroupChat}: NewChatPageProps) {
             return (
                 <Button
                     onPress={() => toggleOption(item)}
-                    style={[styles.pl2]}
+                    style={[styles.pl2, insets.bottom ? styles.mb5 : undefined]}
                     text={translate('newChatPage.addToGroup')}
                     innerStyles={buttonInnerStyles}
                     small
                 />
             );
         },
-        [selectedOptions, setSelectedOptions, styles, translate],
+        [
+            insets.bottom,
+            selectedOptions,
+            setSelectedOptions,
+            styles.alignItemsCenter,
+            styles.buttonDefaultHovered,
+            styles.flexRow,
+            styles.mb5,
+            styles.ml0,
+            styles.ml5,
+            styles.optionSelectCircle,
+            styles.pl2,
+            translate,
+        ],
     );
 
     const createGroup = useCallback(() => {
@@ -317,7 +314,7 @@ function NewChatPage({isGroupChat}: NewChatPageProps) {
     return (
         <ScreenWrapper
             shouldEnableKeyboardAvoidingView={false}
-            includeSafeAreaPaddingBottom={isOffline}
+            includeSafeAreaPaddingBottom={false}
             shouldShowOfflineIndicator={false}
             includePaddingTop={false}
             shouldEnablePickerAvoiding={false}
@@ -351,6 +348,7 @@ function NewChatPage({isGroupChat}: NewChatPageProps) {
                     isLoadingNewOptions={!!isSearchingForReports}
                     initiallyFocusedOptionKey={firstKeyForList}
                     shouldTextInputInterceptSwipe
+                    confirmButtonStyles={insets.bottom ? [safeAreaPaddingBottomStyle, styles.mb5] : undefined}
                 />
                 {isSmallScreenWidth && (
                     <>

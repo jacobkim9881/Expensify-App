@@ -21,6 +21,7 @@ const PUBLIC_SCREENS_ROUTES = {
     ROOT: '',
     TRANSITION_BETWEEN_APPS: 'transition',
     CONNECTION_COMPLETE: 'connection-complete',
+    BANK_CONNECTION_COMPLETE: 'bank-connection-complete',
     VALIDATE_LOGIN: 'v/:accountID/:validateCode',
     UNLINK_LOGIN: 'u/:accountID/:validateCode',
     APPLE_SIGN_IN: 'sign-in-with-apple',
@@ -74,7 +75,6 @@ const ROUTES = {
         route: 'flag/:reportID/:reportActionID',
         getRoute: (reportID: string, reportActionID: string, backTo?: string) => getUrlWithBackToParam(`flag/${reportID}/${reportActionID}` as const, backTo),
     },
-    CHAT_FINDER: 'chat-finder',
     PROFILE: {
         route: 'a/:accountID',
         getRoute: (accountID?: string | number, backTo?: string, login?: string) => {
@@ -148,16 +148,19 @@ const ROUTES = {
     },
     SETTINGS_DELEGATE_CONFIRM: {
         route: 'settings/security/delegate/:login/role/:role/confirm',
-        getRoute: (login: string, role: string) => `settings/security/delegate/${encodeURIComponent(login)}/role/${role}/confirm` as const,
-    },
-    SETTINGS_DELEGATE_MAGIC_CODE: {
-        route: 'settings/security/delegate/:login/role/:role/magic-code',
-        getRoute: (login: string, role: string) => `settings/security/delegate/${encodeURIComponent(login)}/role/${role}/magic-code` as const,
+        getRoute: (login: string, role: string, showValidateActionModal?: boolean) => {
+            const validateActionModalParam = showValidateActionModal ? `?showValidateActionModal=true` : '';
+            return `settings/security/delegate/${encodeURIComponent(login)}/role/${role}/confirm${validateActionModalParam}` as const;
+        },
     },
     SETTINGS_ABOUT: 'settings/about',
     SETTINGS_APP_DOWNLOAD_LINKS: 'settings/about/app-download-links',
     SETTINGS_WALLET: 'settings/wallet',
-    SETTINGS_WALLET_VERIFY_ACCOUNT: {route: 'settings/wallet/verify', getRoute: (backTo?: string) => getUrlWithBackToParam('settings/wallet/verify', backTo)},
+    SETTINGS_WALLET_VERIFY_ACCOUNT: {
+        route: 'settings/wallet/verify',
+        getRoute: (backTo?: string, forwardTo?: string) =>
+            getUrlWithBackToParam(forwardTo ? `settings/wallet/verify?forwardTo=${encodeURIComponent(forwardTo)}` : 'settings/wallet/verify', backTo),
+    },
     SETTINGS_WALLET_DOMAINCARD: {
         route: 'settings/wallet/card/:cardID?',
         getRoute: (cardID: string) => `settings/wallet/card/${cardID}` as const,
@@ -209,6 +212,7 @@ const ROUTES = {
     },
     SETTINGS_LEGAL_NAME: 'settings/profile/legal-name',
     SETTINGS_DATE_OF_BIRTH: 'settings/profile/date-of-birth',
+    SETTINGS_PHONE_NUMBER: 'settings/profile/phone',
     SETTINGS_ADDRESS: 'settings/profile/address',
     SETTINGS_ADDRESS_COUNTRY: {
         route: 'settings/profile/address/country',
@@ -232,7 +236,6 @@ const ROUTES = {
         route: 'settings/profile/contact-methods/:contactMethod/details',
         getRoute: (contactMethod: string, backTo?: string) => getUrlWithBackToParam(`settings/profile/contact-methods/${encodeURIComponent(contactMethod)}/details`, backTo),
     },
-    SETINGS_CONTACT_METHOD_VALIDATE_ACTION: 'settings/profile/contact-methods/validate-action',
     SETTINGS_NEW_CONTACT_METHOD: {
         route: 'settings/profile/contact-methods/new',
         getRoute: (backTo?: string) => getUrlWithBackToParam('settings/profile/contact-methods/new', backTo),
@@ -257,7 +260,14 @@ const ROUTES = {
         getRoute: (source: string) => `settings/troubleshoot/console/share-log?source=${encodeURI(source)}` as const,
     },
 
-    SETTINGS_EXIT_SURVEY_REASON: 'settings/exit-survey/reason',
+    SETTINGS_EXIT_SURVEY_REASON: {
+        route: 'settings/exit-survey/reason',
+        getRoute: (backTo?: string) => getUrlWithBackToParam('settings/exit-survey/reason', backTo),
+    },
+    SETTINGS_EXIT_SURVERY_BOOK_CALL: {
+        route: 'settings/exit-survey/book-call',
+        getRoute: (backTo?: string) => getUrlWithBackToParam('settings/exit-survey/book-call', backTo),
+    },
     SETTINGS_EXIT_SURVEY_RESPONSE: {
         route: 'settings/exit-survey/response',
         getRoute: (reason?: ValueOf<typeof CONST.EXIT_SURVEY.REASONS>, backTo?: string) =>
@@ -311,11 +321,22 @@ const ROUTES = {
     },
     ATTACHMENTS: {
         route: 'attachment',
-        getRoute: (reportID: string, type: ValueOf<typeof CONST.ATTACHMENT_TYPE>, url: string, accountID?: number, isAuthTokenRequired?: boolean) => {
+        getRoute: (
+            reportID: string,
+            type: ValueOf<typeof CONST.ATTACHMENT_TYPE>,
+            url: string,
+            accountID?: number,
+            isAuthTokenRequired?: boolean,
+            fileName?: string,
+            attachmentLink?: string,
+        ) => {
             const reportParam = reportID ? `&reportID=${reportID}` : '';
             const accountParam = accountID ? `&accountID=${accountID}` : '';
             const authTokenParam = isAuthTokenRequired ? '&isAuthTokenRequired=true' : '';
-            return `attachment?source=${encodeURIComponent(url)}&type=${type}${reportParam}${accountParam}${authTokenParam}` as const;
+            const fileNameParam = fileName ? `&fileName=${fileName}` : '';
+            const attachmentLinkParam = attachmentLink ? `&attachmentLink=${attachmentLink}` : '';
+
+            return `attachment?source=${encodeURIComponent(url)}&type=${type}${reportParam}${accountParam}${authTokenParam}${fileNameParam}${attachmentLinkParam}` as const;
         },
     },
     REPORT_PARTICIPANTS: {
@@ -449,6 +470,64 @@ const ROUTES = {
         getRoute: (action: IOUAction, iouType: IOUType, transactionID: string, reportID: string, backTo = '', reportActionID?: string) =>
             getUrlWithBackToParam(`${action as string}/${iouType as string}/category/${transactionID}/${reportID}${reportActionID ? `/${reportActionID}` : ''}`, backTo),
     },
+    MONEY_REQUEST_ATTENDEE: {
+        route: ':action/:iouType/attendees/:transactionID/:reportID',
+        getRoute: (action: IOUAction, iouType: IOUType, transactionID: string, reportID: string, backTo = '') =>
+            getUrlWithBackToParam(`${action as string}/${iouType as string}/attendees/${transactionID}/${reportID}`, backTo),
+    },
+    MONEY_REQUEST_UPGRADE: {
+        route: ':action/:iouType/upgrade/:transactionID/:reportID',
+        getRoute: (action: IOUAction, iouType: IOUType, transactionID: string, reportID: string, backTo = '') =>
+            getUrlWithBackToParam(`${action as string}/${iouType as string}/upgrade/${transactionID}/${reportID}`, backTo),
+    },
+    SETTINGS_TAGS_ROOT: {
+        route: 'settings/:policyID/tags',
+        getRoute: (policyID: string, backTo = '') => getUrlWithBackToParam(`settings/${policyID}/tags`, backTo),
+    },
+    SETTINGS_TAGS_SETTINGS: {
+        route: 'settings/:policyID/tags/settings',
+        getRoute: (policyID: string, backTo = '') => getUrlWithBackToParam(`settings/${policyID}/tags/settings` as const, backTo),
+    },
+    SETTINGS_TAGS_EDIT: {
+        route: 'settings/:policyID/tags/:orderWeight/edit',
+        getRoute: (policyID: string, orderWeight: number, backTo = '') => getUrlWithBackToParam(`settings/${policyID}/tags/${orderWeight}/edit` as const, backTo),
+    },
+    SETTINGS_TAG_CREATE: {
+        route: 'settings/:policyID/tags/new',
+        getRoute: (policyID: string, backTo = '') => getUrlWithBackToParam(`settings/${policyID}/tags/new` as const, backTo),
+    },
+    SETTINGS_TAG_EDIT: {
+        route: 'settings/:policyID/tag/:orderWeight/:tagName/edit',
+        getRoute: (policyID: string, orderWeight: number, tagName: string, backTo = '') =>
+            getUrlWithBackToParam(`settings/${policyID}/tag/${orderWeight}/${encodeURIComponent(tagName)}/edit` as const, backTo),
+    },
+    SETTINGS_TAG_SETTINGS: {
+        route: 'settings/:policyID/tag/:orderWeight/:tagName',
+        getRoute: (policyID: string, orderWeight: number, tagName: string, backTo = '') =>
+            getUrlWithBackToParam(`settings/${policyID}/tag/${orderWeight}/${encodeURIComponent(tagName)}` as const, backTo),
+    },
+    SETTINGS_TAG_APPROVER: {
+        route: 'settings/:policyID/tag/:orderWeight/:tagName/approver',
+        getRoute: (policyID: string, orderWeight: number, tagName: string, backTo = '') =>
+            getUrlWithBackToParam(`settings/${policyID}/tag/${orderWeight}/${encodeURIComponent(tagName)}/approver` as const, backTo),
+    },
+    SETTINGS_TAG_LIST_VIEW: {
+        route: 'settings/:policyID/tag-list/:orderWeight',
+        getRoute: (policyID: string, orderWeight: number, backTo = '') => getUrlWithBackToParam(`settings/${policyID}/tag-list/${orderWeight}` as const, backTo),
+    },
+    SETTINGS_TAG_GL_CODE: {
+        route: 'settings/:policyID/tag/:orderWeight/:tagName/gl-code',
+        getRoute: (policyID: string, orderWeight: number, tagName: string, backTo = '') =>
+            getUrlWithBackToParam(`settings/${policyID}/tag/${orderWeight}/${encodeURIComponent(tagName)}/gl-code` as const, backTo),
+    },
+    SETTINGS_TAGS_IMPORT: {
+        route: 'settings/:policyID/tags/import',
+        getRoute: (policyID: string, backTo = '') => getUrlWithBackToParam(`settings/${policyID}/tags/import` as const, backTo),
+    },
+    SETTINGS_TAGS_IMPORTED: {
+        route: 'settings/:policyID/tags/imported',
+        getRoute: (policyID: string, backTo = '') => getUrlWithBackToParam(`settings/${policyID}/tags/imported` as const, backTo),
+    },
     SETTINGS_CATEGORIES_ROOT: {
         route: 'settings/:policyID/categories',
         getRoute: (policyID: string, backTo = '') => getUrlWithBackToParam(`settings/${policyID}/categories`, backTo),
@@ -467,7 +546,25 @@ const ROUTES = {
     },
     SETTINGS_CATEGORY_EDIT: {
         route: 'settings/:policyID/category/:categoryName/edit',
-        getRoute: (policyID: string, categoryName: string, backTo = '') => getUrlWithBackToParam(`settings/workspaces/${policyID}/category/${encodeURIComponent(categoryName)}/edit`, backTo),
+        getRoute: (policyID: string, categoryName: string, backTo = '') => getUrlWithBackToParam(`settings/${policyID}/category/${encodeURIComponent(categoryName)}/edit`, backTo),
+    },
+    SETTINGS_CATEGORIES_IMPORT: {
+        route: 'settings/:policyID/categories/import',
+        getRoute: (policyID: string, backTo = '') => getUrlWithBackToParam(`settings/${policyID}/categories/import` as const, backTo),
+    },
+    SETTINGS_CATEGORIES_IMPORTED: {
+        route: 'settings/:policyID/categories/imported',
+        getRoute: (policyID: string, backTo = '') => getUrlWithBackToParam(`settings/${policyID}/categories/imported` as const, backTo),
+    },
+    SETTINGS_CATEGORY_PAYROLL_CODE: {
+        route: 'settings/:policyID/category/:categoryName/payroll-code',
+        getRoute: (policyID: string, categoryName: string, backTo = '') =>
+            getUrlWithBackToParam(`settings/${policyID}/category/${encodeURIComponent(categoryName)}/payroll-code` as const, backTo),
+    },
+    SETTINGS_CATEGORY_GL_CODE: {
+        route: 'settings/:policyID/category/:categoryName/gl-code',
+        getRoute: (policyID: string, categoryName: string, backTo = '') =>
+            getUrlWithBackToParam(`settings/${policyID}/category/${encodeURIComponent(categoryName)}/gl-code` as const, backTo),
     },
     MONEY_REQUEST_STEP_CURRENCY: {
         route: ':action/:iouType/currency/:transactionID/:reportID/:pageIndex?',
@@ -518,10 +615,6 @@ const ROUTES = {
         route: ':action/:iouType/tag/:orderWeight/:transactionID/:reportID/:reportActionID?',
         getRoute: (action: IOUAction, iouType: IOUType, orderWeight: number, transactionID: string, reportID: string, backTo = '', reportActionID?: string) =>
             getUrlWithBackToParam(`${action as string}/${iouType as string}/tag/${orderWeight}/${transactionID}/${reportID}${reportActionID ? `/${reportActionID}` : ''}`, backTo),
-    },
-    SETTINGS_TAGS_ROOT: {
-        route: 'settings/:policyID/tags',
-        getRoute: (policyID: string, backTo = '') => getUrlWithBackToParam(`settings/${policyID}/tags`, backTo),
     },
     MONEY_REQUEST_STEP_WAYPOINT: {
         route: ':action/:iouType/waypoint/:transactionID/:reportID/:pageIndex',
@@ -670,6 +763,26 @@ const ROUTES = {
         route: 'settings/workspaces/:policyID/accounting/quickbooks-online/export/date-select',
         getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-online/export/date-select` as const,
     },
+    POLICY_ACCOUNTING_QUICKBOOKS_DESKTOP_COMPANY_CARD_EXPENSE_ACCOUNT_SELECT: {
+        route: 'settings/workspaces/:policyID/accounting/quickbooks-desktop/export/company-card-expense-account/account-select',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-desktop/export/company-card-expense-account/account-select` as const,
+    },
+    POLICY_ACCOUNTING_QUICKBOOKS_DESKTOP_COMPANY_CARD_EXPENSE_SELECT: {
+        route: 'settings/workspaces/:policyID/accounting/quickbooks-desktop/export/company-card-expense-account/card-select',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-desktop/export/company-card-expense-account/card-select` as const,
+    },
+    POLICY_ACCOUNTING_QUICKBOOKS_DESKTOP_NON_REIMBURSABLE_DEFAULT_VENDOR_SELECT: {
+        route: 'settings/workspaces/:policyID/accounting/quickbooks-desktop/export/company-card-expense-account/default-vendor-select',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-desktop/export/company-card-expense-account/default-vendor-select` as const,
+    },
+    POLICY_ACCOUNTING_QUICKBOOKS_DESKTOP_COMPANY_CARD_EXPENSE_ACCOUNT: {
+        route: 'settings/workspaces/:policyID/accounting/quickbooks-desktop/export/company-card-expense-account',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-desktop/export/company-card-expense-account` as const,
+    },
+    WORKSPACE_ACCOUNTING_QUICKBOOKS_DESKTOP_ADVANCED: {
+        route: 'settings/workspaces/:policyID/accounting/quickbooks-desktop/advanced',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-desktop/advanced` as const,
+    },
     POLICY_ACCOUNTING_QUICKBOOKS_DESKTOP_EXPORT_DATE_SELECT: {
         route: 'settings/workspaces/:policyID/accounting/quickbooks-desktop/export/date-select',
         getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-desktop/export/date-select` as const,
@@ -721,6 +834,18 @@ const ROUTES = {
     POLICY_ACCOUNTING_QUICKBOOKS_DESKTOP_CLASSES_DISPLAYED_AS: {
         route: 'settings/workspaces/:policyID/accounting/quickbooks-desktop/import/classes/displayed_as',
         getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-desktop/import/classes/displayed_as` as const,
+    },
+    POLICY_ACCOUNTING_QUICKBOOKS_DESKTOP_CUSTOMERS: {
+        route: 'settings/workspaces/:policyID/accounting/quickbooks-desktop/import/customers',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-desktop/import/customers` as const,
+    },
+    POLICY_ACCOUNTING_QUICKBOOKS_DESKTOP_CUSTOMERS_DISPLAYED_AS: {
+        route: 'settings/workspaces/:policyID/accounting/quickbooks-desktop/import/customers/displayed_as',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-desktop/import/customers/displayed_as` as const,
+    },
+    POLICY_ACCOUNTING_QUICKBOOKS_DESKTOP_ITEMS: {
+        route: 'settings/workspaces/:policyID/accounting/quickbooks-desktop/import/items',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-desktop/import/items` as const,
     },
     WORKSPACE_PROFILE_NAME: {
         route: 'settings/workspaces/:policyID/profile/name',
@@ -853,6 +978,10 @@ const ROUTES = {
         getRoute: (policyID: string, featureName: string, backTo?: string) =>
             getUrlWithBackToParam(`settings/workspaces/${policyID}/upgrade/${encodeURIComponent(featureName)}` as const, backTo),
     },
+    WORKSPACE_DOWNGRADE: {
+        route: 'settings/workspaces/:policyID/downgrade/',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/downgrade/` as const,
+    },
     WORKSPACE_CATEGORIES_SETTINGS: {
         route: 'settings/workspaces/:policyID/categories/settings',
         getRoute: (policyID: string) => `settings/workspaces/${policyID}/categories/settings` as const,
@@ -931,7 +1060,7 @@ const ROUTES = {
     },
     WORKSPACE_TAG_APPROVER: {
         route: 'settings/workspaces/:policyID/tag/:orderWeight/:tagName/approver',
-        getRoute: (policyID: string, orderWeight: number, tagName: string) => `settings/workspaces/${policyID}/tag/${orderWeight}/${tagName}/approver` as const,
+        getRoute: (policyID: string, orderWeight: number, tagName: string) => `settings/workspaces/${policyID}/tag/${orderWeight}/${encodeURIComponent(tagName)}/approver` as const,
     },
     WORKSPACE_TAG_LIST_VIEW: {
         route: 'settings/workspaces/:policyID/tag-list/:orderWeight',
@@ -1061,7 +1190,7 @@ const ROUTES = {
     },
     WORKSPACE_COMPANY_CARDS_ASSIGN_CARD: {
         route: 'settings/workspaces/:policyID/company-cards/:feed/assign-card',
-        getRoute: (policyID: string, feed: string) => `settings/workspaces/${policyID}/company-cards/${feed}/assign-card` as const,
+        getRoute: (policyID: string, feed: string, backTo?: string) => getUrlWithBackToParam(`settings/workspaces/${policyID}/company-cards/${feed}/assign-card`, backTo),
     },
     WORKSPACE_COMPANY_CARD_DETAILS: {
         route: 'settings/workspaces/:policyID/company-cards/:bank/:cardID',
@@ -1170,6 +1299,22 @@ const ROUTES = {
     WORKSPACE_DISTANCE_RATE_TAX_RATE_EDIT: {
         route: 'settings/workspaces/:policyID/distance-rates/:rateID/tax-rate/edit',
         getRoute: (policyID: string, rateID: string) => `settings/workspaces/${policyID}/distance-rates/${rateID}/tax-rate/edit` as const,
+    },
+    WORKSPACE_PER_DIEM: {
+        route: 'settings/workspaces/:policyID/per-diem',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/per-diem` as const,
+    },
+    WORKSPACE_PER_DIEM_IMPORT: {
+        route: 'settings/workspaces/:policyID/per-diem/import',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/per-diem/import` as const,
+    },
+    WORKSPACE_PER_DIEM_IMPORTED: {
+        route: 'settings/workspaces/:policyID/per-diem/imported',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/per-diem/imported` as const,
+    },
+    WORKSPACE_PER_DIEM_SETTINGS: {
+        route: 'settings/workspaces/:policyID/per-diem/settings',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/per-diem/settings` as const,
     },
     RULES_CUSTOM_NAME: {
         route: 'settings/workspaces/:policyID/rules/name',
@@ -1353,13 +1498,25 @@ const ROUTES = {
         route: 'settings/workspaces/:policyID/accounting/quickbooks-online/import/classes',
         getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-online/import/classes` as const,
     },
+    POLICY_ACCOUNTING_QUICKBOOKS_ONLINE_CLASSES_DISPLAYED_AS: {
+        route: 'settings/workspaces/:policyID/accounting/quickbooks-online/import/classes/displayed-as',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-online/import/classes/displayed-as` as const,
+    },
     POLICY_ACCOUNTING_QUICKBOOKS_ONLINE_CUSTOMERS: {
         route: 'settings/workspaces/:policyID/accounting/quickbooks-online/import/customers',
         getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-online/import/customers` as const,
     },
+    POLICY_ACCOUNTING_QUICKBOOKS_ONLINE_CUSTOMERS_DISPLAYED_AS: {
+        route: 'settings/workspaces/:policyID/accounting/quickbooks-online/import/customers/displayed-as',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-online/import/customers/displayed-as` as const,
+    },
     POLICY_ACCOUNTING_QUICKBOOKS_ONLINE_LOCATIONS: {
         route: 'settings/workspaces/:policyID/accounting/quickbooks-online/import/locations',
         getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-online/import/locations` as const,
+    },
+    POLICY_ACCOUNTING_QUICKBOOKS_ONLINE_LOCATIONS_DISPLAYED_AS: {
+        route: 'settings/workspaces/:policyID/accounting/quickbooks-online/import/locations/displayed-as',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/quickbooks-online/import/locations/displayed-as` as const,
     },
     POLICY_ACCOUNTING_QUICKBOOKS_ONLINE_TAXES: {
         route: 'settings/workspaces/:policyID/accounting/quickbooks-online/import/taxes',
@@ -1512,6 +1669,14 @@ const ROUTES = {
         getRoute: (policyID: string, expenseType: ValueOf<typeof CONST.NETSUITE_EXPENSE_TYPE>) =>
             `settings/workspaces/${policyID}/connections/netsuite/advanced/custom-form-id/${expenseType}` as const,
     },
+    POLICY_ACCOUNTING_NETSUITE_AUTO_SYNC: {
+        route: 'settings/workspaces/:policyID/connections/netsuite/advanced/autosync',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/connections/netsuite/advanced/autosync` as const,
+    },
+    POLICY_ACCOUNTING_NETSUITE_ACCOUNTING_METHOD: {
+        route: 'settings/workspaces/:policyID/connections/netsuite/advanced/autosync/accounting-method',
+        getRoute: (policyID: string) => `settings/workspaces/${policyID}/connections/netsuite/advanced/autosync/accounting-method` as const,
+    },
     POLICY_ACCOUNTING_SAGE_INTACCT_PREREQUISITES: {
         route: 'settings/workspaces/:policyID/accounting/sage-intacct/prerequisites',
         getRoute: (policyID: string) => `settings/workspaces/${policyID}/accounting/sage-intacct/prerequisites` as const,
@@ -1633,12 +1798,45 @@ const ROUTES = {
         getRoute: (reportID: string, reportActionID: string) => `debug/report/${reportID}/actions/${reportActionID}/preview` as const,
     },
     DETAILS_CONSTANT_PICKER_PAGE: {
-        route: 'debug/details/constant/:fieldName',
-        getRoute: (fieldName: string, fieldValue?: string, backTo?: string) => getUrlWithBackToParam(`debug/details/constant/${fieldName}?fieldValue=${fieldValue}`, backTo),
+        route: 'debug/:formType/details/constant/:fieldName',
+        getRoute: (formType: string, fieldName: string, fieldValue?: string, policyID?: string, backTo?: string) =>
+            getUrlWithBackToParam(`debug/${formType}/details/constant/${fieldName}?fieldValue=${fieldValue}&policyID=${policyID}`, backTo),
     },
     DETAILS_DATE_TIME_PICKER_PAGE: {
         route: 'debug/details/datetime/:fieldName',
         getRoute: (fieldName: string, fieldValue?: string, backTo?: string) => getUrlWithBackToParam(`debug/details/datetime/${fieldName}?fieldValue=${fieldValue}`, backTo),
+    },
+    DEBUG_TRANSACTION: {
+        route: 'debug/transaction/:transactionID',
+        getRoute: (transactionID: string) => `debug/transaction/${transactionID}` as const,
+    },
+    DEBUG_TRANSACTION_TAB_DETAILS: {
+        route: 'debug/transaction/:transactionID/details',
+        getRoute: (transactionID: string) => `debug/transaction/${transactionID}/details` as const,
+    },
+    DEBUG_TRANSACTION_TAB_JSON: {
+        route: 'debug/transaction/:transactionID/json',
+        getRoute: (transactionID: string) => `debug/transaction/${transactionID}/json` as const,
+    },
+    DEBUG_TRANSACTION_TAB_VIOLATIONS: {
+        route: 'debug/transaction/:transactionID/violations',
+        getRoute: (transactionID: string) => `debug/transaction/${transactionID}/violations` as const,
+    },
+    DEBUG_TRANSACTION_VIOLATION_CREATE: {
+        route: 'debug/transaction/:transactionID/violations/create',
+        getRoute: (transactionID: string) => `debug/transaction/${transactionID}/violations/create` as const,
+    },
+    DEBUG_TRANSACTION_VIOLATION: {
+        route: 'debug/transaction/:transactionID/violations/:index',
+        getRoute: (transactionID: string, index: string) => `debug/transaction/${transactionID}/violations/${index}` as const,
+    },
+    DEBUG_TRANSACTION_VIOLATION_TAB_DETAILS: {
+        route: 'debug/transaction/:transactionID/violations/:index/details',
+        getRoute: (transactionID: string, index: string) => `debug/transaction/${transactionID}/violations/${index}/details` as const,
+    },
+    DEBUG_TRANSACTION_VIOLATION_TAB_JSON: {
+        route: 'debug/transaction/:transactionID/violations/:index/json',
+        getRoute: (transactionID: string, index: string) => `debug/transaction/${transactionID}/violations/${index}/json` as const,
     },
 } as const;
 

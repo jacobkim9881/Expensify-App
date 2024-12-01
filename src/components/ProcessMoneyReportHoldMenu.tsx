@@ -4,6 +4,7 @@ import useLocalize from '@hooks/useLocalize';
 import useResponsiveLayout from '@hooks/useResponsiveLayout';
 import Navigation from '@libs/Navigation/Navigation';
 import {isLinkedTransactionHeld} from '@libs/ReportActionsUtils';
+import playSound, {SOUNDS} from '@libs/Sound';
 import * as IOU from '@userActions/IOU';
 import CONST from '@src/CONST';
 import ROUTES from '@src/ROUTES';
@@ -60,7 +61,8 @@ function ProcessMoneyReportHoldMenu({
 }: ProcessMoneyReportHoldMenuProps) {
     const {translate} = useLocalize();
     const isApprove = requestType === CONST.IOU.REPORT_ACTION_TYPE.APPROVE;
-    // We need to use shouldUseNarrowLayout instead of shouldUseNarrowLayout to apply the correct modal type
+    // We need to use isSmallScreenWidth instead of shouldUseNarrowLayout to apply the correct modal type
+    // eslint-disable-next-line rulesdir/prefer-shouldUseNarrowLayout-instead-of-isSmallScreenWidth
     const {isSmallScreenWidth} = useResponsiveLayout();
 
     const onSubmit = (full: boolean) => {
@@ -73,6 +75,7 @@ function ProcessMoneyReportHoldMenu({
             if (startAnimation) {
                 startAnimation();
             }
+            playSound(SOUNDS.SUCCESS);
             IOU.payMoneyRequest(paymentType, chatReport, moneyRequestReport, full);
         }
         onClose();

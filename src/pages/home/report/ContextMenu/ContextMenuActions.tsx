@@ -64,6 +64,7 @@ type ShouldShow = (args: {
     reportID: string;
     isPinnedChat: boolean;
     isUnreadChat: boolean;
+    isThreadReportParentAction: boolean;
     isOffline: boolean;
     isMini: boolean;
     isProduction: boolean;
@@ -88,6 +89,7 @@ type ContextMenuActionPayload = {
     setIsEmojiPickerActive?: (state: boolean) => void;
     anchorRef?: MutableRefObject<View | null>;
     moneyRequestAction: ReportAction | undefined;
+    hasCard?: boolean;
 };
 
 type OnPress = (closePopover: boolean, payload: ContextMenuActionPayload, selection?: string, reportID?: string, draftMessage?: string) => void;
@@ -177,11 +179,11 @@ const ContextMenuActions: ContextMenuAction[] = [
         isAnonymousAction: false,
         textTranslateKey: 'reportActionContextMenu.replyInThread',
         icon: Expensicons.ChatBubbleReply,
-        shouldShow: ({type, reportAction, reportID}) => {
+        shouldShow: ({type, reportAction, reportID, isThreadReportParentAction}) => {
             if (type !== CONST.CONTEXT_MENU_TYPES.REPORT_ACTION) {
                 return false;
             }
-            return !ReportUtils.shouldDisableThread(reportAction, reportID);
+            return !ReportUtils.shouldDisableThread(reportAction, reportID, isThreadReportParentAction);
         },
         onPress: (closePopover, {reportAction, reportID}) => {
             const originalReportID = ReportUtils.getOriginalReportID(reportID, reportAction);
@@ -300,15 +302,22 @@ const ContextMenuActions: ContextMenuAction[] = [
         isAnonymousAction: false,
         textTranslateKey: 'reportActionContextMenu.joinThread',
         icon: Expensicons.Bell,
-        shouldShow: ({reportAction, isArchivedRoom, reportID}) => {
+        shouldShow: ({reportAction, isArchivedRoom, isThreadReportParentAction}) => {
             const childReportNotificationPreference = ReportUtils.getChildReportNotificationPreference(reportAction);
             const isDeletedAction = ReportActionsUtils.isDeletedAction(reportAction);
-            const shouldDisplayThreadReplies = ReportUtils.shouldDisplayThreadReplies(reportAction, reportID);
+            const shouldDisplayThreadReplies = ReportUtils.shouldDisplayThreadReplies(reportAction, isThreadReportParentAction);
             const subscribed = childReportNotificationPreference !== 'hidden';
-            const isThreadFirstChat = ReportUtils.isThreadFirstChat(reportAction, reportID);
             const isWhisperAction = ReportActionsUtils.isWhisperAction(reportAction) || ReportActionsUtils.isActionableTrackExpense(reportAction);
             const isExpenseReportAction = ReportActionsUtils.isMoneyRequestAction(reportAction) || ReportActionsUtils.isReportPreviewAction(reportAction);
-            return !subscribed && !isWhisperAction && !isExpenseReportAction && !isThreadFirstChat && (shouldDisplayThreadReplies || (!isDeletedAction && !isArchivedRoom));
+            const isTaskAction = ReportActionsUtils.isCreatedTaskReportAction(reportAction);
+            return (
+                !subscribed &&
+                !isWhisperAction &&
+                !isTaskAction &&
+                !isExpenseReportAction &&
+                !isThreadReportParentAction &&
+                (shouldDisplayThreadReplies || (!isDeletedAction && !isArchivedRoom))
+            );
         },
         onPress: (closePopover, {reportAction, reportID}) => {
             const childReportNotificationPreference = ReportUtils.getChildReportNotificationPreference(reportAction);
@@ -367,7 +376,7 @@ const ContextMenuActions: ContextMenuAction[] = [
         // If return value is true, we switch the `text` and `icon` on
         // `ContextMenuItem` with `successText` and `successIcon` which will fall back to
         // the `text` and `icon`
-        onPress: (closePopover, {reportAction, transaction, selection, reportID}) => {
+        onPress: (closePopover, {reportAction, transaction, selection, reportID, hasCard}) => {
             const isReportPreviewAction = ReportActionsUtils.isReportPreviewAction(reportAction);
             const messageHtml = getActionHtml(reportAction);
             const messageText = ReportActionsUtils.getReportActionMessageText(reportAction);
@@ -470,7 +479,7 @@ const ContextMenuActions: ContextMenuAction[] = [
                     setClipboardMessage(Localize.translateLocal('report.actions.type.integrationSyncFailed', {label, errorMessage}));
                 } else if (ReportActionsUtils.isCardIssuedAction(reportAction)) {
                     const report = ReportUtils.getReport(reportID);
-                    setClipboardMessage(ReportActionsUtils.getCardIssuedMessage(reportAction, true, report?.policyID));
+                    setClipboardMessage(ReportActionsUtils.getCardIssuedMessage(reportAction, true, report?.policyID, hasCard));
                 } else if (ReportActionsUtils.isActionOfType(reportAction, CONST.REPORT.ACTIONS.TYPE.POLICY_CHANGE_LOG.DELETE_INTEGRATION)) {
                     setClipboardMessage(ReportActionsUtils.getRemovedConnectionMessage(reportAction));
                 } else if (content) {

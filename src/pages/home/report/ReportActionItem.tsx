@@ -33,7 +33,6 @@ import {ShowContextMenuContext} from '@components/ShowContextMenuContext';
 import Text from '@components/Text';
 import UnreadActionIndicator from '@components/UnreadActionIndicator';
 import useLocalize from '@hooks/useLocalize';
-import usePermissions from '@hooks/usePermissions';
 import usePrevious from '@hooks/usePrevious';
 import useReportScrollManager from '@hooks/useReportScrollManager';
 import useResponsiveLayout from '@hooks/useResponsiveLayout';
@@ -49,12 +48,11 @@ import Navigation from '@libs/Navigation/Navigation';
 import Permissions from '@libs/Permissions';
 import * as PersonalDetailsUtils from '@libs/PersonalDetailsUtils';
 import * as PolicyUtils from '@libs/PolicyUtils';
-import ReportActionComposeFocusManager from '@libs/ReportActionComposeFocusManager';
 import * as ReportActionsUtils from '@libs/ReportActionsUtils';
 import * as ReportUtils from '@libs/ReportUtils';
 import SelectionScraper from '@libs/SelectionScraper';
 import shouldRenderAddPaymentCard from '@libs/shouldRenderAppPaymentCard';
-import * as TransactionUtils from '@libs/TransactionUtils';
+import {doesUserHavePaymentCardAdded} from '@libs/SubscriptionUtils';
 import {ReactionListContext} from '@pages/home/ReportScreenContext';
 import * as BankAccounts from '@userActions/BankAccounts';
 import * as EmojiPickerAction from '@userActions/EmojiPickerAction';
@@ -133,10 +131,14 @@ type ReportActionItemProps = {
     /** If this is the first visible report action */
     isFirstVisibleReportAction: boolean;
 
+    /**
+     * Is the action a thread's parent reportAction viewed from within the thread report?
+     * It will be false if we're viewing the same parent report action from the report it belongs to rather than the thread.
+     */
+    isThreadReportParentAction?: boolean;
+
     /** IF the thread divider line will be used */
     shouldUseThreadDividerLine?: boolean;
-
-    hideThreadReplies?: boolean;
 
     /** Whether context menu should be displayed */
     shouldDisplayContextMenu?: boolean;
@@ -156,8 +158,8 @@ function ReportActionItem({
     shouldShowSubscriptAvatar = false,
     onPress = undefined,
     isFirstVisibleReportAction = false,
+    isThreadReportParentAction = false,
     shouldUseThreadDividerLine = false,
-    hideThreadReplies = false,
     shouldDisplayContextMenu = true,
     parentReportActionForTransactionThread,
 }: ReportActionItemProps) {
@@ -199,7 +201,6 @@ function ReportActionItem({
     const downloadedPreviews = useRef<string[]>([]);
     const prevDraftMessage = usePrevious(draftMessage);
     const [isUserValidated] = useOnyx(ONYXKEYS.USER, {selector: (user) => !!user?.validated});
-    const {canUseP2PDistanceRequests} = usePermissions();
     // The app would crash due to subscribing to the entire report collection if parentReportID is an empty string. So we should have a fallback ID here.
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     const [parentReport] = useOnyx(`${ONYXKEYS.COLLECTION.REPORT}${report?.parentReportID || -1}`);
@@ -339,7 +340,6 @@ function ReportActionItem({
                 return;
             }
 
-            ReportActionComposeFocusManager.blurAll();
             setIsContextMenuActive(true);
             const selection = SelectionScraper.getCurrentSelection();
             ReportActionContextMenu.showContextMenu(
@@ -360,9 +360,22 @@ function ReportActionItem({
                 disabledActions,
                 false,
                 setIsEmojiPickerActive as () => void,
+                undefined,
+                isThreadReportParentAction,
             );
         },
-        [draftMessage, action, reportID, toggleContextMenuFromActiveReportAction, originalReportID, shouldDisplayContextMenu, disabledActions, isArchivedRoom, isChronosReport],
+        [
+            draftMessage,
+            action,
+            reportID,
+            toggleContextMenuFromActiveReportAction,
+            originalReportID,
+            shouldDisplayContextMenu,
+            disabledActions,
+            isArchivedRoom,
+            isChronosReport,
+            isThreadReportParentAction,
+        ],
     );
 
     // Handles manual scrolling to the bottom of the chat when the last message is an actionable whisper and it's resolved.
@@ -402,7 +415,7 @@ function ReportActionItem({
     const mentionReportContextValue = useMemo(() => ({currentReportID: report?.reportID ?? '-1'}), [report?.reportID]);
 
     const actionableItemButtons: ActionableItem[] = useMemo(() => {
-        if (ReportActionsUtils.isActionableAddPaymentCard(action) && shouldRenderAddPaymentCard()) {
+        if (ReportActionsUtils.isActionableAddPaymentCard(action) && !doesUserHavePaymentCardAdded() && shouldRenderAddPaymentCard()) {
             return [
                 {
                     text: 'subscription.cardSection.addCardButton',
@@ -423,18 +436,14 @@ function ReportActionItem({
         if (ReportActionsUtils.isActionableTrackExpense(action)) {
             const transactionID = ReportActionsUtils.getOriginalMessage(action)?.transactionID;
             return [
-                ...(!TransactionUtils.isDistanceRequest(TransactionUtils.getTransaction(transactionID ?? '-1')) || canUseP2PDistanceRequests
-                    ? [
-                          {
-                              text: 'actionableMentionTrackExpense.submit',
-                              key: `${action.reportActionID}-actionableMentionTrackExpense-submit`,
-                              onPress: () => {
-                                  ReportUtils.createDraftTransactionAndNavigateToParticipantSelector(transactionID ?? '0', reportID, CONST.IOU.ACTION.SUBMIT, action.reportActionID);
-                              },
-                              isMediumSized: true,
-                          } as ActionableItem,
-                      ]
-                    : []),
+                {
+                    text: 'actionableMentionTrackExpense.submit',
+                    key: `${action.reportActionID}-actionableMentionTrackExpense-submit`,
+                    onPress: () => {
+                        ReportUtils.createDraftTransactionAndNavigateToParticipantSelector(transactionID ?? '0', reportID, CONST.IOU.ACTION.SUBMIT, action.reportActionID);
+                    },
+                    isMediumSized: true,
+                },
                 {
                     text: 'actionableMentionTrackExpense.categorize',
                     key: `${action.reportActionID}-actionableMentionTrackExpense-categorize`,
@@ -507,7 +516,7 @@ function ReportActionItem({
                 onPress: () => Report.resolveActionableMentionWhisper(reportID, action, CONST.REPORT.ACTIONABLE_MENTION_WHISPER_RESOLUTION.NOTHING),
             },
         ];
-    }, [action, isActionableWhisper, reportID, canUseP2PDistanceRequests]);
+    }, [action, isActionableWhisper, reportID]);
 
     /**
      * Get the content of ReportActionItem
@@ -704,7 +713,13 @@ function ReportActionItem({
         } else if (ReportActionsUtils.isActionOfType(action, CONST.REPORT.ACTIONS.TYPE.REMOVED_FROM_APPROVAL_CHAIN)) {
             children = <ReportActionItemBasicMessage message={ReportActionsUtils.getRemovedFromApprovalChainMessage(action)} />;
         } else if (
-            ReportActionsUtils.isActionOfType(action, CONST.REPORT.ACTIONS.TYPE.CARD_ISSUED, CONST.REPORT.ACTIONS.TYPE.CARD_ISSUED_VIRTUAL, CONST.REPORT.ACTIONS.TYPE.CARD_MISSING_ADDRESS)
+            ReportActionsUtils.isActionOfType(
+                action,
+                CONST.REPORT.ACTIONS.TYPE.CARD_ISSUED,
+                CONST.REPORT.ACTIONS.TYPE.CARD_ISSUED_VIRTUAL,
+                CONST.REPORT.ACTIONS.TYPE.CARD_MISSING_ADDRESS,
+                CONST.REPORT.ACTIONS.TYPE.CARD_ASSIGNED,
+            )
         ) {
             children = (
                 <IssueCardMessage
@@ -786,7 +801,7 @@ function ReportActionItem({
         }
         const numberOfThreadReplies = action.childVisibleActionCount ?? 0;
 
-        const shouldDisplayThreadReplies = !hideThreadReplies && ReportUtils.shouldDisplayThreadReplies(action, reportID);
+        const shouldDisplayThreadReplies = ReportUtils.shouldDisplayThreadReplies(action, isThreadReportParentAction);
         const oldestFourAccountIDs =
             action.childOldestFourAccountIDs
                 ?.split(',')
@@ -957,6 +972,7 @@ function ReportActionItem({
             <Hoverable
                 shouldHandleScroll
                 isDisabled={draftMessage !== undefined}
+                shouldFreezeCapture={isPaymentMethodPopoverActive}
             >
                 {(hovered) => (
                     <View style={highlightedBackgroundColorIfNeeded}>
@@ -971,6 +987,7 @@ function ReportActionItem({
                                 displayAsGroup={displayAsGroup}
                                 disabledActions={disabledActions}
                                 isVisible={hovered && draftMessage === undefined && !hasErrors}
+                                isThreadReportParentAction={isThreadReportParentAction}
                                 draftMessage={draftMessage}
                                 isChronosReport={isChronosReport}
                                 checkIfContextMenuActive={toggleContextMenuFromActiveReportAction}
