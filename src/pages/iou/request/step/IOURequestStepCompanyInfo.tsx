@@ -1,5 +1,5 @@
 import {Str} from 'expensify-common';
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {useOnyx} from 'react-native-onyx';
 import FormProvider from '@components/Form/FormProvider';
 import InputWrapper from '@components/Form/InputWrapper';
@@ -9,9 +9,12 @@ import TextInput from '@components/TextInput';
 import useAutoFocusInput from '@hooks/useAutoFocusInput';
 import useCurrentUserPersonalDetails from '@hooks/useCurrentUserPersonalDetails';
 import useLocalize from '@hooks/useLocalize';
+import usePolicy from '@hooks/usePolicy';
 import useThemeStyles from '@hooks/useThemeStyles';
+import {getDefaultCompanyWebsite} from '@libs/BankAccountUtils';
 import * as CurrencyUtils from '@libs/CurrencyUtils';
 import playSound, {SOUNDS} from '@libs/Sound';
+import * as Url from '@libs/Url';
 import * as ValidationUtils from '@libs/ValidationUtils';
 import Navigation from '@navigation/Navigation';
 import * as IOU from '@userActions/IOU';
@@ -35,29 +38,25 @@ function IOURequestStepCompanyInfo({route, report, transaction}: IOURequestStepC
     const {translate} = useLocalize();
     const {inputCallbackRef} = useAutoFocusInput();
     const currentUserPersonalDetails = useCurrentUserPersonalDetails();
+    const [session] = useOnyx(ONYXKEYS.SESSION);
+    const [user] = useOnyx(ONYXKEYS.USER);
+    const defaultWebsiteExample = useMemo(() => getDefaultCompanyWebsite(session, user), [session, user]);
 
-    const [policy] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY}${IOU.getIOURequestPolicyID(transaction, report)}`);
+    const policy = usePolicy(IOU.getIOURequestPolicyID(transaction, report));
     const [policyCategories] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY_CATEGORIES}${IOU.getIOURequestPolicyID(transaction, report)}`);
     const [policyTags] = useOnyx(`${ONYXKEYS.COLLECTION.POLICY_TAGS}${IOU.getIOURequestPolicyID(transaction, report)}`);
 
     const formattedAmount = CurrencyUtils.convertToDisplayString(Math.abs(transaction?.amount ?? 0), transaction?.currency);
 
-    const extractUrlDomain = (url: string): string | undefined => {
-        const DOMAIN_BASE_REGEX = '^(?:https?:\\/\\/)?(?:www\\.)?([^\\/]+)';
-        const match = String(url).match(DOMAIN_BASE_REGEX);
-
-        return match?.[1];
-    };
-
     const validate = useCallback(
         (values: FormOnyxValues<typeof ONYXKEYS.FORMS.MONEY_REQUEST_COMPANY_INFO_FORM>): FormInputErrors<typeof ONYXKEYS.FORMS.MONEY_REQUEST_COMPANY_INFO_FORM> => {
             const errors = ValidationUtils.getFieldRequiredErrors(values, [INPUT_IDS.COMPANY_NAME, INPUT_IDS.COMPANY_WEBSITE]);
-
             if (values.companyWebsite) {
-                if (!ValidationUtils.isValidWebsite(values.companyWebsite)) {
+                const companyWebsite = Str.sanitizeURL(values.companyWebsite, CONST.COMPANY_WEBSITE_DEFAULT_SCHEME);
+                if (!ValidationUtils.isValidWebsite(companyWebsite)) {
                     errors.companyWebsite = translate('bankAccount.error.website');
                 } else {
-                    const domain = extractUrlDomain(values.companyWebsite);
+                    const domain = Url.extractUrlDomain(companyWebsite);
 
                     if (!domain || !Str.isValidDomainName(domain)) {
                         errors.companyWebsite = translate('iou.invalidDomainError');
@@ -73,8 +72,9 @@ function IOURequestStepCompanyInfo({route, report, transaction}: IOURequestStepC
     );
 
     const submit = (values: FormOnyxValues<typeof ONYXKEYS.FORMS.MONEY_REQUEST_COMPANY_INFO_FORM>) => {
+        const companyWebsite = Str.sanitizeURL(values.companyWebsite, CONST.COMPANY_WEBSITE_DEFAULT_SCHEME);
         playSound(SOUNDS.DONE);
-        IOU.sendInvoice(currentUserPersonalDetails.accountID, transaction, report, undefined, policy, policyTags, policyCategories, values.companyName, values.companyWebsite);
+        IOU.sendInvoice(currentUserPersonalDetails.accountID, transaction, report, undefined, policy, policyTags, policyCategories, values.companyName, companyWebsite);
     };
 
     return (
@@ -112,6 +112,7 @@ function IOURequestStepCompanyInfo({route, report, transaction}: IOURequestStepC
                     accessibilityLabel={translate('iou.yourCompanyWebsite')}
                     role={CONST.ROLE.PRESENTATION}
                     hint={translate('iou.yourCompanyWebsiteNote')}
+                    defaultValue={defaultWebsiteExample}
                 />
             </FormProvider>
         </StepScreenWrapper>

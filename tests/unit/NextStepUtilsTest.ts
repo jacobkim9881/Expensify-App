@@ -17,11 +17,13 @@ describe('libs/NextStepUtils', () => {
         const currentUserAccountID = 37;
         const strangeEmail = 'stranger@expensify.com';
         const strangeAccountID = 50;
+        const ownerEmail = 'owner@expensify.com';
+        const ownerAccountID = 99;
         const policyID = '1';
         const policy: Policy = {
             // Important props
             id: policyID,
-            owner: currentUserEmail,
+            owner: ownerEmail,
             harvesting: {
                 enabled: false,
             },
@@ -56,6 +58,11 @@ describe('libs/NextStepUtils', () => {
                         login: currentUserEmail,
                         avatar: '',
                     },
+                    [ownerAccountID]: {
+                        accountID: ownerAccountID,
+                        login: ownerEmail,
+                        avatar: '',
+                    },
                 },
                 ...policyCollectionDataSet,
             }).then(waitForBatchedUpdates);
@@ -74,7 +81,7 @@ describe('libs/NextStepUtils', () => {
             test('self review', () => {
                 optimisticNextStep.icon = CONST.NEXT_STEP.ICONS.HOURGLASS;
 
-                // Waiting for userSubmitter to add expenses.
+                // Waiting for userSubmitter to add expense(s).
                 optimisticNextStep.message = [
                     {
                         text: 'Waiting for ',
@@ -88,10 +95,9 @@ describe('libs/NextStepUtils', () => {
                     },
                     {
                         text: 'add',
-                        type: 'strong',
                     },
                     {
-                        text: ' expenses.',
+                        text: ' %expenses.',
                     },
                 ];
 
@@ -115,14 +121,18 @@ describe('libs/NextStepUtils', () => {
                         },
                         {
                             text: `${currentUserEmail}`,
+                            clickToCopyText: `${currentUserEmail}`,
                             type: 'strong',
                         },
                         {
-                            text: "'s %expenses to ",
+                            text: "'s",
+                            type: 'strong',
                         },
                         {
-                            text: 'automatically submit later today',
-                            type: 'strong',
+                            text: ' %expenses to automatically submit',
+                        },
+                        {
+                            text: ' later today',
                         },
                     ];
 
@@ -146,14 +156,18 @@ describe('libs/NextStepUtils', () => {
                         },
                         {
                             text: `${currentUserEmail}`,
+                            clickToCopyText: `${currentUserEmail}`,
                             type: 'strong',
                         },
                         {
-                            text: "'s %expenses to ",
+                            text: "'s",
+                            type: 'strong',
                         },
                         {
-                            text: 'automatically submit on Sunday',
-                            type: 'strong',
+                            text: ' %expenses to automatically submit',
+                        },
+                        {
+                            text: ' on Sunday',
                         },
                     ];
 
@@ -177,14 +191,18 @@ describe('libs/NextStepUtils', () => {
                         },
                         {
                             text: `${currentUserEmail}`,
+                            clickToCopyText: `${currentUserEmail}`,
                             type: 'strong',
                         },
                         {
-                            text: "'s %expenses to ",
+                            text: "'s",
+                            type: 'strong',
                         },
                         {
-                            text: 'automatically submit on the 1st and 16th of each month',
-                            type: 'strong',
+                            text: ' %expenses to automatically submit',
+                        },
+                        {
+                            text: ' on the 1st and 16th of each month',
                         },
                     ];
 
@@ -208,14 +226,18 @@ describe('libs/NextStepUtils', () => {
                         },
                         {
                             text: `${currentUserEmail}`,
+                            clickToCopyText: `${currentUserEmail}`,
                             type: 'strong',
                         },
                         {
-                            text: "'s %expenses to ",
+                            text: "'s",
+                            type: 'strong',
                         },
                         {
-                            text: 'automatically submit on the 2nd of each month',
-                            type: 'strong',
+                            text: ' %expenses to automatically submit',
+                        },
+                        {
+                            text: ' on the 2nd of each month',
                         },
                     ];
 
@@ -240,14 +262,18 @@ describe('libs/NextStepUtils', () => {
                         },
                         {
                             text: `${currentUserEmail}`,
+                            clickToCopyText: `${currentUserEmail}`,
                             type: 'strong',
                         },
                         {
-                            text: "'s %expenses to ",
+                            text: "'s",
+                            type: 'strong',
                         },
                         {
-                            text: `automatically submit on the ${format(lastDayOfMonth(new Date()), CONST.DATE.ORDINAL_DAY_OF_MONTH)} of each month`,
-                            type: 'strong',
+                            text: ' %expenses to automatically submit',
+                        },
+                        {
+                            text: ` on the ${format(lastDayOfMonth(new Date()), CONST.DATE.ORDINAL_DAY_OF_MONTH)} of each month`,
                         },
                     ];
 
@@ -274,14 +300,18 @@ describe('libs/NextStepUtils', () => {
                         },
                         {
                             text: `${currentUserEmail}`,
+                            clickToCopyText: `${currentUserEmail}`,
                             type: 'strong',
                         },
                         {
-                            text: "'s %expenses to ",
+                            text: "'s",
+                            type: 'strong',
                         },
                         {
-                            text: `automatically submit on the ${format(setDate(new Date(), lastBusinessDayOfMonth), CONST.DATE.ORDINAL_DAY_OF_MONTH)} of each month`,
-                            type: 'strong',
+                            text: ' %expenses to automatically submit',
+                        },
+                        {
+                            text: ` on the ${format(setDate(new Date(), lastBusinessDayOfMonth), CONST.DATE.ORDINAL_DAY_OF_MONTH)} of each month`,
                         },
                     ];
 
@@ -306,14 +336,18 @@ describe('libs/NextStepUtils', () => {
                         },
                         {
                             text: `${currentUserEmail}`,
+                            clickToCopyText: `${currentUserEmail}`,
                             type: 'strong',
                         },
                         {
-                            text: "'s %expenses to ",
+                            text: "'s",
+                            type: 'strong',
                         },
                         {
-                            text: `automatically submit at the end of their trip`,
-                            type: 'strong',
+                            text: ' %expenses to automatically submit',
+                        },
+                        {
+                            text: ` at the end of their trip`,
                         },
                     ];
 
@@ -330,7 +364,7 @@ describe('libs/NextStepUtils', () => {
                 });
 
                 test('manual', () => {
-                    // Waiting for userSubmitter to add expenses.
+                    // Waiting for userSubmitter to add expense(s).
                     optimisticNextStep.message = [
                         {
                             text: 'Waiting for ',
@@ -344,10 +378,9 @@ describe('libs/NextStepUtils', () => {
                         },
                         {
                             text: 'add',
-                            type: 'strong',
                         },
                         {
-                            text: ' expenses.',
+                            text: ' %expenses.',
                         },
                     ];
 
@@ -369,30 +402,66 @@ describe('libs/NextStepUtils', () => {
             test('self review', () => {
                 optimisticNextStep.icon = CONST.NEXT_STEP.ICONS.HOURGLASS;
 
-                // Waiting for userAdmin to pay expense(s)
+                // Waiting for an admin to set up a bank account
                 optimisticNextStep.message = [
                     {
                         text: 'Waiting for ',
                     },
                     {
-                        text: `${currentUserEmail}`,
-                        type: 'strong',
+                        text: `an admin`,
                     },
                     {
                         text: ' to ',
                     },
                     {
-                        text: 'pay',
-                        type: 'strong',
+                        text: 'finish setting up',
                     },
                     {
-                        text: ' %expenses.',
+                        text: ' a business bank account.',
                     },
                 ];
 
                 const result = NextStepUtils.buildNextStep(report, CONST.REPORT.STATUS_NUM.APPROVED);
 
                 expect(result).toMatchObject(optimisticNextStep);
+            });
+
+            test('self review with bank account setup', () => {
+                optimisticNextStep.icon = CONST.NEXT_STEP.ICONS.HOURGLASS;
+
+                // Waiting for an admin to pay expense(s)
+                optimisticNextStep.message = [
+                    {
+                        text: 'Waiting for ',
+                    },
+                    {
+                        text: `an admin`,
+                    },
+                    {
+                        text: ' to ',
+                    },
+                    {
+                        text: 'pay',
+                    },
+                    {
+                        text: ' %expenses.',
+                    },
+                ];
+
+                return Onyx.merge(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`, {
+                    achAccount: {
+                        accountNumber: '123456789',
+                    },
+                }).then(() => {
+                    const result = NextStepUtils.buildNextStep(report, CONST.REPORT.STATUS_NUM.APPROVED);
+
+                    expect(result).toMatchObject(optimisticNextStep);
+
+                    // restore to previous state
+                    Onyx.merge(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`, {
+                        achAccount: null,
+                    });
+                });
             });
 
             test('another reviewer', () => {
@@ -413,7 +482,6 @@ describe('libs/NextStepUtils', () => {
                     },
                     {
                         text: 'approve',
-                        type: 'strong',
                     },
                     {
                         text: ' %expenses.',
@@ -451,7 +519,6 @@ describe('libs/NextStepUtils', () => {
                     },
                     {
                         text: 'approve',
-                        type: 'strong',
                     },
                     {
                         text: ' %expenses.',
@@ -475,7 +542,7 @@ describe('libs/NextStepUtils', () => {
                 optimisticNextStep.icon = CONST.NEXT_STEP.ICONS.CHECKMARK;
                 optimisticNextStep.message = [
                     {
-                        text: 'Finished! No further action required.',
+                        text: 'No further action required!',
                     },
                 ];
 
@@ -495,7 +562,7 @@ describe('libs/NextStepUtils', () => {
                 optimisticNextStep.icon = CONST.NEXT_STEP.ICONS.CHECKMARK;
                 optimisticNextStep.message = [
                     {
-                        text: 'Finished! No further action required.',
+                        text: 'No further action required!',
                     },
                 ];
 
@@ -507,24 +574,22 @@ describe('libs/NextStepUtils', () => {
             test('payer', () => {
                 optimisticNextStep.icon = CONST.NEXT_STEP.ICONS.HOURGLASS;
 
-                // Waiting for userAdmin to pay expense(s).
+                // Waiting for an admin to set up a bank account
                 optimisticNextStep.message = [
                     {
                         text: 'Waiting for ',
                     },
                     {
-                        text: currentUserEmail,
-                        type: 'strong',
+                        text: 'an admin',
                     },
                     {
                         text: ' to ',
                     },
                     {
-                        text: 'pay',
-                        type: 'strong',
+                        text: 'finish setting up',
                     },
                     {
-                        text: ' %expenses.',
+                        text: ' a business bank account.',
                     },
                 ];
                 // mock the report as approved
@@ -540,20 +605,53 @@ describe('libs/NextStepUtils', () => {
                 report.stateNum = originalState.stateNum;
                 report.statusNum = originalState.statusNum;
             });
-        });
 
-        describe('it generates an optimistic nextStep once a report has been paid', () => {
-            test('paid with wallet / outside of Expensify', () => {
-                optimisticNextStep.icon = CONST.NEXT_STEP.ICONS.CHECKMARK;
+            test('payer with bank account setup', () => {
+                optimisticNextStep.icon = CONST.NEXT_STEP.ICONS.HOURGLASS;
+
+                // Waiting for an admin to pay expense(s)
                 optimisticNextStep.message = [
                     {
-                        text: 'Finished! No further action required.',
+                        text: 'Waiting for ',
+                    },
+                    {
+                        text: 'an admin',
+                    },
+                    {
+                        text: ' to ',
+                    },
+                    {
+                        text: 'pay',
+                    },
+                    {
+                        text: ' %expenses.',
                     },
                 ];
 
-                const result = NextStepUtils.buildNextStep(report, CONST.REPORT.STATUS_NUM.REIMBURSED);
+                return Onyx.merge(`${ONYXKEYS.COLLECTION.POLICY}${policyID}`, {
+                    achAccount: {
+                        accountNumber: '123456789',
+                    },
+                }).then(() => {
+                    const result = NextStepUtils.buildNextStep(report, CONST.REPORT.STATUS_NUM.APPROVED);
 
-                expect(result).toMatchObject(optimisticNextStep);
+                    expect(result).toMatchObject(optimisticNextStep);
+                });
+            });
+
+            describe('it generates an optimistic nextStep once a report has been paid', () => {
+                test('paid with wallet / outside of Expensify', () => {
+                    optimisticNextStep.icon = CONST.NEXT_STEP.ICONS.CHECKMARK;
+                    optimisticNextStep.message = [
+                        {
+                            text: 'No further action required!',
+                        },
+                    ];
+
+                    const result = NextStepUtils.buildNextStep(report, CONST.REPORT.STATUS_NUM.REIMBURSED);
+
+                    expect(result).toMatchObject(optimisticNextStep);
+                });
             });
         });
     });

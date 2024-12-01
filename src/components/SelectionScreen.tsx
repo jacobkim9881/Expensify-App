@@ -1,4 +1,4 @@
-import {isEmpty} from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import React from 'react';
 import type {StyleProp, ViewStyle} from 'react-native';
 import useLocalize from '@hooks/useLocalize';
@@ -90,6 +90,21 @@ type SelectionScreenProps<T = string> = {
 
     /** Used for dynamic header title translation with parameters */
     headerTitleAlreadyTranslated?: string;
+
+    /** Whether to update the focused index on a row select */
+    shouldUpdateFocusedIndex?: boolean;
+
+    /** Whether to show the text input */
+    shouldShowTextInput?: boolean;
+
+    /** Label for the text input */
+    textInputLabel?: string;
+
+    /** Value for the text input */
+    textInputValue?: string;
+
+    /** Callback to fire when the text input changes */
+    onChangeText?: (text: string) => void;
 };
 
 function SelectionScreen<T = string>({
@@ -114,6 +129,11 @@ function SelectionScreen<T = string>({
     onClose,
     shouldSingleExecuteRowSelect,
     headerTitleAlreadyTranslated,
+    textInputLabel,
+    textInputValue,
+    onChangeText,
+    shouldShowTextInput,
+    shouldUpdateFocusedIndex = false,
 }: SelectionScreenProps<T>) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
@@ -141,18 +161,25 @@ function SelectionScreen<T = string>({
                     pendingAction={pendingAction}
                     style={[styles.flex1]}
                     contentContainerStyle={[styles.flex1]}
+                    shouldDisableOpacity={!sections.length}
                 >
                     <SelectionList
                         onSelectRow={onSelectRow}
                         sections={sections}
                         ListItem={listItem}
                         showScrollIndicator
+                        onChangeText={onChangeText}
                         shouldShowTooltips={false}
                         initiallyFocusedOptionKey={initiallyFocusedOptionKey}
                         listEmptyContent={listEmptyContent}
+                        textInputLabel={textInputLabel}
+                        textInputValue={textInputValue}
+                        shouldShowTextInput={shouldShowTextInput}
                         listFooterContent={listFooterContent}
-                        sectionListStyle={[styles.flexGrow0]}
+                        sectionListStyle={!!sections.length && [styles.flexGrow0]}
                         shouldSingleExecuteRowSelect={shouldSingleExecuteRowSelect}
+                        shouldUpdateFocusedIndex={shouldUpdateFocusedIndex}
+                        isAlternateTextMultilineSupported
                     >
                         <ErrorMessageRow
                             errors={errors}

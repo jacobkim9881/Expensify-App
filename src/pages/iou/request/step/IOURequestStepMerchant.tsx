@@ -35,7 +35,7 @@ type IOURequestStepMerchantOnyxProps = {
     policyCategories: OnyxEntry<OnyxTypes.PolicyCategories>;
 
     /** Collection of tags attached to a policy */
-    policyTags: OnyxEntry<OnyxTypes.PolicyTagList>;
+    policyTags: OnyxEntry<OnyxTypes.PolicyTagLists>;
 };
 
 type IOURequestStepMerchantProps = IOURequestStepMerchantOnyxProps &
@@ -113,7 +113,6 @@ function IOURequestStepMerchant({
             onBackButtonPress={navigateBack}
             shouldShowWrapper
             testID={IOURequestStepMerchant.displayName}
-            includeSafeAreaPaddingBottom
         >
             <FormProvider
                 style={[styles.flexGrow1, styles.ph5]}

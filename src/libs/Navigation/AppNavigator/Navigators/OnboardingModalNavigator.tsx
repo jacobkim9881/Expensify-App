@@ -1,51 +1,50 @@
-import {createStackNavigator} from '@react-navigation/stack';
+import {CardStyleInterpolators} from '@react-navigation/stack';
 import React, {useCallback, useEffect} from 'react';
 import {View} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
 import NoDropZone from '@components/DragAndDrop/NoDropZone';
 import FocusTrapForScreens from '@components/FocusTrap/FocusTrapForScreen';
-import useDisableModalDismissOnEscape from '@hooks/useDisableModalDismissOnEscape';
 import useKeyboardShortcut from '@hooks/useKeyboardShortcut';
-import useOnboardingLayout from '@hooks/useOnboardingLayout';
+import useResponsiveLayout from '@hooks/useResponsiveLayout';
 import useThemeStyles from '@hooks/useThemeStyles';
-import hasCompletedGuidedSetupFlowSelector from '@libs/hasCompletedGuidedSetupFlowSelector';
-import OnboardingModalNavigatorScreenOptions from '@libs/Navigation/AppNavigator/OnboardingModalNavigatorScreenOptions';
-import Navigation from '@libs/Navigation/Navigation';
+import GoogleTagManager from '@libs/GoogleTagManager';
+import createPlatformStackNavigator from '@libs/Navigation/PlatformStackNavigation/createPlatformStackNavigator';
+import type {PlatformStackNavigationOptions} from '@libs/Navigation/PlatformStackNavigation/types';
 import type {OnboardingModalNavigatorParamList} from '@libs/Navigation/types';
 import OnboardingRefManager from '@libs/OnboardingRefManager';
+import OnboardingAccounting from '@pages/OnboardingAccounting';
+import OnboardingEmployees from '@pages/OnboardingEmployees';
 import OnboardingPersonalDetails from '@pages/OnboardingPersonalDetails';
 import OnboardingPurpose from '@pages/OnboardingPurpose';
-import OnboardingWork from '@pages/OnboardingWork';
-import * as Report from '@userActions/Report';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import SCREENS from '@src/SCREENS';
 import Overlay from './Overlay';
 
-const Stack = createStackNavigator<OnboardingModalNavigatorParamList>();
+const defaultScreenOptions: PlatformStackNavigationOptions = {
+    headerShown: false,
+    web: {
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+    },
+};
+
+const Stack = createPlatformStackNavigator<OnboardingModalNavigatorParamList>();
 
 function OnboardingModalNavigator() {
     const styles = useThemeStyles();
-    const {isMediumOrLargerScreenWidth} = useOnboardingLayout();
-    const [hasCompletedGuidedSetupFlow] = useOnyx(ONYXKEYS.NVP_ONBOARDING, {
-        selector: hasCompletedGuidedSetupFlowSelector,
-    });
+    const {onboardingIsMediumOrLargerScreenWidth} = useResponsiveLayout();
+    const outerViewRef = React.useRef<View>(null);
+    const [accountID] = useOnyx(ONYXKEYS.SESSION, {selector: (session) => session?.accountID ?? 0});
 
-    useDisableModalDismissOnEscape();
-
+    // Publish a sign_up event when we start the onboarding flow. This should track basic sign ups
+    // as well as Google and Apple SSO.
     useEffect(() => {
-        if (!hasCompletedGuidedSetupFlow) {
+        if (!accountID) {
             return;
         }
-        Navigation.isNavigationReady().then(() => {
-            // Need to go back to previous route and then redirect to Concierge,
-            // otherwise going back on Concierge will go to onboarding and then redirected to Concierge again
-            Navigation.goBack();
-            Report.navigateToConciergeChat();
-        });
-    }, [hasCompletedGuidedSetupFlow]);
 
-    const outerViewRef = React.useRef<View>(null);
+        GoogleTagManager.publishEvent(CONST.ANALYTICS.EVENT.SIGN_UP, accountID);
+    }, [accountID]);
 
     const handleOuterClick = useCallback(() => {
         OnboardingRefManager.handleOuterClick();
@@ -53,9 +52,6 @@ function OnboardingModalNavigator() {
 
     useKeyboardShortcut(CONST.KEYBOARD_SHORTCUTS.ESCAPE, handleOuterClick, {shouldBubble: true});
 
-    if (hasCompletedGuidedSetupFlow) {
-        return null;
-    }
     return (
         <NoDropZone>
             <Overlay />
@@ -67,9 +63,9 @@ function OnboardingModalNavigator() {
                 <FocusTrapForScreens>
                     <View
                         onClick={(e) => e.stopPropagation()}
-                        style={styles.OnboardingNavigatorInnerView(isMediumOrLargerScreenWidth)}
+                        style={styles.OnboardingNavigatorInnerView(onboardingIsMediumOrLargerScreenWidth)}
                     >
-                        <Stack.Navigator screenOptions={OnboardingModalNavigatorScreenOptions()}>
+                        <Stack.Navigator screenOptions={defaultScreenOptions}>
                             <Stack.Screen
                                 name={SCREENS.ONBOARDING.PURPOSE}
                                 component={OnboardingPurpose}
@@ -79,8 +75,12 @@ function OnboardingModalNavigator() {
                                 component={OnboardingPersonalDetails}
                             />
                             <Stack.Screen
-                                name={SCREENS.ONBOARDING.WORK}
-                                component={OnboardingWork}
+                                name={SCREENS.ONBOARDING.EMPLOYEES}
+                                component={OnboardingEmployees}
+                            />
+                            <Stack.Screen
+                                name={SCREENS.ONBOARDING.ACCOUNTING}
+                                component={OnboardingAccounting}
                             />
                         </Stack.Navigator>
                     </View>
