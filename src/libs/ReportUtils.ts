@@ -2493,6 +2493,7 @@ function getIcons(
     }
 
     const participantAccountIDs = Object.keys(report.participants ?? {}).map(Number);
+console.log('report at getIcons...................>: ', report)
 console.log('left participantAccountIDs.............>: ', participantAccountIDs)
     return getIconsForParticipants(participantAccountIDs, personalDetails);
 }
@@ -5432,11 +5433,13 @@ function buildOptimisticChatReport(
     avatarUrl = '',
     optimisticReportID = '',
 ): OptimisticChatReport {
+	console.log('buildOptimisticChatReport.............!!')
     const isWorkspaceChatType = chatType && isWorkspaceChat(chatType);
     const participants = participantList.reduce((reportParticipants: Participants, accountID: number) => {
         const participant: ReportParticipant = {
             notificationPreference,
             ...(!isWorkspaceChatType && {role: accountID === currentUserAccountID ? CONST.REPORT.ROLE.ADMIN : CONST.REPORT.ROLE.MEMBER}),
+		hello: "hi"
         };
         // eslint-disable-next-line no-param-reassign
         reportParticipants[accountID] = participant;

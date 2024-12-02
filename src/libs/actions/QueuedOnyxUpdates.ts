@@ -10,6 +10,7 @@ let queuedOnyxUpdates: OnyxUpdate[] = [];
  */
 function queueOnyxUpdates(updates: OnyxUpdate[]): Promise<void> {
     queuedOnyxUpdates = queuedOnyxUpdates.concat(updates);
+	 console.log('queuedOnyxUpdates: ', queuedOnyxUpdates)
     return Promise.resolve();
 }
 
