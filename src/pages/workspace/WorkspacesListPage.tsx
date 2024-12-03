@@ -112,6 +112,7 @@ function WorkspacesListPage() {
     const [reimbursementAccount] = useOnyx(ONYXKEYS.REIMBURSEMENT_ACCOUNT);
     const [reports] = useOnyx(ONYXKEYS.COLLECTION.REPORT);
     const [session] = useOnyx(ONYXKEYS.SESSION);
+const subscription = useOnyx(ONYXKEYS.NVP_PRIVATE_SUBSCRIPTION);	
 
     const {activeWorkspaceID, setActiveWorkspaceID} = useActiveWorkspace();
 
@@ -340,6 +341,9 @@ function WorkspacesListPage() {
                         isJoinRequestPending: true,
                     };
                 }
+                if(policy.errors && policy.pendingAction === CONST.RED_BRICK_ROAD_PENDING_ACTION.DELETE && subscription.at(0).type === CONST.SUBSCRIPTION.TYPE.PAYPERUSE)  {
+                  dismissWorkspaceError(policy.id, policy.pendingAction)
+	      }
                 return {
                     title: policy.name,
                     icon: policy.avatarURL ? policy.avatarURL : ReportUtils.getDefaultWorkspaceAvatar(policy.name),
@@ -369,6 +373,13 @@ function WorkspacesListPage() {
             })
             .sort((a, b) => localeCompare(a.title, b.title));
     }, [reimbursementAccount?.errors, policies, isOffline, theme.textLight, policyRooms, session?.email, allConnectionSyncProgresses]);
+
+	const isWorkspaceErrorDismissable = useMemo(() => {
+	    Object.values(policies)
+	    .map((policy): WorkspaceItem => {
+	      
+	    })
+	}, [])
 
     const getHeaderButton = () => (
         <Button
