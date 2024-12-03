@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useRef, useMemo} from 'react';
+//import React from 'react';
 import {View} from 'react-native';
 import Badge from '@components/Badge';
 import Button from '@components/Button';
@@ -48,12 +49,42 @@ function ActionCell({
     const StyleUtils = useStyleUtils();
     const {isOffline} = useNetwork();
 
+    const text = translate(actionTranslationsMap[action]);
+	const isClicked = useRef(false);
+	const lastAction = useRef('');
+	const getLastAction = lastAction.current;
+
+	const handleLoading = () => {
+		if(action === 'submit' || action === 'approve' || action === 'pay') {
+			isClicked.current = true;
+				//!isClicked.current;
+			lastAction.current = text;
+		}
+		goToItem();
+		return;
+
+	}
+
+	const resetLastAction = useMemo(() => {
+		if(isClicked.current) {
+
+			lastAction.current = ''
+			isClicked.current = false;
+		}
+		else if(getLastAction && !isClicked.current) {
+lastAction.current = '' 
+		}
+
+	}, [text])
+
+	const setLastActionWithIsLoading = useMemo(() => {
+	if(isLoading && !isClicked.current) {
+lastAction.current = text;
+		} 	}, [isLoading])
 	React.useEffect(() => {
 		console.log('action....................:', action)
 
 	}, [])
-    const text = translate(actionTranslationsMap[action]);
-
     const shouldUseViewAction = action === CONST.SEARCH.ACTION_TYPES.VIEW || (parentAction === CONST.SEARCH.ACTION_TYPES.PAID && action === CONST.SEARCH.ACTION_TYPES.PAID);
 
     if ((parentAction !== CONST.SEARCH.ACTION_TYPES.PAID && action === CONST.SEARCH.ACTION_TYPES.PAID) || action === CONST.SEARCH.ACTION_TYPES.DONE) {
@@ -98,11 +129,13 @@ function ActionCell({
     return (
         <Button
             text={text}
-            onPress={goToItem}
+	    //onPress={goToItem}
+	    onPress={handleLoading}
             small
             style={[styles.w100]}
             innerStyles={buttonInnerStyles}
-            isLoading={isLoading}
+	    //isLoading={isLoading}
+	    isLoading={isLoading || getLastAction === text}
             success
             isDisabled={isOffline}
         />

@@ -229,6 +229,7 @@ function buildSearchQueryJSON(query: SearchQueryString) {
         result.hash = primaryHash;
         result.recentSearchHash = recentSearchHash;
 
+	    console.log('buildSearchQueryJSON...............: ', result)
         return result;
     } catch (e) {
         console.error(`Error when parsing SearchQuery: "${query}"`, e);
