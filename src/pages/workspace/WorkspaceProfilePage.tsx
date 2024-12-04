@@ -102,6 +102,11 @@ function WorkspaceProfilePage({policyDraft, policy: policyProp, route}: Workspac
 
     useNetwork({onReconnect: fetchPolicyData});
 
+	React.useMemo(() => {
+		//    setActiveWorkspaceID(undefined);
+		//  Navigation.navigateWithSwitchPolicyID({policyID: undefined});
+
+	}, [])
     // We have the same focus effect in the WorkspaceInitialPage, this way we can get the policy data in narrow
     // as well as in the wide layout when looking at policy settings.
     useFocusEffect(
@@ -140,7 +145,8 @@ function WorkspaceProfilePage({policyDraft, policy: policyProp, route}: Workspac
         // If the workspace being deleted is the active workspace, switch to the "All Workspaces" view
         if (activeWorkspaceID === policy?.id) {
             setActiveWorkspaceID(undefined);
-            Navigation.navigateWithSwitchPolicyID({policyID: undefined});
+		//Navigation.navigateWithSwitchPolicyID({policyID: undefined});
+Navigation.navigate(ROUTES.SETTINGS_WORKSPACES)
         }
     }, [policy?.id, policyName, activeWorkspaceID, setActiveWorkspaceID]);
 

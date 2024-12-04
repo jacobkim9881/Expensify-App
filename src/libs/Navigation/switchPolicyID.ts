@@ -33,15 +33,23 @@ function getActionForBottomTabNavigator(action: StackNavigationAction, state: Na
         return;
     }
 
+	console.log('getActionForBottomTabNavigator...........')
+	console.log('action.payload: ', action.payload)
+	console.log('action.payload.params: ', action.payload.params)
+	console.log('action:, ', action)
     let name: string | undefined;
     let params: Record<string, string | undefined>;
     if (isCentralPaneName(action.payload.name)) {
         name = action.payload.name;
         params = action.payload.params as Record<string, string | undefined>;
+
+	console.log('CentralPaneName......params: ', params)
     } else {
         const actionPayloadParams = action.payload.params as ActionPayloadParams;
         name = actionPayloadParams.screen;
         params = actionPayloadParams?.params as Record<string, string | undefined>;
+
+	console.log('No CentralPaneName......params: ', params)
     }
 
     if (name === SCREENS.SEARCH.CENTRAL_PANE) {
@@ -62,6 +70,9 @@ function getActionForBottomTabNavigator(action: StackNavigationAction, state: Na
         };
     }
 
+	console.log('name: ', name)
+	console.log('params: ', params)
+	console.log('target: ', bottomTabNavigatorRoute.state.key)
     // If there is no 'Home' route in the BottomTabNavigator or if we are updating a different navigator, we want to push a new route.
     return {
         type: CONST.NAVIGATION.ACTION_TYPE.PUSH,
