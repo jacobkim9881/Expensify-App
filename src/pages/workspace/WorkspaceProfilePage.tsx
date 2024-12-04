@@ -103,9 +103,9 @@ function WorkspaceProfilePage({policyDraft, policy: policyProp, route}: Workspac
     useNetwork({onReconnect: fetchPolicyData});
 
 	React.useMemo(() => {
-		//    setActiveWorkspaceID(undefined);
+		//setActiveWorkspaceID(undefined);
 		//  Navigation.navigateWithSwitchPolicyID({policyID: undefined});
-
+		// Navigation.goBack(ROUTES.SETTINGS_WORKSPACES, true)
 	}, [])
     // We have the same focus effect in the WorkspaceInitialPage, this way we can get the policy data in narrow
     // as well as in the wide layout when looking at policy settings.
@@ -146,7 +146,8 @@ function WorkspaceProfilePage({policyDraft, policy: policyProp, route}: Workspac
         if (activeWorkspaceID === policy?.id) {
             setActiveWorkspaceID(undefined);
 		//Navigation.navigateWithSwitchPolicyID({policyID: undefined});
-Navigation.navigate(ROUTES.SETTINGS_WORKSPACES)
+		//
+		 Navigation.goBack(ROUTES.SETTINGS_WORKSPACES)
         }
     }, [policy?.id, policyName, activeWorkspaceID, setActiveWorkspaceID]);
 
