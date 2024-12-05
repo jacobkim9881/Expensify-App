@@ -263,7 +263,39 @@ function getAction(data: OnyxTypes.SearchResults['data'], key: string): SearchTr
         return CONST.SEARCH.ACTION_TYPES.PAID;
     }
 
+    const policy = data[`${ONYXKEYS.COLLECTION.POLICY}${report?.policyID}`] ?? {};
+
+    const invoiceReceiverPolicy =
+        ReportUtils.isInvoiceReport(report) && report?.invoiceReceiver?.type === CONST.REPORT.INVOICE_RECEIVER_TYPE.BUSINESS
+            ? data[`${ONYXKEYS.COLLECTION.POLICY}${report?.invoiceReceiver?.policyID}`]
+            : undefined;
+
+    const allReportTransactions = (
+        isReportEntry(key)
+            ? Object.entries(data)
+                  .filter(([itemKey, value]) => isTransactionEntry(itemKey) && (value as SearchTransaction)?.reportID === report.reportID)
+                  .map((item) => item[1])
+            : [transaction]
+    ) as SearchTransaction[];
+    const chatReport = data[`${ONYXKEYS.COLLECTION.REPORT}${report?.chatReportID}`] ?? {};
+    const rara = data[`${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${report?.chatReportID}`] ?? {};
+    const chatReportRNVP = data[`${ONYXKEYS.COLLECTION.REPORT_NAME_VALUE_PAIRS}${report?.chatReportID}`] ?? undefined;
+
+
     if (ReportUtils.isClosedReport(report)) {
+	  
+console.log('IOU.canIOUBePaid: ', IOU.canIOUBePaid(report, chatReport, policy, allReportTransactions, false, chatReportRNVP, invoiceReceiverPolicy) )
+console.log('report: ', report)
+	console.log('!ReportUtils.hasOnlyHeldExpenses(report.reportID, allReportTransactions): ', !ReportUtils.hasOnlyHeldExpenses(report.reportID, allReportTransactions))
+    if (
+        IOU.canIOUBePaid(report, chatReport, policy, allReportTransactions, false, chatReportRNVP, invoiceReceiverPolicy) &&
+        !ReportUtils.hasOnlyHeldExpenses(report.reportID, allReportTransactions)
+    ) {
+	   console.log('getAction........................CONST.SEARCH.ACTION_TYPES.PAY')
+        return CONST.SEARCH.ACTION_TYPES.PAY;
+    }
+
+
         return CONST.SEARCH.ACTION_TYPES.DONE;
     }
 
@@ -271,7 +303,7 @@ function getAction(data: OnyxTypes.SearchResults['data'], key: string): SearchTr
     if (!ReportUtils.isMoneyRequestReport(report) || (isTransaction && !data[key].isFromOneTransactionReport)) {
         return CONST.SEARCH.ACTION_TYPES.VIEW;
     }
-
+/*
     const policy = data[`${ONYXKEYS.COLLECTION.POLICY}${report?.policyID}`] ?? {};
 
     const invoiceReceiverPolicy =
@@ -291,7 +323,9 @@ function getAction(data: OnyxTypes.SearchResults['data'], key: string): SearchTr
     const rara = data[`${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${report?.chatReportID}`] ?? {};
     const chatReportRNVP = data[`${ONYXKEYS.COLLECTION.REPORT_NAME_VALUE_PAIRS}${report?.chatReportID}`] ?? undefined;
 
+*/
 	console.log('getAction........................REPORT_ACTIONS: ', rara)
+	
     if (
         IOU.canIOUBePaid(report, chatReport, policy, allReportTransactions, false, chatReportRNVP, invoiceReceiverPolicy) &&
         !ReportUtils.hasOnlyHeldExpenses(report.reportID, allReportTransactions)
