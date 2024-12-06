@@ -314,6 +314,7 @@ function resetToHome() {
  * Update route params for the specified route.
  */
 function setParams(params: Record<string, unknown>, routeKey = '') {
+console.log('setParams to undefined')	
     navigationRef.current?.dispatch({
         ...CommonActions.setParams(params),
         source: routeKey,
@@ -433,7 +434,20 @@ function removeScreenFromNavigationState(screen: Screen) {
     });
 }
 
+function test1(params: Record<string, unknown>, routeKey = '') {
+	const rootState = navigationRef.current.getRootState() as NavigationState<RootStackParamList>;
+	const bottomTabNavigatorRoute = rootState.routes.at(0);
+	console.log('rootState: ', rootState)
+	console.log('bottomTabNavigatorRoute: ', bottomTabNavigatorRoute)
+console.log('setParams to undefined')	
+    navigationRef.current?.dispatch({
+        ...CommonActions.setParams(params),
+        //source: routeKey,
+        source: bottomTabNavigatorRoute.state.key,
+    });
+}
 export default {
+	test1,
     setShouldPopAllStateOnUP,
     navigate,
     setParams,

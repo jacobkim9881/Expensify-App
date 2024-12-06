@@ -103,6 +103,8 @@ function WorkspaceProfilePage({policyDraft, policy: policyProp, route}: Workspac
     useNetwork({onReconnect: fetchPolicyData});
 
 	React.useMemo(() => {
+
+		//Navigation.test1({policyID: undefined});
 		//setActiveWorkspaceID(undefined);
 		//  Navigation.navigateWithSwitchPolicyID({policyID: undefined});
 		// Navigation.goBack(ROUTES.SETTINGS_WORKSPACES, true)
@@ -147,7 +149,10 @@ function WorkspaceProfilePage({policyDraft, policy: policyProp, route}: Workspac
             setActiveWorkspaceID(undefined);
 		//Navigation.navigateWithSwitchPolicyID({policyID: undefined});
 		//
-		 Navigation.goBack(ROUTES.SETTINGS_WORKSPACES)
+		// Navigation.goBack(ROUTES.SETTINGS_WORKSPACES)
+		//Navigation.setParams({policyID: undefined});
+		Navigation.test1({policyID: undefined});
+		Navigation.closeRHPFlow();
         }
     }, [policy?.id, policyName, activeWorkspaceID, setActiveWorkspaceID]);
 
