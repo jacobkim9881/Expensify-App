@@ -1,15 +1,17 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {View} from 'react-native';
-import Onyx, {withOnyx} from 'react-native-onyx';
-import type {OnyxEntry} from 'react-native-onyx';
+import {useOnyx} from 'react-native-onyx';
 import type {SvgProps} from 'react-native-svg';
 import ClientSideLoggingToolMenu from '@components/ClientSideLoggingToolMenu';
 import ConfirmModal from '@components/ConfirmModal';
+import FullScreenLoadingIndicator from '@components/FullscreenLoadingIndicator';
 import HeaderWithBackButton from '@components/HeaderWithBackButton';
 import * as Expensicons from '@components/Icon/Expensicons';
 import * as Illustrations from '@components/Icon/Illustrations';
+import ImportOnyxState from '@components/ImportOnyxState';
 import LottieAnimations from '@components/LottieAnimations';
 import MenuItemList from '@components/MenuItemList';
+import {useOptionsList} from '@components/OptionListContextProvider';
 import ScreenWrapper from '@components/ScreenWrapper';
 import ScrollView from '@components/ScrollView';
 import Section from '@components/Section';
@@ -20,12 +22,13 @@ import Text from '@components/Text';
 import TextLink from '@components/TextLink';
 import useEnvironment from '@hooks/useEnvironment';
 import useLocalize from '@hooks/useLocalize';
+import useResponsiveLayout from '@hooks/useResponsiveLayout';
 import useThemeStyles from '@hooks/useThemeStyles';
 import useWaitForNavigation from '@hooks/useWaitForNavigation';
-import useWindowDimensions from '@hooks/useWindowDimensions';
+import {setShouldMaskOnyxState} from '@libs/actions/MaskOnyx';
 import ExportOnyxState from '@libs/ExportOnyxState';
 import Navigation from '@libs/Navigation/Navigation';
-import * as App from '@userActions/App';
+import {clearOnyxAndResetApp} from '@userActions/App';
 import * as Report from '@userActions/Report';
 import type {TranslationPaths} from '@src/languages/types';
 import ONYXKEYS from '@src/ONYXKEYS';
@@ -38,29 +41,22 @@ type BaseMenuItem = {
     action: () => void | Promise<void>;
 };
 
-type TroubleshootPageOnyxProps = {
-    shouldStoreLogs: OnyxEntry<boolean>;
-};
-
-type TroubleshootPageProps = TroubleshootPageOnyxProps;
-
-function TroubleshootPage({shouldStoreLogs}: TroubleshootPageProps) {
+function TroubleshootPage() {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
     const {isProduction} = useEnvironment();
     const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
     const waitForNavigate = useWaitForNavigation();
-    const {isSmallScreenWidth} = useWindowDimensions();
+    const {shouldUseNarrowLayout} = useResponsiveLayout();
     const illustrationStyle = getLightbulbIllustrationStyle();
-    const [shouldMaskOnyxState, setShouldMaskOnyxState] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [shouldStoreLogs] = useOnyx(ONYXKEYS.SHOULD_STORE_LOGS);
+    const [shouldMaskOnyxState = true] = useOnyx(ONYXKEYS.SHOULD_MASK_ONYX_STATE);
+    const {resetOptions} = useOptionsList({shouldInitialize: false});
 
     const exportOnyxState = useCallback(() => {
         ExportOnyxState.readFromOnyxDatabase().then((value: Record<string, unknown>) => {
-            let dataToShare = value;
-            if (shouldMaskOnyxState) {
-                dataToShare = ExportOnyxState.maskFragileData(value);
-            }
-
+            const dataToShare = ExportOnyxState.maskOnyxState(value, shouldMaskOnyxState);
             ExportOnyxState.shareAsFile(JSON.stringify(dataToShare));
         });
     }, [shouldMaskOnyxState]);
@@ -68,7 +64,7 @@ function TroubleshootPage({shouldStoreLogs}: TroubleshootPageProps) {
     const menuItems = useMemo(() => {
         const debugConsoleItem: BaseMenuItem = {
             translationKey: 'initialSettingsPage.troubleshoot.viewConsole',
-            icon: Expensicons.Gear,
+            icon: Expensicons.Bug,
             action: waitForNavigate(() => Navigation.navigate(ROUTES.SETTINGS_CONSOLE.getRoute(ROUTES.SETTINGS_TROUBLESHOOT))),
         };
 
@@ -108,12 +104,14 @@ function TroubleshootPage({shouldStoreLogs}: TroubleshootPageProps) {
         >
             <HeaderWithBackButton
                 title={translate('initialSettingsPage.aboutPage.troubleshoot')}
-                shouldShowBackButton={isSmallScreenWidth}
+                shouldShowBackButton={shouldUseNarrowLayout}
+                shouldDisplaySearchRouter
                 onBackButtonPress={() => Navigation.goBack(ROUTES.SETTINGS)}
                 icon={Illustrations.Lightbulb}
             />
+            {isLoading && <FullScreenLoadingIndicator />}
             <ScrollView contentContainerStyle={styles.pt3}>
-                <View style={[styles.flex1, isSmallScreenWidth ? styles.workspaceSectionMobile : styles.workspaceSection]}>
+                <View style={[styles.flex1, shouldUseNarrowLayout ? styles.workspaceSectionMobile : styles.workspaceSection]}>
                     <Section
                         title={translate('initialSettingsPage.aboutPage.troubleshoot')}
                         subtitle={translate('initialSettingsPage.troubleshoot.description')}
@@ -146,6 +144,10 @@ function TroubleshootPage({shouldStoreLogs}: TroubleshootPageProps) {
                                     />
                                 </TestToolRow>
                             </View>
+                            <ImportOnyxState
+                                setIsLoading={setIsLoading}
+                                isLoading={isLoading}
+                            />
                             <MenuItemList
                                 menuItems={menuItems}
                                 shouldUseSingleExecution
@@ -160,9 +162,8 @@ function TroubleshootPage({shouldStoreLogs}: TroubleshootPageProps) {
                                 isVisible={isConfirmationModalVisible}
                                 onConfirm={() => {
                                     setIsConfirmationModalVisible(false);
-                                    Onyx.clear(App.KEYS_TO_PRESERVE).then(() => {
-                                        App.openApp();
-                                    });
+                                    resetOptions();
+                                    clearOnyxAndResetApp();
                                 }}
                                 onCancel={() => setIsConfirmationModalVisible(false)}
                                 prompt={translate('initialSettingsPage.troubleshoot.confirmResetDescription')}
@@ -179,8 +180,4 @@ function TroubleshootPage({shouldStoreLogs}: TroubleshootPageProps) {
 
 TroubleshootPage.displayName = 'TroubleshootPage';
 
-export default withOnyx<TroubleshootPageProps, TroubleshootPageOnyxProps>({
-    shouldStoreLogs: {
-        key: ONYXKEYS.SHOULD_STORE_LOGS,
-    },
-})(TroubleshootPage);
+export default TroubleshootPage;

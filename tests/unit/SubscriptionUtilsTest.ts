@@ -11,7 +11,7 @@ const billingGraceEndPeriod: BillingGraceEndPeriod = {
     value: 0,
 };
 
-const GRACE_PERIOD_DATE = new Date().getTime() + 1000;
+const GRACE_PERIOD_DATE = new Date().getTime() + 1000 * 3600;
 const GRACE_PERIOD_DATE_OVERDUE = new Date().getTime() - 1000;
 
 const AMOUNT_OWED = 100;
@@ -37,6 +37,9 @@ const FUND_LIST: FundList = {
         accountData: {
             cardYear: new Date().getFullYear(),
             cardMonth: new Date().getMonth() + 1,
+            additionalData: {
+                isBillingCard: true,
+            },
         },
     },
 };
@@ -350,6 +353,7 @@ describe('SubscriptionUtils', () => {
 
             expect(SubscriptionUtils.getSubscriptionStatus()).toEqual({
                 status: PAYMENT_STATUS.POLICY_OWNER_WITH_AMOUNT_OWED_OVERDUE,
+                isError: true,
             });
         });
 
@@ -361,6 +365,7 @@ describe('SubscriptionUtils', () => {
 
             expect(SubscriptionUtils.getSubscriptionStatus()).toEqual({
                 status: PAYMENT_STATUS.OWNER_OF_POLICY_UNDER_INVOICING_OVERDUE,
+                isError: true,
             });
         });
 
@@ -371,6 +376,7 @@ describe('SubscriptionUtils', () => {
 
             expect(SubscriptionUtils.getSubscriptionStatus()).toEqual({
                 status: PAYMENT_STATUS.OWNER_OF_POLICY_UNDER_INVOICING,
+                isError: true,
             });
         });
 
@@ -382,6 +388,7 @@ describe('SubscriptionUtils', () => {
 
             expect(SubscriptionUtils.getSubscriptionStatus()).toEqual({
                 status: PAYMENT_STATUS.BILLING_DISPUTE_PENDING,
+                isError: true,
             });
         });
 
@@ -394,6 +401,7 @@ describe('SubscriptionUtils', () => {
 
             expect(SubscriptionUtils.getSubscriptionStatus()).toEqual({
                 status: PAYMENT_STATUS.CARD_AUTHENTICATION_REQUIRED,
+                isError: true,
             });
         });
 
@@ -406,6 +414,7 @@ describe('SubscriptionUtils', () => {
 
             expect(SubscriptionUtils.getSubscriptionStatus()).toEqual({
                 status: PAYMENT_STATUS.INSUFFICIENT_FUNDS,
+                isError: true,
             });
         });
 
@@ -416,6 +425,7 @@ describe('SubscriptionUtils', () => {
 
             expect(SubscriptionUtils.getSubscriptionStatus()).toEqual({
                 status: PAYMENT_STATUS.CARD_EXPIRED,
+                isError: true,
             });
         });
 

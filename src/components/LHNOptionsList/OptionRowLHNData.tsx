@@ -21,12 +21,14 @@ function OptionRowLHNData({
     personalDetails = {},
     preferredLocale = CONST.LOCALES.DEFAULT,
     policy,
+    invoiceReceiverPolicy,
     receiptTransactions,
     parentReportAction,
+    iouReportReportActions,
     transaction,
     lastReportActionTransaction,
     transactionViolations,
-    canUseViolations,
+    lastMessageTextFromReport,
     ...propsToForward
 }: OptionRowLHNDataProps) {
     const reportID = propsToForward.reportID;
@@ -35,7 +37,11 @@ function OptionRowLHNData({
 
     const optionItemRef = useRef<OptionData>();
 
-    const shouldDisplayViolations = canUseViolations && ReportUtils.shouldDisplayTransactionThreadViolations(fullReport, transactionViolations, parentReportAction);
+    const shouldDisplayViolations = ReportUtils.shouldDisplayViolationsRBRInLHN(fullReport, transactionViolations);
+    const isSettled = ReportUtils.isSettled(fullReport);
+    const shouldDisplayReportViolations = !isSettled && ReportUtils.isReportOwner(fullReport) && ReportUtils.hasReportViolations(reportID);
+    // We only want to show RBR for expense reports with transaction violations not for transaction threads reports.
+    const doesExpenseReportHasViolations = ReportUtils.isExpenseReport(fullReport) && !isSettled && ReportUtils.hasViolations(reportID, transactionViolations, true);
 
     const optionItem = useMemo(() => {
         // Note: ideally we'd have this as a dependent selector in onyx!
@@ -46,13 +52,18 @@ function OptionRowLHNData({
             preferredLocale: preferredLocale ?? CONST.LOCALES.DEFAULT,
             policy,
             parentReportAction,
-            hasViolations: !!shouldDisplayViolations,
+            hasViolations: !!shouldDisplayViolations || shouldDisplayReportViolations || doesExpenseReportHasViolations,
+            lastMessageTextFromReport,
             transactionViolations,
+            invoiceReceiverPolicy,
         });
+        // eslint-disable-next-line react-compiler/react-compiler
         if (deepEqual(item, optionItemRef.current)) {
+            // eslint-disable-next-line react-compiler/react-compiler
             return optionItemRef.current;
         }
 
+        // eslint-disable-next-line react-compiler/react-compiler
         optionItemRef.current = item;
 
         return item;
@@ -67,10 +78,13 @@ function OptionRowLHNData({
         preferredLocale,
         policy,
         parentReportAction,
+        iouReportReportActions,
         transaction,
         transactionViolations,
-        canUseViolations,
         receiptTransactions,
+        invoiceReceiverPolicy,
+        shouldDisplayReportViolations,
+        lastMessageTextFromReport,
     ]);
 
     return (

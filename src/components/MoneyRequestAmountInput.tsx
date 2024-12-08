@@ -1,6 +1,6 @@
 import type {ForwardedRef} from 'react';
 import React, {useCallback, useEffect, useImperativeHandle, useRef, useState} from 'react';
-import type {NativeSyntheticEvent, StyleProp, TextInputSelectionChangeEventData, TextStyle, ViewStyle} from 'react-native';
+import type {NativeSyntheticEvent, StyleProp, TextStyle, ViewStyle} from 'react-native';
 import useLocalize from '@hooks/useLocalize';
 import {useMouseContext} from '@hooks/useMouseContext';
 import * as Browser from '@libs/Browser';
@@ -88,6 +88,9 @@ type MoneyRequestAmountInputProps = {
      * Autogrow input container length based on the entered text.
      */
     autoGrow?: boolean;
+
+    /** The width of inner content */
+    contentWidth?: number;
 };
 
 type Selection = {
@@ -123,6 +126,7 @@ function MoneyRequestAmountInput(
         hideFocusedState = true,
         shouldKeepUserInput = false,
         autoGrow = true,
+        contentWidth,
         ...props
     }: MoneyRequestAmountInputProps,
     forwardedRef: ForwardedRef<BaseTextInputRef>,
@@ -130,6 +134,8 @@ function MoneyRequestAmountInput(
     const {toLocaleDigit, numberFormat} = useLocalize();
 
     const textInput = useRef<BaseTextInputRef | null>(null);
+
+    const amountRef = useRef<string | undefined>(undefined);
 
     const decimals = CurrencyUtils.getCurrencyDecimals(currency);
     const selectedAmountAsString = amount ? onFormatAmount(amount, currency) : '';
@@ -168,8 +174,9 @@ function MoneyRequestAmountInput(
 
             willSelectionBeUpdatedManually.current = true;
             let hasSelectionBeenSet = false;
+            const strippedAmount = MoneyRequestUtils.stripCommaFromAmount(finalAmount);
+            amountRef.current = strippedAmount;
             setCurrentAmount((prevAmount) => {
-                const strippedAmount = MoneyRequestUtils.stripCommaFromAmount(finalAmount);
                 const isForwardDelete = prevAmount.length > strippedAmount.length && forwardDeletePressedRef.current;
                 if (!hasSelectionBeenSet) {
                     hasSelectionBeenSet = true;
@@ -300,7 +307,7 @@ function MoneyRequestAmountInput(
             }}
             selectedCurrencyCode={currency}
             selection={selection}
-            onSelectionChange={(e: NativeSyntheticEvent<TextInputSelectionChangeEventData>) => {
+            onSelectionChange={(selectionStart, selectionEnd) => {
                 if (shouldIgnoreSelectionWhenUpdatedManually && willSelectionBeUpdatedManually.current) {
                     willSelectionBeUpdatedManually.current = false;
                     return;
@@ -308,9 +315,12 @@ function MoneyRequestAmountInput(
                 if (!shouldUpdateSelection) {
                     return;
                 }
-                const maxSelection = formattedAmount.length;
-                const start = Math.min(e.nativeEvent.selection.start, maxSelection);
-                const end = Math.min(e.nativeEvent.selection.end, maxSelection);
+
+                // When the amount is updated in setNewAmount on iOS, in onSelectionChange formattedAmount stores the value before the update. Using amountRef allows us to read the updated value
+                const maxSelection = amountRef.current?.length ?? formattedAmount.length;
+                amountRef.current = undefined;
+                const start = Math.min(selectionStart, maxSelection);
+                const end = Math.min(selectionEnd, maxSelection);
                 setSelection({start, end});
             }}
             onKeyPress={textInputKeyPress}
@@ -326,6 +336,7 @@ function MoneyRequestAmountInput(
             hideFocusedState={hideFocusedState}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
+            contentWidth={contentWidth}
         />
     );
 }

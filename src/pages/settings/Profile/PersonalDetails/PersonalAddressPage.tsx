@@ -1,9 +1,10 @@
-import type {StackScreenProps} from '@react-navigation/stack';
 import React, {useMemo} from 'react';
 import type {OnyxEntry} from 'react-native-onyx';
 import {withOnyx} from 'react-native-onyx';
 import useLocalize from '@hooks/useLocalize';
+import type {PlatformStackScreenProps} from '@libs/Navigation/PlatformStackNavigation/types';
 import type {SettingsNavigatorParamList} from '@libs/Navigation/types';
+import * as PersonalDetailsUtils from '@libs/PersonalDetailsUtils';
 import AddressPage from '@pages/AddressPage';
 import * as PersonalDetails from '@userActions/PersonalDetails';
 import type {FormOnyxValues} from '@src/components/Form/types';
@@ -18,7 +19,7 @@ type PersonalAddressPageOnyxProps = {
     isLoadingApp: OnyxEntry<boolean>;
 };
 
-type PersonalAddressPageProps = StackScreenProps<SettingsNavigatorParamList, typeof SCREENS.SETTINGS.PROFILE.ADDRESS> & PersonalAddressPageOnyxProps;
+type PersonalAddressPageProps = PlatformStackScreenProps<SettingsNavigatorParamList, typeof SCREENS.SETTINGS.PROFILE.ADDRESS> & PersonalAddressPageOnyxProps;
 
 /**
  * Submit form to update user's first and last legal name
@@ -37,7 +38,7 @@ function updateAddress(values: FormOnyxValues<typeof ONYXKEYS.FORMS.HOME_ADDRESS
 
 function PersonalAddressPage({privatePersonalDetails, isLoadingApp = true}: PersonalAddressPageProps) {
     const {translate} = useLocalize();
-    const address = useMemo(() => privatePersonalDetails?.address, [privatePersonalDetails]);
+    const address = useMemo(() => PersonalDetailsUtils.getCurrentAddress(privatePersonalDetails), [privatePersonalDetails]);
 
     return (
         <AddressPage

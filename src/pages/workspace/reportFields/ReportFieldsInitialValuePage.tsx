@@ -1,17 +1,20 @@
-import type {StackScreenProps} from '@react-navigation/stack';
 import React, {useCallback, useState} from 'react';
+import {View} from 'react-native';
 import FormProvider from '@components/Form/FormProvider';
 import InputWrapper from '@components/Form/InputWrapper';
 import type {FormInputErrors, FormOnyxValues} from '@components/Form/types';
 import HeaderWithBackButton from '@components/HeaderWithBackButton';
 import ScreenWrapper from '@components/ScreenWrapper';
+import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import useAutoFocusInput from '@hooks/useAutoFocusInput';
 import useLocalize from '@hooks/useLocalize';
 import useThemeStyles from '@hooks/useThemeStyles';
 import * as ReportField from '@libs/actions/Policy/ReportField';
 import Navigation from '@libs/Navigation/Navigation';
+import type {PlatformStackScreenProps} from '@libs/Navigation/PlatformStackNavigation/types';
 import type {SettingsNavigatorParamList} from '@libs/Navigation/types';
+import * as PolicyUtils from '@libs/PolicyUtils';
 import * as ReportUtils from '@libs/ReportUtils';
 import * as WorkspaceReportFieldUtils from '@libs/WorkspaceReportFieldUtils';
 import NotFoundPage from '@pages/ErrorPage/NotFoundPage';
@@ -26,7 +29,8 @@ import type SCREENS from '@src/SCREENS';
 import INPUT_IDS from '@src/types/form/WorkspaceReportFieldForm';
 import ReportFieldsInitialListValuePicker from './InitialListValueSelector/ReportFieldsInitialListValuePicker';
 
-type ReportFieldsInitialValuePageProps = WithPolicyAndFullscreenLoadingProps & StackScreenProps<SettingsNavigatorParamList, typeof SCREENS.WORKSPACE.REPORT_FIELDS_EDIT_INITIAL_VALUE>;
+type ReportFieldsInitialValuePageProps = WithPolicyAndFullscreenLoadingProps &
+    PlatformStackScreenProps<SettingsNavigatorParamList, typeof SCREENS.WORKSPACE.REPORT_FIELDS_EDIT_INITIAL_VALUE>;
 function ReportFieldsInitialValuePage({
     policy,
     route: {
@@ -37,21 +41,24 @@ function ReportFieldsInitialValuePage({
     const {translate} = useLocalize();
     const {inputCallbackRef} = useAutoFocusInput();
 
+    const hasAccountingConnections = PolicyUtils.hasAccountingConnections(policy);
     const reportField = policy?.fieldList?.[ReportUtils.getReportFieldKey(reportFieldID)] ?? null;
     const availableListValuesLength = (reportField?.disabledOptions ?? []).filter((disabledListValue) => !disabledListValue).length;
-
-    const [initialValue, setInitialValue] = useState(WorkspaceReportFieldUtils.getReportFieldInitialValue(reportField));
+    const currentInitialValue = WorkspaceReportFieldUtils.getReportFieldInitialValue(reportField);
+    const [initialValue, setInitialValue] = useState(currentInitialValue);
 
     const submitForm = useCallback(
         (values: FormOnyxValues<typeof ONYXKEYS.FORMS.WORKSPACE_REPORT_FIELDS_FORM>) => {
-            ReportField.updateReportFieldInitialValue(policyID, reportFieldID, values.initialValue);
+            if (currentInitialValue !== values.initialValue) {
+                ReportField.updateReportFieldInitialValue(policyID, reportFieldID, values.initialValue);
+            }
             Navigation.goBack();
         },
-        [policyID, reportFieldID],
+        [policyID, reportFieldID, currentInitialValue],
     );
 
     const submitListValueUpdate = (value: string) => {
-        ReportField.updateReportFieldInitialValue(policyID, reportFieldID, value);
+        ReportField.updateReportFieldInitialValue(policyID, reportFieldID, currentInitialValue === value ? '' : value);
         Navigation.goBack();
     };
 
@@ -82,7 +89,7 @@ function ReportFieldsInitialValuePage({
         [availableListValuesLength, policy?.fieldList, translate],
     );
 
-    if (!reportField) {
+    if (!reportField || hasAccountingConnections) {
         return <NotFoundPage />;
     }
 
@@ -96,15 +103,21 @@ function ReportFieldsInitialValuePage({
             featureName={CONST.POLICY.MORE_FEATURES.ARE_REPORT_FIELDS_ENABLED}
         >
             <ScreenWrapper
-                includeSafeAreaPaddingBottom={false}
+                includeSafeAreaPaddingBottom
                 style={styles.defaultModalContainer}
                 testID={ReportFieldsInitialValuePage.displayName}
                 shouldEnableMaxHeight
             >
                 <HeaderWithBackButton
-                    title={reportField.name}
+                    title={translate('common.initialValue')}
                     onBackButtonPress={Navigation.goBack}
                 />
+                {isListFieldType && (
+                    <View style={[styles.ph5, styles.pb4]}>
+                        <Text style={[styles.sidebarLinkText, styles.optionAlternateText]}>{translate('workspace.reportFields.listValuesInputSubtitle')}</Text>
+                    </View>
+                )}
+
                 {isTextFieldType && (
                     <FormProvider
                         formID={ONYXKEYS.FORMS.WORKSPACE_REPORT_FIELDS_FORM}

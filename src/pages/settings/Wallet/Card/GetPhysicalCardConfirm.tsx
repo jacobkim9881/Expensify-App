@@ -1,4 +1,3 @@
-import type {StackScreenProps} from '@react-navigation/stack';
 import React from 'react';
 import {withOnyx} from 'react-native-onyx';
 import type {OnyxEntry} from 'react-native-onyx';
@@ -8,6 +7,7 @@ import Text from '@components/Text';
 import useLocalize from '@hooks/useLocalize';
 import useThemeStyles from '@hooks/useThemeStyles';
 import Navigation from '@libs/Navigation/Navigation';
+import type {PlatformStackScreenProps} from '@libs/Navigation/PlatformStackNavigation/types';
 import * as PersonalDetailsUtils from '@libs/PersonalDetailsUtils';
 import type {SettingsNavigatorParamList} from '@navigation/types';
 import CONST from '@src/CONST';
@@ -34,7 +34,7 @@ type GetPhysicalCardConfirmOnyxProps = {
     draftValues: OnyxEntry<GetPhysicalCardForm>;
 };
 
-type GetPhysicalCardConfirmProps = GetPhysicalCardConfirmOnyxProps & StackScreenProps<SettingsNavigatorParamList, typeof SCREENS.SETTINGS.WALLET.CARD_GET_PHYSICAL.CONFIRM>;
+type GetPhysicalCardConfirmProps = GetPhysicalCardConfirmOnyxProps & PlatformStackScreenProps<SettingsNavigatorParamList, typeof SCREENS.SETTINGS.WALLET.CARD_GET_PHYSICAL.CONFIRM>;
 
 function GetPhysicalCardConfirm({
     draftValues,
@@ -77,13 +77,15 @@ function GetPhysicalCardConfirm({
                 onPress={() => goToGetPhysicalCardAddress(domain)}
                 shouldShowRightIcon
                 title={PersonalDetailsUtils.getFormattedAddress({
-                    address: {
-                        street: PersonalDetailsUtils.getFormattedStreet(addressLine1, addressLine2),
-                        city,
-                        state,
-                        zip: zipPostCode,
-                        country,
-                    },
+                    addresses: [
+                        {
+                            street: PersonalDetailsUtils.getFormattedStreet(addressLine1, addressLine2),
+                            city,
+                            state,
+                            zip: zipPostCode,
+                            country,
+                        },
+                    ],
                 })}
             />
         </BaseGetPhysicalCard>
