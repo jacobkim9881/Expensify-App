@@ -23,6 +23,7 @@ Onyx.connect({
     key: ONYXKEYS.PERSONAL_DETAILS_LIST,
     callback: (val) => {
         personalDetails = Object.values(val ?? {});
+	    console.log('allPersonalDetails at onyx...........>:' , val)
         allPersonalDetails = val;
         emailToPersonalDetailsCache = personalDetails.reduce((acc: Record<string, PersonalDetails>, detail) => {
             if (detail?.login) {
@@ -86,9 +87,12 @@ function getDisplayNameOrDefault(passedPersonalDetails?: Partial<PersonalDetails
  * @returns - Array of personal detail objects
  */
 function getPersonalDetailsByIDs(accountIDs: number[], currentUserAccountID: number, shouldChangeUserDisplayName = false): PersonalDetails[] {
+	console.log('allPersonalDetails: ..........', allPersonalDetails)
     const result: PersonalDetails[] = accountIDs
         .filter((accountID) => !!allPersonalDetails?.[accountID])
         .map((accountID) => {
+
+	console.log('accountID: ', accountID)
             const detail = (allPersonalDetails?.[accountID] ?? {}) as PersonalDetails;
 
             if (shouldChangeUserDisplayName && currentUserAccountID === detail.accountID) {

@@ -139,6 +139,10 @@ function ReportScreen({route, currentReportID = '', navigation}: ReportScreenPro
     const isLoadingReportOnyx = isLoadingOnyxValue(reportResult);
     const permissions = useDeepCompareRef(reportOnyx?.permissions);
 
+
+    useEffect(() => {
+console.log('src/pages/home/ReportScreen.tsx......')
+    }, [])
     useEffect(() => {
         // Don't update if there is a reportID in the params already
         if (route.params.reportID) {

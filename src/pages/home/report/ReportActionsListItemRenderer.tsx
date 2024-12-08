@@ -1,6 +1,8 @@
 import React, {memo, useMemo} from 'react';
 import type {OnyxEntry} from 'react-native-onyx';
 import * as ReportActionsUtils from '@libs/ReportActionsUtils';
+import * as PersonalDetailsUtils from '@libs/PersonalDetailsUtils';
+import * as Localize from '@libs/Localize';
 import * as ReportUtils from '@libs/ReportUtils';
 import CONST from '@src/CONST';
 import type {Report, ReportAction} from '@src/types/onyx';
@@ -145,6 +147,23 @@ function ReportActionsListItemRenderer({
         ],
     );
 
+    React.useEffect(() => {
+console.log('src/pages/home/temRenderer..tsx......')
+console.log('action:  ', action)
+const originalMessage = ReportActionsUtils.getOriginalMessage(reportAction);
+const targetAccountIDs: number[] = originalMessage?.targetAccountIDs ?? [];
+const personalDetails = PersonalDetailsUtils.getPersonalDetailsByIDs(targetAccountIDs, 0);
+console.log('targetAccountIDs......: ', targetAccountIDs)
+console.log('personalDetails.......: ', personalDetails)
+const mentionElements = targetAccountIDs.map((accountID) => {
+const personalDetail = personalDetails.find((personal) => personal.accountID === accountID)
+const handleText = PersonalDetailsUtils.getEffectiveDisplayName(personalDetail) ?? Localize.translateLocal('common.hidden');
+
+console.log('handleText......: ', handleText)
+});
+console.log('personalDetails......: ', personalDetails)
+console.log('ReportActionsUtils.getReportActionMessageFragments(action); ', ReportActionsUtils.getMemberChangeMessageElements(action))
+    }, [])
     return shouldDisplayParentAction ? (
         <ReportActionItemParentAction
             shouldHideThreadDividerLine={shouldDisplayParentAction && shouldHideThreadDividerLine}

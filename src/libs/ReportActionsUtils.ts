@@ -1144,6 +1144,7 @@ function isNotifiableReportAction(reportAction: OnyxEntry<ReportAction>): boolea
     return actions.includes(reportAction.actionName);
 }
 
+//function getMemberChangeMessageElements(reportAction: OnyxEntry<ReportAction>): MemberChangeMessageElement[] {
 function getMemberChangeMessageElements(reportAction: OnyxEntry<ReportAction>): readonly MemberChangeMessageElement[] {
     const isInviteAction = isInviteMemberAction(reportAction);
     const isLeaveAction = isLeavePolicyAction(reportAction);
@@ -1170,6 +1171,9 @@ function getMemberChangeMessageElements(reportAction: OnyxEntry<ReportAction>): 
         const personalDetail = personalDetails.find((personal) => personal.accountID === accountID);
         const handleText = PersonalDetailsUtils.getEffectiveDisplayName(personalDetail) ?? Localize.translateLocal('common.hidden');
 
+	    console.log('personalDetails......: ', personalDetails)
+	    console.log('handleText......: ', handleText)
+	    console.log('personalDetail......: ', personalDetail)
         return {
             kind: 'userMention',
             content: `@${handleText}`,
@@ -1347,6 +1351,7 @@ function getMessageOfOldDotReportAction(oldDotAction: PartialReportAction | OldD
 }
 
 function getMemberChangeMessageFragment(reportAction: OnyxEntry<ReportAction>): Message {
+    //const messageElements: MemberChangeMessageElement[] = getMemberChangeMessageElements(reportAction);
     const messageElements: readonly MemberChangeMessageElement[] = getMemberChangeMessageElements(reportAction);
     const html = messageElements
         .map((messageElement) => {
@@ -1960,6 +1965,7 @@ export {
     getActionableJoinRequestPendingReportAction,
     getReportActionsLength,
     wasActionCreatedWhileOffline,
+	getMemberChangeMessageElements,
 };
 
 export type {LastVisibleMessage};
