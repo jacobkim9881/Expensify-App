@@ -1,5 +1,5 @@
 import {Str} from 'expensify-common';
-import React from 'react';
+import React, {useMemo} from 'react';
 import type {StyleProp, ViewStyle} from 'react-native';
 import {View} from 'react-native';
 import Checkbox from '@components/Checkbox';
@@ -268,6 +268,8 @@ function TransactionListItemRow({
 	React.useEffect(() => {
 console.log('TransactionListItemRow..................... item: ', item)
 	}, [])
+    const isOnHold = useMemo(() => TransactionUtils.isOnHold(item), [item]);
+
     if (!isLargeScreenWidth) {
         return (
             <View style={containerStyle}>
@@ -281,6 +283,7 @@ console.log('TransactionListItemRow..................... item: ', item)
                         onButtonPress={onButtonPress}
                         canSelectMultiple={canSelectMultiple}
                         action={item.action}
+                        shouldUseSuccessStyle={!isOnHold}
                         isSelected={item.isSelected}
                         isDisabled={item.isDisabled}
                         isDisabledCheckbox={item.isDisabledCheckbox}
@@ -447,6 +450,7 @@ console.log('TransactionListItemRow..................... item: ', item)
                 <View style={[StyleUtils.getSearchTableColumnStyles(CONST.SEARCH.TABLE_COLUMNS.ACTION)]}>
                     <ActionCell
                         action={item.action}
+                        shouldUseSuccessStyle={!isOnHold}
                         isSelected={isButtonSelected}
                         isChildListItem={isChildListItem}
                         parentAction={parentAction}
