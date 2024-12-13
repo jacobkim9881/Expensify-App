@@ -104,10 +104,13 @@ function getOrderedReportIDs(
     const isInDefaultMode = !isInFocusMode;
     const allReportsDictValues = Object.values(allReports ?? {});
 
+	console.log('all reports..........................: ', allReports)
     // Filter out all the reports that shouldn't be displayed
     let reportsToDisplay: Array<Report & {hasErrorsOtherThanFailedReceipt?: boolean}> = [];
     allReportsDictValues.forEach((report) => {
         if (!report) {
+
+		console.log(' (!report) {    : .........', report.reportID )
             return;
         }
         if ((Object.values(CONST.REPORT.UNSUPPORTED_TYPE) as string[]).includes(report?.type ?? '')) {
@@ -123,6 +126,8 @@ function getOrderedReportIDs(
             return;
         }
         if (hasErrorsOtherThanFailedReceipt && !isReportInAccessible) {
+
+		console.log('(hasErrorsOtherThanFailedReceipt && !isReportInAccessible) {: .........', report.reportID )
             reportsToDisplay.push({
                 ...report,
                 hasErrorsOtherThanFailedReceipt: true,
@@ -139,6 +144,7 @@ function getOrderedReportIDs(
             report.isPinned ||
             ReportUtils.requiresAttentionFromCurrentUser(report, parentReportAction);
         if (isHidden && !shouldOverrideHidden) {
+		console.log('(isHidden && !shouldOverrideHidden) : .........', report.reportID )
             return;
         }
 
@@ -154,6 +160,8 @@ function getOrderedReportIDs(
                 includeSelfDM: true,
             })
         ) {
+
+		console.log('ReportUtils.shouldReportBeInOptionList({: .........', report.reportID )
             reportsToDisplay.push(report);
         }
     });
@@ -231,6 +239,7 @@ function getOrderedReportIDs(
 
     const LHNReports = [...pinnedAndGBRReports, ...errorReports, ...draftReports, ...nonArchivedReports, ...archivedReports].map((report) => report?.reportID ?? '-1');
 
+	console.log('...............report: ', reportsToDisplay)
 	console.log('/.........................CLHNReports: ', LHNReports)
 	console.log('.......................nonArchivedReports', nonArchivedReports)
 	console.log('..................... pinnedAndGBRReports.: ', pinnedAndGBRReports)

@@ -6716,6 +6716,7 @@ function reasonForReportToBeInOptionList({
  * filter out the majority of reports before filtering out very specific minority of reports.
  */
 function shouldReportBeInOptionList(params: ShouldReportBeInOptionListParams) {
+	console.log('houldReportBeInOptionList(params////////////: ', params)
     return reasonForReportToBeInOptionList(params) !== null;
 }
 

@@ -818,6 +818,10 @@ function getLastVisibleMessage(
         };
     }
 
+	console.log('reportID............................reportID: ', reportID)
+	console.log('lastVisibleAction.................!!: ', lastVisibleAction)
+	console.log('..................reportAction: ', reportAction)
+	console.log(' getLastVisibleAction(reportID, canUserPerformWriteAction, actionsToMerge)>.................:' , getLastVisibleAction(reportID, canUserPerformWriteAction, actionsToMerge))
     if (isCreatedAction(lastVisibleAction)) {
         return {
             lastMessageText: '',
