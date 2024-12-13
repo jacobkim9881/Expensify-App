@@ -445,6 +445,7 @@ function addNewContactMethod(contactMethod: string, validateCode = '') {
             onyxMethod: Onyx.METHOD.MERGE,
             key: ONYXKEYS.PENDING_CONTACT_ACTION,
             value: {
+                contactMethod: null,
                 validateCodeSent: null,
                 actionVerified: true,
                 errorFields: {
@@ -1367,14 +1368,6 @@ function dismissTrackTrainingModal() {
     });
 }
 
-function dismissWorkspaceTooltip() {
-    Onyx.merge(ONYXKEYS.NVP_WORKSPACE_TOOLTIP, {shouldShow: false});
-}
-
-function dismissGBRTooltip() {
-    Onyx.merge(ONYXKEYS.NVP_SHOULD_HIDE_GBR_TOOLTIP, true);
-}
-
 function requestRefund() {
     API.write(WRITE_COMMANDS.REQUEST_REFUND, null);
 }
@@ -1395,7 +1388,6 @@ export {
     closeAccount,
     dismissReferralBanner,
     dismissTrackTrainingModal,
-    dismissWorkspaceTooltip,
     resendValidateCode,
     requestContactMethodValidateCode,
     updateNewsletterSubscription,
@@ -1429,6 +1421,5 @@ export {
     addPendingContactMethod,
     clearValidateCodeActionError,
     subscribeToActiveGuides,
-    dismissGBRTooltip,
     setIsDebugModeEnabled,
 };
