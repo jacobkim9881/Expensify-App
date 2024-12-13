@@ -485,6 +485,9 @@ function getIOUReportIDOfLastAction(report: OnyxEntry<Report>): string | undefin
 function getLastMessageTextForReport(report: OnyxEntry<Report>, lastActorDetails: Partial<PersonalDetails> | null, policy?: OnyxEntry<Policy>): string {
     const reportID = report?.reportID ?? '-1';
     const lastReportAction = lastVisibleReportActions[reportID] ?? null;
+	console.log('lastVisibleReportActions: ', lastVisibleReportActions)
+	console.log('lastReportAction: ', lastReportAction)
+	console.log('reportID: ', reportID)
 
     // some types of actions are filtered out for lastReportAction, in some cases we need to check the actual last action
     const lastOriginalReportAction = lastReportActions[reportID] ?? null;
@@ -532,6 +535,8 @@ function getLastMessageTextForReport(report: OnyxEntry<Report>, lastActorDetails
             true,
             lastReportAction,
         );
+	    console.log('lastIOUMoneyReportAction: ', lastIOUMoneyReportAction)
+	    console.log('reportPreviewMessage: ', reportPreviewMessage)
         lastMessageTextFromReport = ReportUtils.formatReportLastMessageText(reportPreviewMessage);
     } else if (ReportActionUtils.isReimbursementQueuedAction(lastReportAction)) {
         lastMessageTextFromReport = ReportUtils.getReimbursementQueuedActionMessage(lastReportAction, report);
@@ -587,6 +592,7 @@ function getLastMessageTextForReport(report: OnyxEntry<Report>, lastActorDetails
         lastMessageTextFromReport = ReportActionUtils.getMessageOfOldDotReportAction(lastReportAction, false);
     }
 
+	console.log(' (report?.lastMessageText: ', lastMessageTextFromReport ? '' : (report?.lastMessageText ?? ''))
     return lastMessageTextFromReport || (report?.lastMessageText ?? '');
 }
 
