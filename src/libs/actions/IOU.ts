@@ -7181,6 +7181,18 @@ function canIOUBePaid(
     const shouldBeApproved = canApproveIOU(iouReport, policy);
 
     const isPayAtEndExpenseReport = ReportUtils.isPayAtEndExpenseReport(iouReport?.reportID, transactions);
+
+	    console.log('isPayer: ', isPayer)
+	    console.log('!isOpenExpenseReport : ', !isOpenExpenseReport )
+	    console.log('!iouSettled: ', !iouSettled)
+	    console.log('!iouReport?.isWaitingOnBankAccount: ', !iouReport?.isWaitingOnBankAccount)
+	    console.log('reimbursableSpend !== 0: ', reimbursableSpend !== 0)
+	    console.log('!isChatReportArchived: ', !isChatReportArchived)
+	    console.log('!isAutoReimbursable : ', !isAutoReimbursable )
+	    console.log('(!shouldBeApproved || !shouldCheckApprovedState): ', (!shouldBeApproved || !shouldCheckApprovedState))
+	console.log('(!shouldBeApproved: ', !shouldBeApproved)
+	console.log('!shouldCheckApprovedState: ', !shouldCheckApprovedState)
+	    console.log('!isPayAtEndExpenseReport: ', !isPayAtEndExpenseReport)
     return (
         isPayer &&
         !isOpenExpenseReport &&
