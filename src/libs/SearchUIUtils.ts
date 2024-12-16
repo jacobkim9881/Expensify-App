@@ -259,6 +259,19 @@ function getAction(data: OnyxTypes.SearchResults['data'], key: string): SearchTr
 
 	//console.log('getAction........................transaction: ', transaction)
 	//console.log('getAction........................report: ', report)
+    // Tracked and unreported expenses don't have a report, so we return early.
+    /*
+    if (!report) {
+        return CONST.SEARCH.ACTION_TYPES.VIEW;
+    }
+
+    // We need to check both options for a falsy value since the transaction might not have an error but the report associated with it might
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    if (transaction?.hasError || report.hasError) {
+        return CONST.SEARCH.ACTION_TYPES.REVIEW;
+    }
+*/
+
     if (ReportUtils.isSettled(report)) {
         return CONST.SEARCH.ACTION_TYPES.PAID;
     }
@@ -267,8 +280,8 @@ function getAction(data: OnyxTypes.SearchResults['data'], key: string): SearchTr
         return CONST.SEARCH.ACTION_TYPES.DONE;
     }
 
-    // We don't need to run the logic if this is not an iou/expense report, so let's shortcircuit the logic for performance reasons
-    if (!ReportUtils.isMoneyRequestReport(report)) {
+    // We don't need to run the logic if this is not a transaction or iou/expense report, so let's shortcircuit the logic for performance reasons
+    if (!ReportUtils.isMoneyRequestReport(report) || (isTransaction && !data[key].isFromOneTransactionReport)) {
         return CONST.SEARCH.ACTION_TYPES.VIEW;
     }
 
@@ -300,11 +313,18 @@ function getAction(data: OnyxTypes.SearchResults['data'], key: string): SearchTr
         return CONST.SEARCH.ACTION_TYPES.PAY;
     }
 
-    if (IOU.canApproveIOU(report, policy) && ReportUtils.isAllowedToApproveExpenseReport(report, undefined, policy)) {
-	    console.log('getAction........................CONST.SEARCH.ACTION_TYPES.APPROVE:')
+    const isAllowedToApproveExpenseReport = ReportUtils.isAllowedToApproveExpenseReport(report, undefined, policy);
+    if (IOU.canApproveIOU(report, policy) && isAllowedToApproveExpenseReport) {
+        console.log('getAction........................CONST.SEARCH.ACTION_TYPES.APPROVE:')
 	    console.log('IOU.canApproveIOU(report, policy): ', IOU.canApproveIOU(report, policy))
 	    console.log('ReportUtils.isAllowedToApproveExpenseReport(report, undefined, policy): ', ReportUtils.isAllowedToApproveExpenseReport(report, undefined, policy))
+
         return CONST.SEARCH.ACTION_TYPES.APPROVE;
+    }
+
+    // We check for isAllowedToApproveExpenseReport because if the policy has preventSelfApprovals enabled, we disable the Submit action and in that case we want to show the View action instead
+    if (IOU.canSubmitReport(report, policy) && isAllowedToApproveExpenseReport) {
+        return CONST.SEARCH.ACTION_TYPES.SUBMIT;
     }
 
     return CONST.SEARCH.ACTION_TYPES.VIEW;
@@ -594,4 +614,5 @@ export {
     getExpenseTypeTranslationKey,
     getOverflowMenu,
     isCorrectSearchUserName,
+    isReportActionEntry,
 };

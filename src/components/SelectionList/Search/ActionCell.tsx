@@ -51,10 +51,12 @@ function ActionCell({
     const StyleUtils = useStyleUtils();
     const {isOffline} = useNetwork();
 
-    const text = translate(actionTranslationsMap[action]);
+    const text = isChildListItem ? translate(actionTranslationsMap[CONST.SEARCH.ACTION_TYPES.VIEW]) : translate(actionTranslationsMap[action]);
+
 	const isClicked = useRef(false);
 	const lastAction = useRef('');
 	const getLastAction = lastAction.current;
+
 
 	const handleLoading = () => {
 		if(action === 'submit' || action === 'approve' || action === 'pay') {
@@ -122,16 +124,19 @@ lastAction.current = text;
         );
     }
 
-    if (action === CONST.SEARCH.ACTION_TYPES.VIEW || shouldUseViewAction) {
+    if (action === CONST.SEARCH.ACTION_TYPES.VIEW || action === CONST.SEARCH.ACTION_TYPES.REVIEW || shouldUseViewAction) {
         return isLargeScreenWidth ? (
             <Button
-                text={translate(actionTranslationsMap[CONST.SEARCH.ACTION_TYPES.VIEW])}
+                text={text}
                 onPress={goToItem}
                 small
                 style={[styles.w100]}
                 innerStyles={getButtonInnerStyles(false)}
                 link={isChildListItem}
                 shouldUseDefaultHover={!isChildListItem}
+                icon={!isChildListItem && action === CONST.SEARCH.ACTION_TYPES.REVIEW ? Expensicons.DotIndicator : undefined}
+                iconFill={theme.danger}
+                iconHoverFill={theme.dangerHover}
             />
         ) : null;
     }

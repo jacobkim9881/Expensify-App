@@ -192,7 +192,9 @@ import type {
     WelcomeNoteParams,
     WelcomeToRoomParams,
     WeSentYouMagicSignInLinkParams,
+    WorkspaceMemberList,
     WorkspaceOwnerWillNeedToAddOrUpdatePaymentCardParams,
+    WorkspaceYouMayJoin,
     YourPlanPriceParams,
     ZipCodeExampleFormatParams,
 } from './params';
@@ -207,7 +209,7 @@ const translations = {
         no: 'No',
         ok: 'OK',
         notNow: 'Ahora no',
-        learnMore: 'Más información',
+        learnMore: 'Más información.',
         buttonConfirm: 'Ok, entendido',
         name: 'Nombre',
         attachment: 'Archivo adjunto',
@@ -219,6 +221,7 @@ const translations = {
         new: 'Nuevo',
         center: 'Centrar',
         search: 'Buscar',
+        reports: 'Informes',
         find: 'Encontrar',
         searchWithThreeDots: 'Buscar...',
         select: 'Seleccionar',
@@ -348,6 +351,7 @@ const translations = {
         semicolon: 'el punto y coma',
         please: 'Por favor',
         rename: 'Renombrar',
+        skip: 'Saltarse',
         contactUs: 'contáctenos',
         pleaseEnterEmailOrPhoneNumber: 'Por favor, escribe un correo electrónico o número de teléfono',
         fixTheErrors: 'corrige los errores',
@@ -638,10 +642,6 @@ const translations = {
         emoji: 'Emoji',
         collapse: 'Colapsar',
         expand: 'Expandir',
-        tooltip: {
-            title: '¡Empecemos!',
-            subtitle: ' Presenta tu primer gasto',
-        },
     },
     reportActionContextMenu: {
         copyToClipboard: 'Copiar al portapapeles',
@@ -831,10 +831,6 @@ const translations = {
         trackDistance: 'Crear gasto por desplazamiento',
         noLongerHaveReportAccess: 'Ya no tienes acceso al destino previo de esta acción rápida. Escoge uno nuevo a continuación.',
         updateDestination: 'Actualiza el destino',
-        tooltip: {
-            title: '¡Acción rápida! ',
-            subtitle: 'A un click.',
-        },
     },
     iou: {
         amount: 'Importe',
@@ -1763,6 +1759,11 @@ const translations = {
         },
         getStarted: 'Comenzar',
         whatsYourName: '¿Cómo te llamas?',
+        peopleYouMayKnow: 'Las personas que tal vez conozcas ya están aquí. Verifica tu correo electrónico para unirte a ellos.',
+        workspaceMemberList: ({employeeCount, policyOwner}: WorkspaceMemberList) => `${employeeCount} miembro${employeeCount > 1 ? 's' : ''} • ${policyOwner}`,
+        workspaceYouMayJoin: ({domain, email}: WorkspaceYouMayJoin) => `Alguien de ${domain} ya ha creado un espacio de trabajo. Por favor, introduce el código mágico enviado a ${email}.`,
+        joinAWorkspace: 'Unirse a un espacio de trabajo',
+        listOfWorkspaces: 'Aquí está la lista de espacios de trabajo a los que puedes unirte. No te preocupes, siempre puedes unirte a ellos más tarde si lo prefieres.',
         whereYouWork: '¿Dónde trabajas?',
         errorSelection: 'Por favor selecciona una opción para continuar.',
         purpose: {
@@ -2803,6 +2804,10 @@ const translations = {
             },
             noAccountsFound: 'No se ha encontrado ninguna cuenta',
             noAccountsFoundDescription: 'Añade la cuenta en QuickBooks Online y sincroniza de nuevo la conexión.',
+        },
+        workspaceList: {
+            joinNow: 'Únete ahora',
+            askToJoin: 'Pedir unirse',
         },
         xero: {
             organization: 'Organización Xero',
@@ -4488,7 +4493,7 @@ const translations = {
         roomNameInvalidError: 'Los nombres de las salas solo pueden contener minúsculas, números y guiones.',
         pleaseEnterRoomName: 'Por favor, escribe el nombre de una sala.',
         pleaseSelectWorkspace: 'Por favor, selecciona un espacio de trabajo.',
-        renamedRoomAction: ({oldName, newName}: RenamedRoomActionParams) => `cambió el nombre de la sala de ${oldName} a ${newName}`,
+        renamedRoomAction: ({oldName, newName}: RenamedRoomActionParams) => `cambió el nombre de la sala a "${newName}" (previamente "${oldName}")`,
         roomRenamedTo: ({newName}: RoomRenamedToParams) => `Sala renombrada a ${newName}`,
         social: 'social',
         selectAWorkspace: 'Seleccionar un espacio de trabajo',
@@ -4502,7 +4507,7 @@ const translations = {
         },
     },
     workspaceActions: {
-        renamedWorkspaceNameAction: ({oldName, newName}: RenamedRoomActionParams) => `actualizó el nombre de este espacio de trabajo de ${oldName} a ${newName}`,
+        renamedWorkspaceNameAction: ({oldName, newName}: RenamedRoomActionParams) => `actualizó el nombre de este espacio de trabajo a "${newName}" (previamente "${oldName}")`,
         removedFromApprovalWorkflow: ({submittersNames}: RemovedFromApprovalWorkflowParams) => {
             let joinedNames = '';
             if (submittersNames.length === 1) {
@@ -4602,7 +4607,6 @@ const translations = {
             },
         },
         saveSearch: 'Guardar búsqueda',
-        saveSearchTooltipText: 'Puedes cambiar el nombre de tu búsqueda guardada',
         savedSearchesMenuItemTitle: 'Guardadas',
         searchName: 'Nombre de la búsqueda',
         deleteSavedSearch: 'Eliminar búsqueda guardada',
@@ -5973,6 +5977,44 @@ const translations = {
             chat: '<strong>Chatea directamente en cualquier gasto</strong>, informe o espacio de trabajo',
             scanReceipt: '<strong>Escanea recibos</strong> y obtén reembolsos',
             crossPlatform: 'Haz <strong>todo</strong> desde tu teléfono o navegador',
+        },
+    },
+    productTrainingTooltip: {
+        conciergeLHNGBR: {
+            part1: '¡Comienza',
+            part2: ' aquí!',
+        },
+        saveSearchTooltip: {
+            part1: 'Renombra tus búsquedas guardadas',
+            part2: ' aquí',
+        },
+        quickActionButton: {
+            part1: '¡Acción rápida!',
+            part2: ' A solo un toque',
+        },
+        workspaceChatCreate: {
+            part1: 'Envía tus',
+            part2: ' gastos',
+            part3: ' aquí',
+        },
+        searchFilterButtonTooltip: {
+            part1: 'Personaliza tu búsqueda',
+            part2: ' aquí!',
+        },
+        bottomNavInboxTooltip: {
+            part1: 'Tu lista de tareas',
+            part2: '\n🟢 = listo para ti',
+            part3: ' 🔴 = necesita revisión',
+        },
+        workspaceChatTooltip: {
+            part1: 'Envía gastos',
+            part2: ' y chatea con',
+            part3: '\naprobadores aquí!',
+        },
+        globalCreateTooltip: {
+            part1: 'Crea gastos',
+            part2: ', comienza a chatear,',
+            part3: '\ny mucho más!',
         },
     },
 };
