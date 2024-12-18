@@ -144,13 +144,13 @@ lastAction.current = text;
     return (
         <Button
             text={text}
-	    //onPress={goToItem}
-	    onPress={handleLoading}
+	    onPress={goToItem}
+	    //onPress={handleLoading}
             small
             style={[styles.w100]}
             innerStyles={getButtonInnerStyles(shouldUseSuccessStyleProp)}
-	    //isLoading={isLoading}
-	    isLoading={isLoading || getLastAction === text}
+	    isLoading={isLoading}
+	    //isLoading={isLoading || getLastAction === text}
             success={shouldUseSuccessStyleProp}
             isDisabled={isOffline}
         />

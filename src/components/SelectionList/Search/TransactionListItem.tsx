@@ -1,4 +1,5 @@
-import React from 'react';
+//import React from 'react';
+import React, {useMemo, useRef} from 'react';
 import {useSearchContext} from '@components/Search/SearchContext';
 import BaseListItem from '@components/SelectionList/BaseListItem';
 import type {ListItem, TransactionListItemProps, TransactionListItemType} from '@components/SelectionList/types';
@@ -6,7 +7,8 @@ import useAnimatedHighlightStyle from '@hooks/useAnimatedHighlightStyle';
 import useResponsiveLayout from '@hooks/useResponsiveLayout';
 import useTheme from '@hooks/useTheme';
 import useThemeStyles from '@hooks/useThemeStyles';
-import {handleActionButtonPress} from '@libs/actions/Search';
+import {handleActionButtonPress, test1} from '@libs/actions/Search';
+//import {handleActionButtonPress} from '@libs/actions/Search';
 import variables from '@styles/variables';
 import TransactionListItemRow from './TransactionListItemRow';
 
@@ -30,6 +32,25 @@ function TransactionListItem<TItem extends ListItem>({
 
     const {isLargeScreenWidth} = useResponsiveLayout();
     const {currentSearchHash} = useSearchContext();
+
+
+        const previousActionItem = useRef('');
+        const setPreviousActionItem = useMemo(() => {
+		console.log('item////////////////////////////: ', item)
+              if (!previousActionItem.current) { 
+		      console.log('previousActionItem.current is not definedddddddddddd')
+ previousActionItem.current = item.action
+               }
+   
+               if (item.action !== previousActionItem.current) {
+		       console.log('item.action !== previousActionItem.current//////////////')
+		       previousActionItem.current = item.action
+		       console.log('isLoading,?.....................: ', transactionItem.isActionLoading)
+transactionItem.isActionLoading ? test1(currentSearchHash, transactionItem, {isActionLoading: false}) : null;
+        
+               }
+        }, [item, previousActionItem])  
+
 
     const listItemPressableStyle = [
         styles.selectionListPressableItemWrapper,
