@@ -285,7 +285,8 @@ function approveMoneyRequestOnSearch(hash: number, reportIDList: string[], trans
         },
     ];
     const optimisticData: OnyxUpdate[] = createOnyxData({isActionLoading: true});
-    const failureData: OnyxUpdate[] = createOnyxData({hasError: true});
+    const failureData: OnyxUpdate[] = createOnyxData({hasError: true, isActionLoading: false});
+    //const failureData: OnyxUpdate[] = createOnyxData({hasError: true});
     const finallyData: OnyxUpdate[] = createOnyxData({isActionLoading: false});
 
     API.write(WRITE_COMMANDS.APPROVE_MONEY_REQUEST_ON_SEARCH, {hash, reportIDList}, {optimisticData, failureData});
@@ -381,30 +382,22 @@ function clearAdvancedFilters() {
     Onyx.merge(ONYXKEYS.FORMS.SEARCH_ADVANCED_FILTERS_FORM, values);
 }
 
-function test1(hash: number, item, update) {
-	const reportIDList = [item?.reportID]
-	const transactionIDList = item?.transactionID ? [item.transactionID] : undefined;
-	console.log('test1 transactionIDList: ' ,transactionIDList)
-	console.log('test1 reportIDList: ', reportIDList)
-	console.log('hash: ', hash)
+function setIsActionLoading(hash: number, item: TransactionListItemType | ReportListItemType, isActionLoading: boolean) {
+    const reportIDList = [item?.reportID]
+    const transactionIDList = isTransactionListItemType(item) ? [item.transactionID] : undefined;
+    console.log('test1 transactionIDList: ' ,transactionIDList)
+    console.log('test1 reportIDList: ', reportIDList)
+    console.log('hash: ', hash)
 
-	/*
-const values = (update: Partial<SearchTransaction> | Partial<SearchReport>): OnyxUpdate[] => [
-                data: transactionIDList
-                    ? (Object.fromEntries(transactionIDList.map((transactionID) => [`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`, update])) as Partial<SearchTransaction>)
-                    : (Object.fromEntries(reportIDList.map((reportID) => [`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, update])) as Partial<SearchReport>),
-    ];
-*/
-    //Onyx.merge(`${ONYXKEYS.COLLECTION.SNAPSHOT}${hash}`, values);
     Onyx.merge(`${ONYXKEYS.COLLECTION.SNAPSHOT}${hash}`, {
                 data: transactionIDList
-                    ? (Object.fromEntries(transactionIDList.map((transactionID) => [`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`, update])) as Partial<SearchTransaction>)
-                    : (Object.fromEntries(reportIDList.map((reportID) => [`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, update])) as Partial<SearchReport>),
+                    ? (Object.fromEntries(transactionIDList.map((transactionID) => [`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`,  {isActionLoading}])) as Partial<SearchTransaction>)
+                    : (Object.fromEntries(reportIDList.map((reportID) => [`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, {isActionLoading}])) as Partial<SearchReport>),
     });
 }
 
 export {
-	test1,
+    setIsActionLoading,
     saveSearch,
     search,
     createTransactionThread,

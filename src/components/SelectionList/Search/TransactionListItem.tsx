@@ -7,7 +7,7 @@ import useAnimatedHighlightStyle from '@hooks/useAnimatedHighlightStyle';
 import useResponsiveLayout from '@hooks/useResponsiveLayout';
 import useTheme from '@hooks/useTheme';
 import useThemeStyles from '@hooks/useThemeStyles';
-import {handleActionButtonPress, test1} from '@libs/actions/Search';
+import {handleActionButtonPress, setIsActionLoading} from '@libs/actions/Search';
 //import {handleActionButtonPress} from '@libs/actions/Search';
 import variables from '@styles/variables';
 import TransactionListItemRow from './TransactionListItemRow';
@@ -34,22 +34,20 @@ function TransactionListItem<TItem extends ListItem>({
     const {currentSearchHash} = useSearchContext();
 
 
-        const previousActionItem = useRef('');
-        const setPreviousActionItem = useMemo(() => {
-		console.log('item////////////////////////////: ', item)
-              if (!previousActionItem.current) { 
-		      console.log('previousActionItem.current is not definedddddddddddd')
- previousActionItem.current = item.action
-               }
-   
-               if (item.action !== previousActionItem.current) {
-		       console.log('item.action !== previousActionItem.current//////////////')
-		       previousActionItem.current = item.action
-		       console.log('isLoading,?.....................: ', transactionItem.isActionLoading)
-transactionItem.isActionLoading ? test1(currentSearchHash, transactionItem, {isActionLoading: false}) : null;
-        
-               }
-        }, [item, previousActionItem])  
+    const previousActionItem = useRef('');
+    const setPreviousActionItem = useMemo(() => {
+        console.log('item////////////////////////////: ', item)
+        if (!previousActionItem.current) { 
+            console.log('previousActionItem.current is not definedddddddddddd')
+            previousActionItem.current = item.action
+	}   
+        if (item.action !== previousActionItem.current) {
+            console.log('item.action !== previousActionItem.current//////////////')
+            previousActionItem.current = item.action
+            console.log('isLoading,?.....................: ', transactionItem.isActionLoading)
+            transactionItem.isActionLoading ? setIsActionLoading(currentSearchHash, transactionItem, false) : null;        
+        }
+        }, [item.action])  
 
 
     const listItemPressableStyle = [
