@@ -118,6 +118,7 @@ function BaseSelectionList<TItem extends ListItem>(
         shouldPreventActiveCellVirtualization = false,
         shouldScrollToFocusedIndex = true,
         onContentSizeChange,
+        listItemTitleStyles,
     }: BaseSelectionListProps<TItem>,
     ref: ForwardedRef<SelectionListHandle>,
 ) {
@@ -529,6 +530,7 @@ console.log('src/components/SelectionList/BaseSelectionList.tsx.................
                     normalizedIndex={normalizedIndex}
                     shouldSyncFocus={!isTextInputFocusedRef.current}
                     wrapperStyle={listItemWrapperStyle}
+                    titleStyles={listItemTitleStyles}
                     shouldHighlightSelectedItem={shouldHighlightSelectedItem}
                     singleExecution={singleExecution}
                 />
