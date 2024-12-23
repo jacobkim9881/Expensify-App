@@ -27,7 +27,8 @@ Onyx.connect({
     callback: (val) => (lastOnyxUpdatesFromServer = val),
 });
 
-const requestsToIgnoreLastCommand: Array<string | undefined> = [WRITE_COMMANDS.SUBMIT_REPORT];
+const requestsToIgnoreLastCommand: Array<string | undefined> = [WRITE_COMMANDS.SUBMIT_REPORT
+,WRITE_COMMANDS.APPROVE_MONEY_REQUEST];
 
 // This promise is used to ensure pusher events are always processed in the order they are received,
 // even when such events are received over multiple separate pusher updates.
