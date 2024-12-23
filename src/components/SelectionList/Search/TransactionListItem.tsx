@@ -39,15 +39,15 @@ function TransactionListItem<TItem extends ListItem>({
         console.log('item////////////////////////////: ', item)
         if (!previousActionItem.current) { 
             console.log('previousActionItem.current is not definedddddddddddd')
-            previousActionItem.current = item.action
+            previousActionItem.current = transactionItem.action
 	}   
-        if (item.action !== previousActionItem.current) {
+        if (transactionItem.action !== previousActionItem.current) {
             console.log('item.action !== previousActionItem.current//////////////')
-            previousActionItem.current = item.action
+            previousActionItem.current = transactionItem.action
             console.log('isLoading,?.....................: ', transactionItem.isActionLoading)
             transactionItem.isActionLoading ? setIsActionLoading(currentSearchHash, transactionItem, false) : null;        
         }
-        }, [item.action])  
+        }, [transactionItem.action])  
 
 
     const listItemPressableStyle = [
