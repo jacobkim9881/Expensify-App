@@ -10,6 +10,7 @@ let ongoingRequest: Request | null = null;
 Onyx.connect({
     key: ONYXKEYS.PERSISTED_REQUESTS,
     callback: (val) => {
+	    console.log('ONYXKEYS.PERSISTED_REQUESTS, val>:...........', val)
         Log.info('[PersistedRequests] hit Onyx connect callback', false, {isValNullish: val == null});
         persistedRequests = val ?? [];
 
@@ -49,6 +50,8 @@ function save(requestToPersist: Request) {
     // If the command is not in the keepLastInstance array, add the new request as usual
     const requests = [...persistedRequests, requestToPersist];
     persistedRequests = requests;
+	console.log('save persistedRequests.........>: ', persistedRequests)
+	console.log('requestToPersist..............: ', requestToPersist)
     Onyx.set(ONYXKEYS.PERSISTED_REQUESTS, requests).then(() => {
         Log.info(`[SequentialQueue] '${requestToPersist.command}' command queued. Queue length is ${getLength()}`);
     });
@@ -120,6 +123,8 @@ function processNextRequest(): Request | null {
     }
 
     ongoingRequest = persistedRequests.shift() ?? null;
+	console.log('processNextRequest... persistedRequests: ', persistedRequests)
+	console.log('ongoingRequest..............: ', ongoingRequest)
 
     if (ongoingRequest && ongoingRequest.persistWhenOngoing) {
         Onyx.set(ONYXKEYS.PERSISTED_ONGOING_REQUESTS, ongoingRequest);

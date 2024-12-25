@@ -23,6 +23,7 @@ function makeXHR(request: Request): Promise<Response | void> {
 }
 
 function processWithMiddleware(request: Request, isFromSequentialQueue = false): Promise<Response | void> {
+	console.log('processWithMiddleware...  middlewares: ', middlewares)
     return middlewares.reduce((last, middleware) => middleware(last, request, isFromSequentialQueue), makeXHR(request));
 }
 
