@@ -1,5 +1,5 @@
 //import React from 'react';
-import React, {useMemo, useRef} from 'react';
+import React, {useMemo, useState, useRef} from 'react';
 import {useSearchContext} from '@components/Search/SearchContext';
 import BaseListItem from '@components/SelectionList/BaseListItem';
 import type {ListItem, TransactionListItemProps, TransactionListItemType} from '@components/SelectionList/types';
@@ -34,18 +34,18 @@ function TransactionListItem<TItem extends ListItem>({
     const {currentSearchHash} = useSearchContext();
 
 
-    const previousActionItem = useRef('');
-    const setPreviousActionItem = useMemo(() => {
+    const [previousActionItem, setPreviousActionItem] = useState('')
+    const setIsLoadingOnyx = useMemo(() => {
         console.log('item////////////////////////////: ', item)
-        if (!previousActionItem.current) { 
+        if (!previousActionItem) { 
             console.log('previousActionItem.current is not definedddddddddddd')
-            previousActionItem.current = transactionItem.action
+            setPreviousActionItem(transactionItem.action);
 	}   
-        if (transactionItem.action !== previousActionItem.current) {
+        if (previousActionItem && transactionItem.action !== previousActionItem && transactionItem.isActionLoading) {
             console.log('item.action !== previousActionItem.current//////////////')
-            previousActionItem.current = transactionItem.action
+            setPreviousActionItem(transactionItem.action);
             console.log('isLoading,?.....................: ', transactionItem.isActionLoading)
-            transactionItem.isActionLoading ? setIsActionLoading(currentSearchHash, transactionItem, false) : null;        
+            setIsActionLoading(currentSearchHash, transactionItem, false);        
         }
         }, [transactionItem.action])  
 
