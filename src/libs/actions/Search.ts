@@ -409,13 +409,6 @@ function setIsActionLoading(hash: number, item: TransactionListItemType | Report
                     : (Object.fromEntries(reportIDList.map((reportID) => [`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, {isActionLoading}])) as Partial<SearchReport>),
     });
 }
-function showSavedSearchRenameTooltip() {
-    Onyx.set(ONYXKEYS.SHOULD_SHOW_SAVED_SEARCH_RENAME_TOOLTIP, true);
-}
-
-function dismissSavedSearchRenameTooltip() {
-    Onyx.set(ONYXKEYS.SHOULD_SHOW_SAVED_SEARCH_RENAME_TOOLTIP, false);
-}
 
 export {
     setIsActionLoading,
@@ -430,8 +423,6 @@ export {
     clearAllFilters,
     clearAdvancedFilters,
     deleteSavedSearch,
-    dismissSavedSearchRenameTooltip,
-    showSavedSearchRenameTooltip,
     payMoneyRequestOnSearch,
     approveMoneyRequestOnSearch,
     handleActionButtonPress,
