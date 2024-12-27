@@ -1,5 +1,5 @@
 //import React from 'react';
-import React, {useMemo, useState, useRef} from 'react';
+import React, {useCallback, useEffect, useMemo, useState, useRef} from 'react';
 import {useSearchContext} from '@components/Search/SearchContext';
 import BaseListItem from '@components/SelectionList/BaseListItem';
 import type {ListItem, TransactionListItemProps, TransactionListItemType} from '@components/SelectionList/types';
@@ -35,20 +35,24 @@ function TransactionListItem<TItem extends ListItem>({
 
 
     const [previousActionItem, setPreviousActionItem] = useState('')
-    const setIsLoadingOnyx = useMemo(() => {
+    useEffect(() => {
         console.log('item////////////////////////////: ', item)
-        if (!previousActionItem) { 
-            console.log('previousActionItem.current is not definedddddddddddd')
-            setPreviousActionItem(transactionItem.action);
-	}   
         if (previousActionItem && transactionItem.action !== previousActionItem && transactionItem.isActionLoading) {
             console.log('item.action !== previousActionItem.current//////////////')
             setPreviousActionItem(transactionItem.action);
             console.log('isLoading,?.....................: ', transactionItem.isActionLoading)
             setIsActionLoading(currentSearchHash, transactionItem, false);        
         }
-        }, [transactionItem.action])  
+        }, [transactionItem.action, currentSearchHash, item, previousActionItem, transactionItem])  
 
+    const handlePreviousActionItem = useCallback(() => {
+        if (!previousActionItem && !transactionItem.isActionLoading) { 
+            console.log('previousActionItem.current is not definedddddddddddd')
+            setPreviousActionItem(transactionItem.action);
+	}   
+	return;
+        }, [transactionItem.action, previousActionItem, transactionItem.isActionLoading])
+	    //}, [])
 
     const listItemPressableStyle = [
         styles.selectionListPressableItemWrapper,
@@ -99,6 +103,7 @@ function TransactionListItem<TItem extends ListItem>({
                 showTooltip={showTooltip}
                 onButtonPress={() => {
                     handleActionButtonPress(currentSearchHash, transactionItem, () => onSelectRow(item));
+		    handlePreviousActionItem();
                 }}
                 onCheckboxPress={() => onCheckboxPress?.(item)}
                 isDisabled={!!isDisabled}
