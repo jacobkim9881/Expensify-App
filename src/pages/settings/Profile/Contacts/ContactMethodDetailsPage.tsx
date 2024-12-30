@@ -54,6 +54,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
     const theme = useTheme();
     const themeStyles = useThemeStyles();
 
+    const firstRenderRef = useRef(true);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const validateCodeFormRef = useRef<ValidateCodeFormHandle>(null);
     const backTo = route.params.backTo;
@@ -155,13 +156,18 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 	//useBeforeRemove(() => setIsValidateCodeActionModalVisible(false));
     useBeforeRemove(() => {
         User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
+        firstRenderRef.current = true;
     });
+
+    const isVisible = isValidateCodeActionModalVisible && !loginData.validatedDate && !!loginData;
 
     useEffect(() => {
         setIsValidateCodeActionModalVisible(!loginData?.validatedDate);
-        if (!loginData?.validatedDate && !loginData?.validateCodeSent) {  
+            if (!firstRenderRef.current || isVisible || hasMagicCodeBeenSent) {  
+                return;
+            }
             User.requestContactMethodValidateCode(contactMethod)
-        }
+            firstRenderRef.current = false;
     }, [loginData?.validatedDate, loginData?.errorFields?.addedLogin]);
 
     if (isLoadingOnyxValues || (isLoadingReportData && isEmptyObject(loginList))) {
@@ -190,7 +196,6 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 
 
 
-    const isVisible = isValidateCodeActionModalVisible && !loginData.validatedDate && !!loginData;
 	/*
     useEffect(() => {
         if (!!loginData.validateCodeSent) {
