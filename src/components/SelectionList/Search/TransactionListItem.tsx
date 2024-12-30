@@ -36,14 +36,16 @@ function TransactionListItem<TItem extends ListItem>({
 
     const [previousActionItem, setPreviousActionItem] = useState('')
     useEffect(() => {
-        console.log('item////////////////////////////: ', item)
+	    //console.log('item////////////////////////////: ', item)
 	if(!previousActionItem) {
 		//setIsActionLoading(currentSearchHash, transactionItem, false);        
 	}
 
         if (previousActionItem && transactionItem.action !== previousActionItem && transactionItem.isActionLoading) {
             console.log('item.action !== previousActionItem.current//////////////')
-            setPreviousActionItem(transactionItem.action);
+		console.log('previousActionItem: ', previousActionItem, ', transactionItem.action: ', transactionItem.action)
+            setPreviousActionItem('');
+		console.log('transactionItem: ', transactionItem)
             console.log('isLoading,?.....................: ', transactionItem.isActionLoading)
             setIsActionLoading(currentSearchHash, transactionItem, false);        
         }
@@ -52,6 +54,8 @@ function TransactionListItem<TItem extends ListItem>({
     const handlePreviousActionItem = useCallback(() => {
 	if (transactionItem.isActionLoading) {return};
         if (!transactionItem.isActionLoading) { 
+
+		console.log('previousActionItem: ', previousActionItem, ', transactionItem.action: ', transactionItem.action)
             console.log('previousActionItem.current is not definedddddddddddd')
 
             setIsActionLoading(currentSearchHash, transactionItem, true);        
