@@ -283,7 +283,8 @@ function submitMoneyRequestOnSearch(hash: number, reportList: SearchReport[], po
 
     // The SubmitReport command is not 1:1:1 yet, which means creating a separate SubmitMoneyRequestOnSearch command is not feasible until https://github.com/Expensify/Expensify/issues/451223 is done.
     // In the meantime, we'll call SubmitReport which works for a single expense only, so not bulk actions are possible.
-    API.write(WRITE_COMMANDS.SUBMIT_REPORT, parameters, {optimisticData, finallyData});
+    API.write(WRITE_COMMANDS.SUBMIT_REPORT, parameters);
+    //API.write(WRITE_COMMANDS.SUBMIT_REPORT, parameters, {optimisticData, finallyData});
 }
 
 function approveMoneyRequestOnSearch(hash: number, reportIDList: string[], transactionIDList?: string[]) {
@@ -303,7 +304,8 @@ function approveMoneyRequestOnSearch(hash: number, reportIDList: string[], trans
     //const failureData: OnyxUpdate[] = createOnyxData({hasError: true});
     const finallyData: OnyxUpdate[] = createOnyxData({isActionLoading: false});
 
-    API.write(WRITE_COMMANDS.APPROVE_MONEY_REQUEST_ON_SEARCH, {hash, reportIDList}, {optimisticData, failureData});
+    API.write(WRITE_COMMANDS.APPROVE_MONEY_REQUEST_ON_SEARCH, {hash, reportIDList}, {failureData});
+    //API.write(WRITE_COMMANDS.APPROVE_MONEY_REQUEST_ON_SEARCH, {hash, reportIDList}, {optimisticData, failureData});
     //API.write(WRITE_COMMANDS.APPROVE_MONEY_REQUEST_ON_SEARCH, {hash, reportIDList}, {optimisticData, failureData, finallyData});
 }
 
@@ -328,7 +330,8 @@ function payMoneyRequestOnSearch(hash: number, paymentData: PaymentData[], trans
     API.makeRequestWithSideEffects(
         SIDE_EFFECT_REQUEST_COMMANDS.PAY_MONEY_REQUEST_ON_SEARCH,
         {hash, paymentData: JSON.stringify(paymentData)},
-        {optimisticData, failureData, finallyData},
+        {failureData},
+        //{optimisticData, failureData, finallyData},
     ).then((response) => {
         if (response?.jsonCode !== CONST.JSON_CODE.SUCCESS) {
             return;

@@ -37,6 +37,10 @@ function TransactionListItem<TItem extends ListItem>({
     const [previousActionItem, setPreviousActionItem] = useState('')
     useEffect(() => {
         console.log('item////////////////////////////: ', item)
+	if(!previousActionItem) {
+		//setIsActionLoading(currentSearchHash, transactionItem, false);        
+	}
+
         if (previousActionItem && transactionItem.action !== previousActionItem && transactionItem.isActionLoading) {
             console.log('item.action !== previousActionItem.current//////////////')
             setPreviousActionItem(transactionItem.action);
@@ -46,12 +50,14 @@ function TransactionListItem<TItem extends ListItem>({
         }, [transactionItem.action, currentSearchHash, item, previousActionItem, transactionItem])  
 
     const handlePreviousActionItem = useCallback(() => {
-        if (!previousActionItem && !transactionItem.isActionLoading) { 
+	if (transactionItem.isActionLoading) {return};
+        if (!transactionItem.isActionLoading) { 
             console.log('previousActionItem.current is not definedddddddddddd')
+
+            setIsActionLoading(currentSearchHash, transactionItem, true);        
             setPreviousActionItem(transactionItem.action);
 	}   
-	return;
-        }, [transactionItem.action, previousActionItem, transactionItem.isActionLoading])
+        }, [currentSearchHash, transactionItem])
 	    //}, [])
 
     const listItemPressableStyle = [
