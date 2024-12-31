@@ -149,6 +149,7 @@ function BaseValidateCodeForm({
     );
 
     useEffect(() => {
+	    console.log('hasMagicCodeBeenSent: ', hasMagicCodeBeenSent)
         if (!hasMagicCodeBeenSent) {
             return;
         }

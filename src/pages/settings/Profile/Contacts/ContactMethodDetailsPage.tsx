@@ -162,7 +162,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 
     useEffect(() => {
         setIsValidateCodeActionModalVisible(!loginData?.validatedDate);
-            if (!firstRenderRef.current || isVisible || hasMagicCodeBeenSent) {  
+            if (!firstRenderRef.current || isVisible || !!loginData.validateCodeSent) {  
                 return;
             }
             User.requestContactMethodValidateCode(contactMethod)
