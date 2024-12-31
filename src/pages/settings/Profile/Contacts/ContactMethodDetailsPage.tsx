@@ -288,7 +288,6 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                         clearError={() => User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')}
                         buttonStyles={[themeStyles.justifyContentEnd, themeStyles.flex1]}
                         ref={validateCodeFormRef}
-                        hasMagicCodeBeenSent={hasMagicCodeBeenSent}
                     />
                 </View>
                 }
