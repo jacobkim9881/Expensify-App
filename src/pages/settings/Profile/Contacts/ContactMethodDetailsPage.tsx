@@ -1,6 +1,5 @@
 import {Str} from 'expensify-common';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-//import {InteractionManager, Keyboard} from 'react-native';
 import {InteractionManager, Keyboard, View} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
 import FullPageNotFoundView from '@components/BlockingViews/FullPageNotFoundView';
@@ -193,21 +192,6 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
     const isFailedAddContactMethod = !!loginData.errorFields?.addedLogin;
     const isFailedRemovedContactMethod = !!loginData.errorFields?.deletedLogin;
 
-
-
-
-	/*
-    useEffect(() => {
-        if (!!loginData.validateCodeSent) {
-            return;
-        }
-
-        User.requestContactMethodValidateCode(contactMethod);
-    }, [loginData.validateCodeSent]);
-	*/
-
-
-
     const getMenuItems = () => (
         <>
             {canChangeDefaultContactMethod ? (
@@ -291,28 +275,6 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                         canDismissError
                     />
                 )}
-
-		{
-			/*
-                <ValidateCodeActionModal
-                    title={formattedContactMethod}
-                    onModalHide={() => {}}
-                    hasMagicCodeBeenSent={hasMagicCodeBeenSent}
-                    isVisible={isValidateCodeActionModalVisible && !loginData.validatedDate && !!loginData}
-                    validatePendingAction={loginData.pendingFields?.validateCodeSent}
-                    handleSubmitForm={(validateCode) => User.validateSecondaryLogin(loginList, contactMethod, validateCode)}
-                    validateError={!isEmptyObject(validateLoginError) ? validateLoginError : ErrorUtils.getLatestErrorField(loginData, 'validateCodeSent')}
-                    clearError={() => User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')}
-                    onClose={() => {
-                        Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
-                        setIsValidateCodeActionModalVisible(false);
-                    }}
-                    sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
-                    descriptionPrimary={translate('contacts.enterMagicCode', {contactMethod: formattedContactMethod})}
-                />
-			*/
-		}
-
 
                 {isValidateCodeActionModalVisible &&
                 <View style={[themeStyles.ph5, themeStyles.mt3, themeStyles.mb5, themeStyles.flex1]}>
