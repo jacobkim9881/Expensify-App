@@ -188,6 +188,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 
     // Replacing spaces with "hard spaces" to prevent breaking the number
     const formattedContactMethod = Str.isSMSLogin(contactMethod) ? formatPhoneNumber(contactMethod) : contactMethod;
+    const hasMagicCodeBeenSent = !!loginData.validateCodeSent;
     const isFailedAddContactMethod = !!loginData.errorFields?.addedLogin;
     const isFailedRemovedContactMethod = !!loginData.errorFields?.deletedLogin;
 
