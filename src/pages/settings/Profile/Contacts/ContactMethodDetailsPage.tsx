@@ -56,6 +56,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 
     const firstRenderRef = useRef(true);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(true);
     const validateCodeFormRef = useRef<ValidateCodeFormHandle>(null);
     const backTo = route.params.backTo;
 
@@ -153,16 +154,20 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
         Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
     }, [prevValidatedDate, loginData?.validatedDate, isDefaultContactMethod, backTo, loginData]);
 
-	useBeforeRemove(() => setIsValidateCodeActionModalVisible(false));
-	//    useBeforeRemove(() => {
+	//useBeforeRemove(() => setIsValidateCodeActionModalVisible(false));
+	    useBeforeRemove(() => {
 	    //        User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
 	    //        firstRenderRef.current = true;
-	    //    });
+	    setIsModalOpen(false);
+	        });
 	
     const hide = useCallback(() => {
 User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
                         Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
+
+            InteractionManager.runAfterInteractions(() => {
                         setIsValidateCodeActionModalVisible(false);
+})
 
         firstRenderRef.current = true;
 
@@ -263,7 +268,7 @@ User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) 
     return (
         <Modal
             type={CONST.MODAL.MODAL_TYPE.RIGHT_DOCKED}
-            isVisible={isVisible}
+            isVisible={isModalOpen}
 	    onClose={hide}
 	    onModalHide={hide}
 	    onBackdropPress={() => Navigation.dismissModal()}
