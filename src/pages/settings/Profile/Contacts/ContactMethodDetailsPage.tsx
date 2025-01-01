@@ -9,6 +9,7 @@ import FullscreenLoadingIndicator from '@components/FullscreenLoadingIndicator';
 import HeaderWithBackButton from '@components/HeaderWithBackButton';
 import * as Expensicons from '@components/Icon/Expensicons';
 import MenuItem from '@components/MenuItem/';
+import Modal from '@components/Modal';
 import OfflineWithFeedback from '@components/OfflineWithFeedback';
 import ScreenWrapper from '@components/ScreenWrapper';
 import ScrollView from '@components/ScrollView';
@@ -152,11 +153,20 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
         Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
     }, [prevValidatedDate, loginData?.validatedDate, isDefaultContactMethod, backTo, loginData]);
 
-	//useBeforeRemove(() => setIsValidateCodeActionModalVisible(false));
-    useBeforeRemove(() => {
-        User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
+	useBeforeRemove(() => setIsValidateCodeActionModalVisible(false));
+	//    useBeforeRemove(() => {
+	    //        User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
+	    //        firstRenderRef.current = true;
+	    //    });
+	
+    const hide = useCallback(() => {
+User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
+                        Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
+                        setIsValidateCodeActionModalVisible(false);
+
         firstRenderRef.current = true;
-    });
+
+    }, [])
 
     const isVisible = isValidateCodeActionModalVisible && !loginData.validatedDate && !!loginData;
 
@@ -251,6 +261,17 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
     );
 
     return (
+        <Modal
+            type={CONST.MODAL.MODAL_TYPE.RIGHT_DOCKED}
+            isVisible={isVisible}
+	    onClose={hide}
+	    onModalHide={hide}
+	    onBackdropPress={() => Navigation.dismissModal()}
+            hideModalContentWhileAnimating
+            useNativeDriver
+            shouldUseModalPaddingStyle={false}
+        >
+
         <ScreenWrapper
             onEntryTransitionEnd={() => validateCodeFormRef.current?.focus?.()}
             testID={ContactMethodDetailsPage.displayName}
@@ -288,6 +309,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                         clearError={() => User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')}
                         buttonStyles={[themeStyles.justifyContentEnd, themeStyles.flex1]}
                         ref={validateCodeFormRef}
+                        hasMagicCodeBeenSent={hasMagicCodeBeenSent}
                     />
                 </View>
                 }
@@ -296,6 +318,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                 {!isValidateCodeActionModalVisible && getMenuItems()}
             </ScrollView>
         </ScreenWrapper>
+	</Modal>
     );
 }
 
