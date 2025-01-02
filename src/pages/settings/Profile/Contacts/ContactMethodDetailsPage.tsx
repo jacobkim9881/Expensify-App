@@ -164,20 +164,24 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
     const hide = useCallback(() => {
 User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
                         Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
-
+	    /*
             InteractionManager.runAfterInteractions(() => {
                         setIsValidateCodeActionModalVisible(false);
 })
-
+	     */
         firstRenderRef.current = true;
 
     }, [])
 
-    const isVisible = isValidateCodeActionModalVisible && !loginData.validatedDate && !!loginData;
+    const isVisible = isValidateCodeActionModalVisible && !loginData?.validatedDate && !!loginData;
 
     useEffect(() => {
+            if (!firstRenderRef.current) {  
+	return;
+	    }
         setIsValidateCodeActionModalVisible(!loginData?.validatedDate);
-            if (!firstRenderRef.current || isVisible || loginData.validateCodeSent) {  
+		    //if (!firstRenderRef.current || isVisible || loginData?.validateCodeSent) {  
+	    if (isVisible || loginData?.validateCodeSent) {
                 return;
             }
             User.requestContactMethodValidateCode(contactMethod)
@@ -270,7 +274,6 @@ User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) 
             type={CONST.MODAL.MODAL_TYPE.RIGHT_DOCKED}
             isVisible={isModalOpen}
 	    onClose={hide}
-	    onModalHide={hide}
 	    onBackdropPress={() => Navigation.dismissModal()}
             hideModalContentWhileAnimating
             useNativeDriver
@@ -283,7 +286,7 @@ User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) 
         >
             <HeaderWithBackButton
                 title={formattedContactMethod}
-                onBackButtonPress={() => Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo))}
+                onBackButtonPress={hide}
             />
 	    <ScrollView
                 contentContainerStyle={themeStyles.flex1} 
@@ -309,6 +312,7 @@ User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) 
                         validateCodeAction={validateCodeAction}
                         validatePendingAction={loginData.pendingFields?.validateCodeSent}
                         validateError={!isEmptyObject(validateLoginError) ? validateLoginError : ErrorUtils.getLatestErrorField(loginData, 'validateCodeSent')}
+			//handleSubmitForm={(validateCode) => User.validateSecondaryLogin(loginList, contactMethod, validateCode)}
                         handleSubmitForm={(validateCode) => User.validateSecondaryLogin(loginList, contactMethod, validateCode)}
                         sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
                         clearError={() => User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')}
