@@ -164,6 +164,9 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
     const hide = useCallback(() => {
 User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
                         Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
+console.log('isModalOpen: ', isModalOpen)
+	    setIsModalOpen(false);
+
 	    /*
             InteractionManager.runAfterInteractions(() => {
                         setIsValidateCodeActionModalVisible(false);
