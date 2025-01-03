@@ -56,7 +56,6 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 
     const firstRenderRef = useRef(true);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(true);
     const validateCodeFormRef = useRef<ValidateCodeFormHandle>(null);
     const backTo = route.params.backTo;
 
@@ -149,8 +148,6 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
             return;
         }
 
-	    setIsModalOpen(false);
-
         // Navigate to methods page on successful magic code verification
         // validatedDate property is responsible to decide the status of the magic code verification
         Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
@@ -162,15 +159,11 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 	    //        User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
 	    //        firstRenderRef.current = true;
 
-console.log('useBeforeRemove isModalOpen: ', isModalOpen)
-	    setIsModalOpen(false);
 	        });
 	
     const hide = useCallback(() => {
 User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
                         Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
-console.log('isModalOpen: ', isModalOpen)
-	    setIsModalOpen(false);
 
 	    /*
             InteractionManager.runAfterInteractions(() => {
@@ -184,13 +177,8 @@ console.log('isModalOpen: ', isModalOpen)
     const isVisible = isValidateCodeActionModalVisible && !loginData?.validatedDate && !!loginData;
 
     useEffect(() => {
-            if (!firstRenderRef.current) {  
-	return;
-	    }
-
         setIsValidateCodeActionModalVisible(!loginData?.validatedDate);
-		    //if (!firstRenderRef.current || isVisible || loginData?.validateCodeSent) {  
-	    if (isVisible || loginData?.validateCodeSent) {
+		   if (!firstRenderRef.current || isVisible || loginData?.validateCodeSent) {  
                 return;
             }
             User.requestContactMethodValidateCode(contactMethod)
@@ -325,7 +313,7 @@ console.log('isModalOpen: ', isModalOpen)
                 }
 
 
-                {(!isValidateCodeActionModalVisible && isModalOpen)&& getMenuItems()}
+                {!isValidateCodeActionModalVisible && getMenuItems()}
             </ScrollView>
         </ScreenWrapper>
     );
