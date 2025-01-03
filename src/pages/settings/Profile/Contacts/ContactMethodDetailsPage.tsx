@@ -10,6 +10,7 @@ import HeaderWithBackButton from '@components/HeaderWithBackButton';
 import * as Expensicons from '@components/Icon/Expensicons';
 import MenuItem from '@components/MenuItem/';
 import Modal from '@components/Modal';
+import type {WindowState} from '@components/Modal/types';
 import OfflineWithFeedback from '@components/OfflineWithFeedback';
 import ScreenWrapper from '@components/ScreenWrapper';
 import ScrollView from '@components/ScrollView';
@@ -156,8 +157,11 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 
 	//useBeforeRemove(() => setIsValidateCodeActionModalVisible(false));
 	    useBeforeRemove(() => {
+		    // setIsValidateCodeActionModalVisible(false)
 	    //        User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
 	    //        firstRenderRef.current = true;
+
+console.log('useBeforeRemove isModalOpen: ', isModalOpen)
 	    setIsModalOpen(false);
 	        });
 	
@@ -176,12 +180,28 @@ console.log('isModalOpen: ', isModalOpen)
 
     }, [])
 
+    const onClose = useCallback(() => {
+User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
+Navigation.dismissModal()
+console.log('isModalOpen: ', isModalOpen)
+	    setIsModalOpen(false);
+
+	    /*
+            InteractionManager.runAfterInteractions(() => {
+                        setIsValidateCodeActionModalVisible(false);
+})
+	     */
+        firstRenderRef.current = true;
+
+    }, [])
+
     const isVisible = isValidateCodeActionModalVisible && !loginData?.validatedDate && !!loginData;
 
     useEffect(() => {
             if (!firstRenderRef.current) {  
 	return;
 	    }
+
         setIsValidateCodeActionModalVisible(!loginData?.validatedDate);
 		    //if (!firstRenderRef.current || isVisible || loginData?.validateCodeSent) {  
 	    if (isVisible || loginData?.validateCodeSent) {
@@ -273,15 +293,7 @@ console.log('isModalOpen: ', isModalOpen)
     );
 
     return (
-        <Modal
-            type={CONST.MODAL.MODAL_TYPE.RIGHT_DOCKED}
-            isVisible={isModalOpen}
-	    onClose={hide}
-	    onBackdropPress={() => Navigation.dismissModal()}
-            hideModalContentWhileAnimating
-            useNativeDriver
-            shouldUseModalPaddingStyle={false}
-        >
+        
 
         <ScreenWrapper
             onEntryTransitionEnd={() => validateCodeFormRef.current?.focus?.()}
@@ -308,7 +320,7 @@ console.log('isModalOpen: ', isModalOpen)
                     />
                 )}
 
-                {isValidateCodeActionModalVisible &&
+                {!loginData?.validatedDate &&
                 <View style={[themeStyles.ph5, themeStyles.mt3, themeStyles.mb5, themeStyles.flex1]}>
                     <Text style={[themeStyles.mb3]}>{translate('contacts.enterMagicCode', {contactMethod})}</Text>
                     <ValidateCodeForm
@@ -330,7 +342,6 @@ console.log('isModalOpen: ', isModalOpen)
                 {!isValidateCodeActionModalVisible && getMenuItems()}
             </ScrollView>
         </ScreenWrapper>
-	</Modal>
     );
 }
 
