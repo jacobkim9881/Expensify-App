@@ -8,13 +8,11 @@ import ErrorMessageRow from '@components/ErrorMessageRow';
 import FullscreenLoadingIndicator from '@components/FullscreenLoadingIndicator';
 import HeaderWithBackButton from '@components/HeaderWithBackButton';
 import * as Expensicons from '@components/Icon/Expensicons';
-import MenuItem from '@components/MenuItem/';
-import Modal from '@components/Modal';
+import MenuItem from '@components/MenuItem';
 import OfflineWithFeedback from '@components/OfflineWithFeedback';
 import ScreenWrapper from '@components/ScreenWrapper';
 import ScrollView from '@components/ScrollView';
 import Text from '@components/Text';
-import ValidateCodeActionModal from '@components/ValidateCodeActionModal';
 import ValidateCodeForm from '@components/ValidateCodeActionModal/ValidateCodeForm';
 
 import useBeforeRemove from '@hooks/useBeforeRemove';
@@ -162,28 +160,21 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 	        });
 	
     const hide = useCallback(() => {
-User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
-                        Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
-
-	    /*
-            InteractionManager.runAfterInteractions(() => {
-                        setIsValidateCodeActionModalVisible(false);
-})
-	     */
+        User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
+        Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
         firstRenderRef.current = true;
-
-    }, [])
+    }, [backTo, contactMethod, validateLoginError])
 
     const isVisible = isValidateCodeActionModalVisible && !loginData?.validatedDate && !!loginData;
 
     useEffect(() => {
         setIsValidateCodeActionModalVisible(!loginData?.validatedDate);
-		   if (!firstRenderRef.current || isVisible || loginData?.validateCodeSent) {  
+            if (!firstRenderRef.current || isVisible || loginData?.validateCodeSent) {  
                 return;
             }
-            User.requestContactMethodValidateCode(contactMethod)
+            User.requestContactMethodValidateCode(contactMethod);
             firstRenderRef.current = false;
-    }, [loginData?.validatedDate, loginData?.errorFields?.addedLogin]);
+    }, [contactMethod, isVisible, loginData?.validateCodeSent, loginData?.validatedDate, loginData?.errorFields?.addedLogin]);
 
     if (isLoadingOnyxValues || (isLoadingReportData && isEmptyObject(loginList))) {
         return <FullscreenLoadingIndicator />;
@@ -294,14 +285,13 @@ User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) 
                     />
                 )}
 
-                {!loginData?.validatedDate &&
+                {!loginData?.validatedDate && (
                 <View style={[themeStyles.ph5, themeStyles.mt3, themeStyles.mb5, themeStyles.flex1]}>
                     <Text style={[themeStyles.mb3]}>{translate('contacts.enterMagicCode', {contactMethod})}</Text>
                     <ValidateCodeForm
                         validateCodeAction={validateCodeAction}
                         validatePendingAction={loginData.pendingFields?.validateCodeSent}
                         validateError={!isEmptyObject(validateLoginError) ? validateLoginError : ErrorUtils.getLatestErrorField(loginData, 'validateCodeSent')}
-			//handleSubmitForm={(validateCode) => User.validateSecondaryLogin(loginList, contactMethod, validateCode)}
                         handleSubmitForm={(validateCode) => User.validateSecondaryLogin(loginList, contactMethod, validateCode)}
                         sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
                         clearError={() => User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')}
@@ -310,7 +300,7 @@ User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) 
                         hasMagicCodeBeenSent={hasMagicCodeBeenSent}
                     />
                 </View>
-                }
+		)}
 
 
                 {!isValidateCodeActionModalVisible && getMenuItems()}
