@@ -10,7 +10,6 @@ import HeaderWithBackButton from '@components/HeaderWithBackButton';
 import * as Expensicons from '@components/Icon/Expensicons';
 import MenuItem from '@components/MenuItem/';
 import Modal from '@components/Modal';
-import type {WindowState} from '@components/Modal/types';
 import OfflineWithFeedback from '@components/OfflineWithFeedback';
 import ScreenWrapper from '@components/ScreenWrapper';
 import ScrollView from '@components/ScrollView';
@@ -150,6 +149,8 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
             return;
         }
 
+	    setIsModalOpen(false);
+
         // Navigate to methods page on successful magic code verification
         // validatedDate property is responsible to decide the status of the magic code verification
         Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
@@ -168,21 +169,6 @@ console.log('useBeforeRemove isModalOpen: ', isModalOpen)
     const hide = useCallback(() => {
 User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
                         Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
-console.log('isModalOpen: ', isModalOpen)
-	    setIsModalOpen(false);
-
-	    /*
-            InteractionManager.runAfterInteractions(() => {
-                        setIsValidateCodeActionModalVisible(false);
-})
-	     */
-        firstRenderRef.current = true;
-
-    }, [])
-
-    const onClose = useCallback(() => {
-User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')
-Navigation.dismissModal()
 console.log('isModalOpen: ', isModalOpen)
 	    setIsModalOpen(false);
 
@@ -339,7 +325,7 @@ console.log('isModalOpen: ', isModalOpen)
                 }
 
 
-                {!isValidateCodeActionModalVisible && getMenuItems()}
+                {(!isValidateCodeActionModalVisible && isModalOpen)&& getMenuItems()}
             </ScrollView>
         </ScreenWrapper>
     );
