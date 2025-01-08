@@ -56,7 +56,7 @@ function ValidateCodeAction({
                 includeSafeAreaPaddingBottom
                 includePaddingTop
                 shouldEnableMaxHeight
-                testID={ValidateCodeActionModal.displayName}
+                testID={ValidateCodeAction.displayName}
                 offlineIndicatorStyle={themeStyles.mtAuto}
             >
                 <HeaderWithBackButton

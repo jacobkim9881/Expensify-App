@@ -14,6 +14,7 @@ import ScreenWrapper from '@components/ScreenWrapper';
 import ScrollView from '@components/ScrollView';
 import Text from '@components/Text';
 import ValidateCodeActionModal from '@components/ValidateCodeActionModal';
+import ValidateCodeAction from '@components/ValidateCodeAction';
 import useBeforeRemove from '@hooks/useBeforeRemove';
 import useLocalize from '@hooks/useLocalize';
 import usePrevious from '@hooks/usePrevious';
@@ -235,6 +236,29 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
         </>
     );
 
+	//	const getDetailsPage = () => {
+	if (!loginData?.validatedDate) {
+		return (
+		<ValidateCodeAction
+                    title={formattedContactMethod}
+		    //onModalHide={() => {}}
+                    hasMagicCodeBeenSent={hasMagicCodeBeenSent}
+                    isVisible={isValidateCodeActionModalVisible && !loginData.validatedDate && !!loginData}
+                    validatePendingAction={loginData.pendingFields?.validateCodeSent}
+                    handleSubmitForm={(validateCode) => User.validateSecondaryLogin(loginList, contactMethod, validateCode)}
+                    validateError={!isEmptyObject(validateLoginError) ? validateLoginError : ErrorUtils.getLatestErrorField(loginData, 'validateCodeSent')}
+                    clearError={() => User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')}
+                    onClose={() => {
+                        Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
+                        setIsValidateCodeActionModalVisible(false);
+                    }}
+                    sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
+                    descriptionPrimary={translate('contacts.enterMagicCode', {contactMethod})}
+                />
+	)
+	} 
+	else if ( !isValidateCodeActionModalVisible ) {
+	//}
     return (
         <ScreenWrapper
             onEntryTransitionEnd={() => validateCodeFormRef.current?.focus?.()}
@@ -258,27 +282,11 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                     />
                 )}
 
-                <ValidateCodeActionModal
-                    title={formattedContactMethod}
-                    onModalHide={() => {}}
-                    hasMagicCodeBeenSent={hasMagicCodeBeenSent}
-                    isVisible={isValidateCodeActionModalVisible && !loginData.validatedDate && !!loginData}
-                    validatePendingAction={loginData.pendingFields?.validateCodeSent}
-                    handleSubmitForm={(validateCode) => User.validateSecondaryLogin(loginList, contactMethod, validateCode)}
-                    validateError={!isEmptyObject(validateLoginError) ? validateLoginError : ErrorUtils.getLatestErrorField(loginData, 'validateCodeSent')}
-                    clearError={() => User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')}
-                    onClose={() => {
-                        Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
-                        setIsValidateCodeActionModalVisible(false);
-                    }}
-                    sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
-                    descriptionPrimary={translate('contacts.enterMagicCode', {contactMethod})}
-                />
-
-                {!isValidateCodeActionModalVisible && getMenuItems()}
+                        {!isValidateCodeActionModalVisible && getMenuItems()}
             </ScrollView>
         </ScreenWrapper>
     );
+	}
 }
 
 ContactMethodDetailsPage.displayName = 'ContactMethodDetailsPage';
