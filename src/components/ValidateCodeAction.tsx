@@ -30,12 +30,16 @@ function ValidateCodeAction({
     const [validateCodeAction] = useOnyx(ONYXKEYS.VALIDATE_ACTION_CODE);
 
     useEffect(() => {
-        if (isClose) {
+		console.log('hide')
+	    console.log('isVisible: ', isVisible)
+        if (!isVisible) {
+
+		console.log('hideeeee')
             clearError();
             onClose?.();
             firstRenderRef.current = true;
         }
-    }, [isClose, onClose, clearError]);
+    }, [isVisible, onClose, clearError]);
 
     useEffect(() => {
         if (!firstRenderRef.current || !isVisible || hasMagicCodeBeenSent) {
