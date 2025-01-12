@@ -1,12 +1,8 @@
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {View} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
-import HeaderWithBackButton from '@components/HeaderWithBackButton';
-import Modal from '@components/Modal';
-import ScreenWrapper from '@components/ScreenWrapper';
-import Text from '@components/Text';
+import Text from './Text';
 import useThemeStyles from '@hooks/useThemeStyles';
-import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import type {ValidateCodeActionModalProps} from '@components/ValidateCodeActionModal/type';
 import ValidateCodeForm from '@components/ValidateCodeActionModal/ValidateCodeForm';
@@ -14,7 +10,6 @@ import type {ValidateCodeFormHandle} from '@components/ValidateCodeActionModal/V
 
 function ValidateCodeAction({
     isVisible,
-    title,
     descriptionPrimary,
     descriptionSecondary,
     onClose,
@@ -27,7 +22,6 @@ function ValidateCodeAction({
     sendValidateCode,
     hasMagicCodeBeenSent,
     isLoading,
-    shouldHandleNavigationBack,
 }: ValidateCodeActionModalProps) {
     const themeStyles = useThemeStyles();
     const firstRenderRef = useRef(true);
@@ -41,7 +35,7 @@ function ValidateCodeAction({
             onClose?.();
             firstRenderRef.current = true;
         }
-    }, [onClose, clearError]);
+    }, [isClose, onClose, clearError]);
 
     useEffect(() => {
         if (!firstRenderRef.current || !isVisible || hasMagicCodeBeenSent) {
