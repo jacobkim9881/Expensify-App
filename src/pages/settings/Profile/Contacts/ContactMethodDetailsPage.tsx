@@ -13,7 +13,6 @@ import OfflineWithFeedback from '@components/OfflineWithFeedback';
 import ScreenWrapper from '@components/ScreenWrapper';
 import ScrollView from '@components/ScrollView';
 import Text from '@components/Text';
-import ValidateCodeActionModal from '@components/ValidateCodeActionModal';
 import ValidateCodeAction from '@components/ValidateCodeAction';
 import useBeforeRemove from '@hooks/useBeforeRemove';
 import useLocalize from '@hooks/useLocalize';
@@ -138,9 +137,6 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
         User.deleteContactMethod(contactMethod, loginList ?? {}, backTo);
     }, [contactMethod, loginList, toggleDeleteModal, backTo]);
 
-	//    const isCloseModal = useCallback(() => {
-	    //}, []);
-
     const prevValidatedDate = usePrevious(loginData?.validatedDate);
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
@@ -153,13 +149,11 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
         Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
     }, [prevValidatedDate, loginData?.validatedDate, isDefaultContactMethod, backTo, loginData]);
 
-	//useBeforeRemove(() => setIsValidateCodeActionModalVisible(false));
-	useBeforeRemove(() => {
-
-	    setIsCloseModal(true);
-		setIsValidateCodeActionModalVisible(false)
-	}
-	);
+    useBeforeRemove(() => {
+        setIsCloseModal(true);
+        setIsValidateCodeActionModalVisible(false)
+        }
+    );
 
     useEffect(() => {
         setIsValidateCodeActionModalVisible(!loginData?.validatedDate);
@@ -247,13 +241,6 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
         </>
     );
 
-	//	const getDetailsPage = () => {
-	//if (!loginData?.validatedDate) {
-	//	return (
-		//	)
-		//} 
-	//else if ( !isValidateCodeActionModalVisible ) {
-	//}
     return (
         <ScreenWrapper
             onEntryTransitionEnd={() => validateCodeFormRef.current?.focus?.()}
@@ -277,10 +264,9 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                     />
                 )}
 
- {!loginData?.validatedDate && (
+                {!loginData?.validatedDate && (
 		<ValidateCodeAction
                     title={formattedContactMethod}
-		    //onModalHide={() => {}}
                     hasMagicCodeBeenSent={hasMagicCodeBeenSent}
                     isVisible={isValidateCodeActionModalVisible && !loginData.validatedDate && !!loginData}
                     validatePendingAction={loginData.pendingFields?.validateCodeSent}
@@ -296,11 +282,10 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                     descriptionPrimary={translate('contacts.enterMagicCode', {contactMethod})}
                 />
 		)}
-                        {!isValidateCodeActionModalVisible && !isCloseModal && getMenuItems()}
+                {!isValidateCodeActionModalVisible && !isCloseModal && getMenuItems()}
             </ScrollView>
         </ScreenWrapper>
     );
-		//	}
 }
 
 ContactMethodDetailsPage.displayName = 'ContactMethodDetailsPage';

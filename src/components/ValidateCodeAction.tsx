@@ -6,7 +6,6 @@ import Modal from '@components/Modal';
 import ScreenWrapper from '@components/ScreenWrapper';
 import Text from '@components/Text';
 import useThemeStyles from '@hooks/useThemeStyles';
-//import Navigation from '@libs/Navigation/Navigation';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import type {ValidateCodeActionModalProps} from '@components/ValidateCodeActionModal/type';
@@ -19,8 +18,7 @@ function ValidateCodeAction({
     descriptionPrimary,
     descriptionSecondary,
     onClose,
-	//onModalHide,
-	isClose,
+    isClose,
     validatePendingAction,
     validateError,
     handleSubmitForm,
@@ -37,21 +35,13 @@ function ValidateCodeAction({
 
     const [validateCodeAction] = useOnyx(ONYXKEYS.VALIDATE_ACTION_CODE);
 
-    const hide = useCallback(() => {
-        clearError();
-        onClose?.();
-        firstRenderRef.current = true;
-    }, [onClose, clearError]);
-
     useEffect(() => {
-
-	    if (isClose) {
-        clearError();
-        onClose?.();
-        firstRenderRef.current = true;
-	    }
-
-    }, []);
+        if (isClose) {
+            clearError();
+            onClose?.();
+            firstRenderRef.current = true;
+        }
+    }, [onClose, clearError]);
 
     useEffect(() => {
         if (!firstRenderRef.current || !isVisible || hasMagicCodeBeenSent) {
@@ -64,23 +54,6 @@ function ValidateCodeAction({
 
     return (
 	    <>
-	    {
-		    /*
-            <ScreenWrapper
-                includeSafeAreaPaddingBottom
-                includePaddingTop
-                shouldEnableMaxHeight
-                testID={ValidateCodeAction.displayName}
-                offlineIndicatorStyle={themeStyles.mtAuto}
-            >
-                <HeaderWithBackButton
-                    title={title}
-                    onBackButtonPress={hide}
-                />
-            </ScreenWrapper>
-		     */
-	    }
-
                 <View style={[themeStyles.ph5, themeStyles.mt3, themeStyles.mb7, themeStyles.flex1]}>
                     <Text style={[themeStyles.mb3]}>{descriptionPrimary}</Text>
                     {!!descriptionSecondary && <Text style={[themeStyles.mb3]}>{descriptionSecondary}</Text>}
@@ -94,6 +67,7 @@ function ValidateCodeAction({
                         clearError={clearError}
                         buttonStyles={[themeStyles.justifyContentEnd, themeStyles.flex1]}
                         ref={validateCodeFormRef}
+                        hasMagicCodeBeenSent={hasMagicCodeBeenSent}
                     />
                 </View>
                 {footer?.()}
