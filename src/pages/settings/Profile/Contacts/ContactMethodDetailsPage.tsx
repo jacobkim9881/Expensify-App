@@ -250,7 +250,9 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                 title={formattedContactMethod}
 	onBackButtonPress={() => Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo))}
             />
-            <ScrollView keyboardShouldPersistTaps="handled">
+	    <ScrollView
+                contentContainerStyle={themeStyles.flex1} 
+                keyboardShouldPersistTaps="handled">
                 {isFailedAddContactMethod && (
                     <ErrorMessageRow
                         errors={ErrorUtils.getLatestErrorField(loginData, 'addedLogin')}
@@ -265,7 +267,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                 )}
 
                 {!loginData?.validatedDate && (
-		<ValidateCodeAction
+                <ValidateCodeAction
                     title={formattedContactMethod}
                     hasMagicCodeBeenSent={hasMagicCodeBeenSent}
                     isVisible={isValidateCodeActionModalVisible && !loginData.validatedDate && !!loginData}
@@ -277,11 +279,11 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                         Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
                         setIsValidateCodeActionModalVisible(false);
                     }}
-		    isClose={isCloseModal}
+                    isClose={isCloseModal}
                     sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
                     descriptionPrimary={translate('contacts.enterMagicCode', {contactMethod})}
                 />
-		)}
+                )}
                 {!isValidateCodeActionModalVisible && !isCloseModal && getMenuItems()}
             </ScrollView>
         </ScreenWrapper>
