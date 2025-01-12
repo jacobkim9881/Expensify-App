@@ -52,6 +52,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
     const themeStyles = useThemeStyles();
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isCloseModal, setIsCloseModal] = useState(false);
     const validateCodeFormRef = useRef<ValidateCodeFormHandle>(null);
     const backTo = route.params.backTo;
 
@@ -137,6 +138,9 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
         User.deleteContactMethod(contactMethod, loginList ?? {}, backTo);
     }, [contactMethod, loginList, toggleDeleteModal, backTo]);
 
+	//    const isCloseModal = useCallback(() => {
+	    //}, []);
+
     const prevValidatedDate = usePrevious(loginData?.validatedDate);
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
@@ -149,10 +153,17 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
         Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
     }, [prevValidatedDate, loginData?.validatedDate, isDefaultContactMethod, backTo, loginData]);
 
-    useBeforeRemove(() => setIsValidateCodeActionModalVisible(false));
+	//useBeforeRemove(() => setIsValidateCodeActionModalVisible(false));
+	useBeforeRemove(() => {
+
+	    setIsCloseModal(true);
+		setIsValidateCodeActionModalVisible(false)
+	}
+	);
 
     useEffect(() => {
         setIsValidateCodeActionModalVisible(!loginData?.validatedDate);
+	    setIsCloseModal(false);
     }, [loginData?.validatedDate, loginData?.errorFields?.addedLogin]);
 
     if (isLoadingOnyxValues || (isLoadingReportData && isEmptyObject(loginList))) {
@@ -237,27 +248,11 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
     );
 
 	//	const getDetailsPage = () => {
-	if (!loginData?.validatedDate) {
-		return (
-		<ValidateCodeAction
-                    title={formattedContactMethod}
-		    //onModalHide={() => {}}
-                    hasMagicCodeBeenSent={hasMagicCodeBeenSent}
-                    isVisible={isValidateCodeActionModalVisible && !loginData.validatedDate && !!loginData}
-                    validatePendingAction={loginData.pendingFields?.validateCodeSent}
-                    handleSubmitForm={(validateCode) => User.validateSecondaryLogin(loginList, contactMethod, validateCode)}
-                    validateError={!isEmptyObject(validateLoginError) ? validateLoginError : ErrorUtils.getLatestErrorField(loginData, 'validateCodeSent')}
-                    clearError={() => User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')}
-                    onClose={() => {
-                        Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
-                        setIsValidateCodeActionModalVisible(false);
-                    }}
-                    sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
-                    descriptionPrimary={translate('contacts.enterMagicCode', {contactMethod})}
-                />
-	)
-	} 
-	else if ( !isValidateCodeActionModalVisible ) {
+	//if (!loginData?.validatedDate) {
+	//	return (
+		//	)
+		//} 
+	//else if ( !isValidateCodeActionModalVisible ) {
 	//}
     return (
         <ScreenWrapper
@@ -266,7 +261,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
         >
             <HeaderWithBackButton
                 title={formattedContactMethod}
-                onBackButtonPress={() => Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo))}
+	onBackButtonPress={() => Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo))}
             />
             <ScrollView keyboardShouldPersistTaps="handled">
                 {isFailedAddContactMethod && (
@@ -282,11 +277,30 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                     />
                 )}
 
-                        {!isValidateCodeActionModalVisible && getMenuItems()}
+ {!loginData?.validatedDate && (
+		<ValidateCodeAction
+                    title={formattedContactMethod}
+		    //onModalHide={() => {}}
+                    hasMagicCodeBeenSent={hasMagicCodeBeenSent}
+                    isVisible={isValidateCodeActionModalVisible && !loginData.validatedDate && !!loginData}
+                    validatePendingAction={loginData.pendingFields?.validateCodeSent}
+                    handleSubmitForm={(validateCode) => User.validateSecondaryLogin(loginList, contactMethod, validateCode)}
+                    validateError={!isEmptyObject(validateLoginError) ? validateLoginError : ErrorUtils.getLatestErrorField(loginData, 'validateCodeSent')}
+                    clearError={() => User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')}
+                    onClose={() => {
+                        Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
+                        setIsValidateCodeActionModalVisible(false);
+                    }}
+		    isClose={isCloseModal}
+                    sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
+                    descriptionPrimary={translate('contacts.enterMagicCode', {contactMethod})}
+                />
+		)}
+                        {!isValidateCodeActionModalVisible && !isCloseModal && getMenuItems()}
             </ScrollView>
         </ScreenWrapper>
     );
-	}
+		//	}
 }
 
 ContactMethodDetailsPage.displayName = 'ContactMethodDetailsPage';

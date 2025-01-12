@@ -20,6 +20,7 @@ function ValidateCodeAction({
     descriptionSecondary,
     onClose,
 	//onModalHide,
+	isClose,
     validatePendingAction,
     validateError,
     handleSubmitForm,
@@ -43,6 +44,16 @@ function ValidateCodeAction({
     }, [onClose, clearError]);
 
     useEffect(() => {
+
+	    if (isClose) {
+        clearError();
+        onClose?.();
+        firstRenderRef.current = true;
+	    }
+
+    }, []);
+
+    useEffect(() => {
         if (!firstRenderRef.current || !isVisible || hasMagicCodeBeenSent) {
             return;
         }
@@ -52,6 +63,9 @@ function ValidateCodeAction({
     }, [isVisible, sendValidateCode, hasMagicCodeBeenSent]);
 
     return (
+	    <>
+	    {
+		    /*
             <ScreenWrapper
                 includeSafeAreaPaddingBottom
                 includePaddingTop
@@ -63,6 +77,9 @@ function ValidateCodeAction({
                     title={title}
                     onBackButtonPress={hide}
                 />
+            </ScreenWrapper>
+		     */
+	    }
 
                 <View style={[themeStyles.ph5, themeStyles.mt3, themeStyles.mb7, themeStyles.flex1]}>
                     <Text style={[themeStyles.mb3]}>{descriptionPrimary}</Text>
@@ -77,11 +94,10 @@ function ValidateCodeAction({
                         clearError={clearError}
                         buttonStyles={[themeStyles.justifyContentEnd, themeStyles.flex1]}
                         ref={validateCodeFormRef}
-                        hasMagicCodeBeenSent={hasMagicCodeBeenSent}
                     />
                 </View>
                 {footer?.()}
-            </ScreenWrapper>
+	</>
     );
 }
 
