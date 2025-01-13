@@ -32,7 +32,8 @@ function ValidateCodeAction({
     useEffect(() => {
 		console.log('hide')
 	    console.log('isVisible: ', isVisible)
-        if (!isVisible) {
+	    if (isClose && !firstRenderRef.current) {
+	    //		if (!isVisible) {
 
 		console.log('hideeeee')
             clearError();
@@ -46,8 +47,9 @@ function ValidateCodeAction({
             return;
         }
         firstRenderRef.current = false;
+	    console.log('sendValidateCode')
 
-        sendValidateCode();
+         sendValidateCode();
     }, [isVisible, sendValidateCode, hasMagicCodeBeenSent]);
 
     return (

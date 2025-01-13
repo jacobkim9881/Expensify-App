@@ -150,6 +150,14 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
         Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
     }, [prevValidatedDate, loginData?.validatedDate, isDefaultContactMethod, backTo, loginData]);
 
+	//	    useBeforeRemove(() => setIsValidateCodeActionModalVisible(false));
+	useBeforeRemove(() => {
+console.log('useBeforeRemove')
+
+			setIsCloseModal(true);
+//setIsValidateCodeActionModalVisible(false)
+	});
+
     useEffect(() => {
         setIsValidateCodeActionModalVisible(!loginData?.validatedDate);
     }, [loginData?.validatedDate, loginData?.errorFields?.addedLogin]);
@@ -239,7 +247,6 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
         <ScreenWrapper
 		//onEntryTransitionEnd={() => validateCodeFormRef.current?.focus?.()}
 		onEntryTransitionEnd={() => {
-			validateCodeFormRef.current?.focus?.()
 			if(!!loginData.validateCodeSent){
 				setHasMagicCodeBeenSent(true)
 		}
@@ -249,6 +256,11 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
         >
             <HeaderWithBackButton
                 title={formattedContactMethod}
+		//onBackButtonPress={() => {
+			//setIsValidateCodeActionModalVisible(false);
+
+			//setIsCloseModal(true);
+		//}}
             />
 	    <ScrollView
                 contentContainerStyle={themeStyles.flex1} 
@@ -276,9 +288,8 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                     validateError={!isEmptyObject(validateLoginError) ? validateLoginError : ErrorUtils.getLatestErrorField(loginData, 'validateCodeSent')}
                     clearError={() => User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')}
                     onClose={() => {
-                        Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
-                        setIsValidateCodeActionModalVisible(false);
-                        setIsCloseModal(true);
+                        //setIsValidateCodeActionModalVisible(false))
+                        //setIsCloseModal(true);
                     }}
                     isClose={isCloseModal}
                     sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
