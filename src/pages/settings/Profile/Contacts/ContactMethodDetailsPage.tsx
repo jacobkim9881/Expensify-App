@@ -152,9 +152,8 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 
 	//	    useBeforeRemove(() => setIsValidateCodeActionModalVisible(false));
 	useBeforeRemove(() => {
-console.log('useBeforeRemove')
-
-			setIsCloseModal(true);
+            console.log('useBeforeRemove')
+	    setIsCloseModal(true);
 //setIsValidateCodeActionModalVisible(false)
 	});
 
@@ -247,11 +246,11 @@ console.log('useBeforeRemove')
         <ScreenWrapper
 		//onEntryTransitionEnd={() => validateCodeFormRef.current?.focus?.()}
 		onEntryTransitionEnd={() => {
-			if(!!loginData.validateCodeSent){
-validateCodeFormRef.current?.focus?.()
-				setHasMagicCodeBeenSent(true)
-		}
-		}
+		    if(!!loginData.validateCodeSent){
+                        validateCodeFormRef.current?.focus?.()
+		        setHasMagicCodeBeenSent(true)
+		    }
+		    }
 		}
             testID={ContactMethodDetailsPage.displayName}
         >

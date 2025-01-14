@@ -31,11 +31,9 @@ function ValidateCodeAction({
     const [validateCodeAction] = useOnyx(ONYXKEYS.VALIDATE_ACTION_CODE);
 
     useEffect(() => {
-		console.log('hide')
+            console.log('hide')
 	    console.log('isVisible: ', isVisible)
 	    if (isClose && !firstRenderRef.current) {
-	    //		if (!isVisible) {
-
 		console.log('hideeeee')
             clearError();
             onClose?.();
