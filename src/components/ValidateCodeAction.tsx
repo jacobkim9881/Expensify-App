@@ -22,10 +22,11 @@ function ValidateCodeAction({
     sendValidateCode,
     hasMagicCodeBeenSent,
     isLoading,
+ validateCodeFormRef,
 }: ValidateCodeActionModalProps) {
     const themeStyles = useThemeStyles();
     const firstRenderRef = useRef(true);
-    const validateCodeFormRef = useRef<ValidateCodeFormHandle>(null);
+     //const validateCodeFormRef = useRef<ValidateCodeFormHandle>(null);
 
     const [validateCodeAction] = useOnyx(ONYXKEYS.VALIDATE_ACTION_CODE);
 
@@ -49,7 +50,7 @@ function ValidateCodeAction({
         firstRenderRef.current = false;
 	    console.log('sendValidateCode')
 
-         sendValidateCode();
+          //sendValidateCode();
     }, [isVisible, sendValidateCode, hasMagicCodeBeenSent]);
 
     return (

@@ -52,7 +52,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isCloseModal, setIsCloseModal] = useState(false);
-    const [hasMagicCodeBeenSent, setHasMagicCodeBeenSent] = useState(false);
+     const [hasMagicCodeBeenSent, setHasMagicCodeBeenSent] = useState(false);
     const validateCodeFormRef = useRef<ValidateCodeFormHandle>(null);
     const backTo = route.params.backTo;
 
@@ -181,7 +181,7 @@ console.log('useBeforeRemove')
 
     // Replacing spaces with "hard spaces" to prevent breaking the number
     const formattedContactMethod = Str.isSMSLogin(contactMethod) ? formatPhoneNumber(contactMethod) : contactMethod;
-	//    const hasMagicCodeBeenSent = !!loginData.validateCodeSent;
+     //const hasMagicCodeBeenSent = !!loginData.validateCodeSent;
     const isFailedAddContactMethod = !!loginData.errorFields?.addedLogin;
     const isFailedRemovedContactMethod = !!loginData.errorFields?.deletedLogin;
 
@@ -248,6 +248,7 @@ console.log('useBeforeRemove')
 		//onEntryTransitionEnd={() => validateCodeFormRef.current?.focus?.()}
 		onEntryTransitionEnd={() => {
 			if(!!loginData.validateCodeSent){
+validateCodeFormRef.current?.focus?.()
 				setHasMagicCodeBeenSent(true)
 		}
 		}
@@ -294,6 +295,7 @@ console.log('useBeforeRemove')
                     isClose={isCloseModal}
                     sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
                     descriptionPrimary={translate('contacts.enterMagicCode', {contactMethod})}
+		    validateCodeFormRef={validateCodeFormRef}
                 />
                 )}
                 {!isValidateCodeActionModalVisible && getMenuItems()}
