@@ -248,6 +248,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 		onEntryTransitionEnd={() => {
 		    if(!!loginData.validateCodeSent){
                         validateCodeFormRef.current?.focus?.()
+			    /////////// When modal open, a user types number soon then the number will be reset after onEntryTransitionEnd ////////////////
 		        setHasMagicCodeBeenSent(true)
 		    }
 		    }
