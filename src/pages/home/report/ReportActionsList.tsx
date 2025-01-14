@@ -12,6 +12,7 @@ import {AUTOSCROLL_TO_TOP_THRESHOLD} from '@components/InvertedFlatList/BaseInve
 import {usePersonalDetails} from '@components/OnyxProvider';
 import useCurrentUserPersonalDetails from '@hooks/useCurrentUserPersonalDetails';
 import useLocalize from '@hooks/useLocalize';
+import useKeyboardShortcut from '@hooks/useKeyboardShortcut'; 
 import useNetworkWithOfflineStatus from '@hooks/useNetworkWithOfflineStatus';
 import usePrevious from '@hooks/usePrevious';
 import useReportScrollManager from '@hooks/useReportScrollManager';
@@ -163,6 +164,7 @@ function ReportActionsList({
     const userActiveSince = useRef<string>(DateUtils.getDBTime());
     const lastMessageTime = useRef<string | null>(null);
     const [isVisible, setIsVisible] = useState(Visibility.isVisible);
+	const [currentIndex, setCurrentIndex] = useState(0);
     const isFocused = useIsFocused();
 
     const [reportNameValuePairs] = useOnyx(`${ONYXKEYS.COLLECTION.REPORT_NAME_VALUE_PAIRS}${report?.reportID ?? -1}`);
@@ -175,6 +177,30 @@ function ReportActionsList({
 
         return unsubscriber;
     }, []);
+
+    useKeyboardShortcut(
+	    CONST.KEYBOARD_SHORTCUTS.ARROW_DOWN,
+	    (e) => {
+console.log('e.target: ', e.target)
+console.log('e: ', e)
+console.log('window: ', window)
+reportScrollManager.scrollByArrowKey(-1);
+	    },
+	    {
+		    //shouldPreventDefault: false
+	    });
+
+    useKeyboardShortcut(
+	    CONST.KEYBOARD_SHORTCUTS.ARROW_UP,
+	    (e) => {
+console.log('e.target: ', e.target)
+console.log('e: ', e)
+console.log('window: ', window)
+reportScrollManager.scrollByArrowKey(1);
+	    },
+	    {
+		    //shouldPreventDefault: false
+	    });
 
     const scrollingVerticalOffset = useRef(0);
     const readActionSkipped = useRef(false);
