@@ -256,7 +256,6 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                     />
                 </OfflineWithFeedback>
             )}
-            {getDeleteConfirmationModal()}
         </>
     );
 
@@ -275,6 +274,17 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
         >
             <HeaderWithBackButton
                 title={formattedContactMethod}
+                    threeDotsMenuItems={getThreeDotsMenuItems()}
+                    shouldShowThreeDotsButton={threeDotsMenuItems.length > 0}
+                    shouldOverlayDots
+                    threeDotsAnchorPosition={styles.threeDotsPopoverOffset(windowWidth)}
+                    onThreeDotsButtonPress={() => {
+                        // Hide the keyboard when the user clicks the three-dot menu.
+                        // Use blurActiveElement() for mWeb and KeyboardUtils.dismiss() for native apps.
+                        blurActiveElement();
+                        KeyboardUtils.dismiss();
+                    }}
+
 		//onBackButtonPress={() => {
 			//setIsValidateCodeActionModalVisible(false);
 
@@ -311,15 +321,8 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                         //setIsCloseModal(true);
                     }}
                     isClose={isCloseModal}
-                    sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}<<<<<<< HEAD
+                    sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
                     descriptionPrimary={translate('contacts.enterMagicCode', {contactMethod: formattedContactMethod})}
-                    onThreeDotsButtonPress={() => {
-                        // Hide the keyboard when the user clicks the three-dot menu.
-                        // Use blurActiveElement() for mWeb and KeyboardUtils.dismiss() for native apps.
-                        blurActiveElement();
-                        KeyboardUtils.dismiss();
-                    }}
-                    threeDotsMenuItems={getThreeDotsMenuItems()}
                     footer={getDeleteConfirmationModal}
 		    validateCodeFormRef={validateCodeFormRef}
                 />
