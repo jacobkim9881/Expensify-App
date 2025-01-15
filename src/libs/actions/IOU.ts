@@ -4344,6 +4344,8 @@ function trackExpense(
             if (actionableWhisperReportActionIDParam) {
                 parameters.actionableWhisperReportActionID = actionableWhisperReportActionIDParam;
             }
+		console.log('trackedReceipt instanceof Blob : ', trackedReceipt instanceof Blob)
+		console.log('WRITE_COMMANDS.TRACK_EXPENSE, parameters: ', parameters)
             API.write(WRITE_COMMANDS.TRACK_EXPENSE, parameters, onyxData);
         }
     }

@@ -168,6 +168,8 @@ function AttachmentPicker({
 
                     const targetAsset = response.assets?.[0];
                     const targetAssetUri = targetAsset?.uri;
+			console.log('targetAsset: ', targetAsset)
+			console.log('targetAsset instanceof Blob: ', targetAsset instanceof Blob)
 
                     if (!targetAssetUri) {
                         return resolve();
