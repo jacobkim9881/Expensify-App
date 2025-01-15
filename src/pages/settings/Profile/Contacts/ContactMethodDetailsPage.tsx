@@ -13,7 +13,7 @@ import OfflineWithFeedback from '@components/OfflineWithFeedback';
 import ScreenWrapper from '@components/ScreenWrapper';
 import ScrollView from '@components/ScrollView';
 import Text from '@components/Text';
-import ValidateCodeActionModal from '@components/ValidateCodeActionModal';
+import ValidateCodeAction from '@components/ValidateCodeAction';
 import useBeforeRemove from '@hooks/useBeforeRemove';
 import useLocalize from '@hooks/useLocalize';
 import usePrevious from '@hooks/usePrevious';
@@ -54,6 +54,8 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
     const themeStyles = useThemeStyles();
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isCloseModal, setIsCloseModal] = useState(false);
+     const [hasMagicCodeBeenSent, setHasMagicCodeBeenSent] = useState(false);
     const validateCodeFormRef = useRef<ValidateCodeFormHandle>(null);
     const backTo = route.params.backTo;
 
@@ -151,7 +153,12 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
         Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
     }, [prevValidatedDate, loginData?.validatedDate, isDefaultContactMethod, backTo, loginData]);
 
-    useBeforeRemove(() => setIsValidateCodeActionModalVisible(false));
+	//	    useBeforeRemove(() => setIsValidateCodeActionModalVisible(false));
+	useBeforeRemove(() => {
+            console.log('useBeforeRemove')
+	    setIsCloseModal(true);
+//setIsValidateCodeActionModalVisible(false)
+	});
 
     useEffect(() => {
         setIsValidateCodeActionModalVisible(!loginData?.validatedDate);
@@ -188,7 +195,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 
     // Replacing spaces with "hard spaces" to prevent breaking the number
     const formattedContactMethod = Str.isSMSLogin(contactMethod) ? formatPhoneNumber(contactMethod) : contactMethod;
-    const hasMagicCodeBeenSent = !!loginData.validateCodeSent;
+     //const hasMagicCodeBeenSent = !!loginData.validateCodeSent;
     const isFailedAddContactMethod = !!loginData.errorFields?.addedLogin;
     const isFailedRemovedContactMethod = !!loginData.errorFields?.deletedLogin;
 
@@ -255,14 +262,28 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 
     return (
         <ScreenWrapper
-            onEntryTransitionEnd={() => validateCodeFormRef.current?.focus?.()}
+		//onEntryTransitionEnd={() => validateCodeFormRef.current?.focus?.()}
+		onEntryTransitionEnd={() => {
+		    if(!!loginData.validateCodeSent){
+                        validateCodeFormRef.current?.focus?.()
+			    /////////// When modal open, a user types number soon then the number will be reset after onEntryTransitionEnd ////////////////
+		        setHasMagicCodeBeenSent(true)
+		    }
+		    }
+		}
             testID={ContactMethodDetailsPage.displayName}
         >
             <HeaderWithBackButton
                 title={formattedContactMethod}
-                onBackButtonPress={() => Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo))}
+		//onBackButtonPress={() => {
+			//setIsValidateCodeActionModalVisible(false);
+
+			//setIsCloseModal(true);
+		//}}
             />
-            <ScrollView keyboardShouldPersistTaps="handled">
+	    <ScrollView
+                contentContainerStyle={themeStyles.flex1} 
+                keyboardShouldPersistTaps="handled">
                 {isFailedAddContactMethod && (
                     <ErrorMessageRow
                         errors={ErrorUtils.getLatestErrorField(loginData, 'addedLogin')}
@@ -276,9 +297,9 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                     />
                 )}
 
-                <ValidateCodeActionModal
+                {!loginData?.validatedDate && (
+                <ValidateCodeAction
                     title={formattedContactMethod}
-                    onModalHide={() => {}}
                     hasMagicCodeBeenSent={hasMagicCodeBeenSent}
                     isVisible={isValidateCodeActionModalVisible && !loginData.validatedDate && !!loginData}
                     validatePendingAction={loginData.pendingFields?.validateCodeSent}
@@ -286,10 +307,11 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                     validateError={!isEmptyObject(validateLoginError) ? validateLoginError : ErrorUtils.getLatestErrorField(loginData, 'validateCodeSent')}
                     clearError={() => User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')}
                     onClose={() => {
-                        Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo));
-                        setIsValidateCodeActionModalVisible(false);
+                        //setIsValidateCodeActionModalVisible(false))
+                        //setIsCloseModal(true);
                     }}
-                    sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
+                    isClose={isCloseModal}
+                    sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}<<<<<<< HEAD
                     descriptionPrimary={translate('contacts.enterMagicCode', {contactMethod: formattedContactMethod})}
                     onThreeDotsButtonPress={() => {
                         // Hide the keyboard when the user clicks the three-dot menu.
@@ -299,8 +321,9 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                     }}
                     threeDotsMenuItems={getThreeDotsMenuItems()}
                     footer={getDeleteConfirmationModal}
+		    validateCodeFormRef={validateCodeFormRef}
                 />
-
+                )}
                 {!isValidateCodeActionModalVisible && getMenuItems()}
             </ScrollView>
         </ScreenWrapper>
