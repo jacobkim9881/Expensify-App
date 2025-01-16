@@ -1,6 +1,6 @@
 import {Str} from 'expensify-common';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {InteractionManager, Keyboard} from 'react-native';
+import {Animated, InteractionManager, Keyboard} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
 import FullPageNotFoundView from '@components/BlockingViews/FullPageNotFoundView';
 import ConfirmModal from '@components/ConfirmModal';
@@ -19,6 +19,7 @@ import useLocalize from '@hooks/useLocalize';
 import usePrevious from '@hooks/usePrevious';
 import useTheme from '@hooks/useTheme';
 import useThemeStyles from '@hooks/useThemeStyles';
+import useWindowDimensions from '@hooks/useWindowDimensions';
 import blurActiveElement from '@libs/Accessibility/blurActiveElement';
 import {canUseTouchScreen} from '@libs/DeviceCapabilities';
 import * as ErrorUtils from '@libs/ErrorUtils';
@@ -52,6 +53,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
     const {formatPhoneNumber, translate} = useLocalize();
     const theme = useTheme();
     const themeStyles = useThemeStyles();
+    const {windowWidth} = useWindowDimensions();
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isCloseModal, setIsCloseModal] = useState(false);
@@ -275,9 +277,9 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
             <HeaderWithBackButton
                 title={formattedContactMethod}
                     threeDotsMenuItems={getThreeDotsMenuItems()}
-                    shouldShowThreeDotsButton={threeDotsMenuItems.length > 0}
+                    shouldShowThreeDotsButton={getThreeDotsMenuItems().length > 0}
                     shouldOverlayDots
-                    threeDotsAnchorPosition={styles.threeDotsPopoverOffset(windowWidth)}
+                    threeDotsAnchorPosition={themeStyles.threeDotsPopoverOffset(windowWidth)}
                     onThreeDotsButtonPress={() => {
                         // Hide the keyboard when the user clicks the three-dot menu.
                         // Use blurActiveElement() for mWeb and KeyboardUtils.dismiss() for native apps.
