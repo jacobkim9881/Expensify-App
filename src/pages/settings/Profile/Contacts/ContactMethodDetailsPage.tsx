@@ -57,7 +57,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isCloseModal, setIsCloseModal] = useState(false);
-     const [hasMagicCodeBeenSent, setHasMagicCodeBeenSent] = useState(false);
+      //const [hasMagicCodeBeenSent, setHasMagicCodeBeenSent] = useState(false);
     const validateCodeFormRef = useRef<ValidateCodeFormHandle>(null);
     const backTo = route.params.backTo;
 
@@ -197,7 +197,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 
     // Replacing spaces with "hard spaces" to prevent breaking the number
     const formattedContactMethod = Str.isSMSLogin(contactMethod) ? formatPhoneNumber(contactMethod) : contactMethod;
-     //const hasMagicCodeBeenSent = !!loginData.validateCodeSent;
+     const hasMagicCodeBeenSent = !!loginData.validateCodeSent;
     const isFailedAddContactMethod = !!loginData.errorFields?.addedLogin;
     const isFailedRemovedContactMethod = !!loginData.errorFields?.deletedLogin;
 
@@ -268,7 +268,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 		    if(!!loginData.validateCodeSent){
                         validateCodeFormRef.current?.focus?.()
 			    /////////// When modal open, a user types number soon then the number will be reset after onEntryTransitionEnd ////////////////
-		        setHasMagicCodeBeenSent(true)
+		         //setHasMagicCodeBeenSent(true)
 		    }
 		    }
 		}
