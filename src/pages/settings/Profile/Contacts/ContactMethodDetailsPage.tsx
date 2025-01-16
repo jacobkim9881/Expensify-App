@@ -159,7 +159,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
 	useBeforeRemove(() => {
             console.log('useBeforeRemove')
 	    setIsCloseModal(true);
-//setIsValidateCodeActionModalVisible(false)
+setIsValidateCodeActionModalVisible(false)
 	});
 
     useEffect(() => {
@@ -258,6 +258,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                     />
                 </OfflineWithFeedback>
             )}
+            {getDeleteConfirmationModal()}
         </>
     );
 
@@ -325,7 +326,6 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                     isClose={isCloseModal}
                     sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
                     descriptionPrimary={translate('contacts.enterMagicCode', {contactMethod: formattedContactMethod})}
-                    footer={getDeleteConfirmationModal}
 		    validateCodeFormRef={validateCodeFormRef}
                 />
                 )}
