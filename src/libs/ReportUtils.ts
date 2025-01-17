@@ -8243,7 +8243,6 @@ function isReportOwner(report: OnyxInputOrEntry<Report>): boolean {
 function isAllowedToApproveExpenseReport(report: OnyxEntry<Report>, approverAccountID?: number, reportPolicy?: OnyxEntry<Policy> | SearchPolicy): boolean {
     const policy = reportPolicy ?? getPolicy(report?.policyID);
     const isOwner = (approverAccountID ?? currentUserAccountID) === report?.ownerAccountID;
-	console.log('policy?.preventSelfApproval..........>: ', policy)
     return !(policy?.preventSelfApproval && isOwner);
 }
 

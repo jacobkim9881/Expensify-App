@@ -53,42 +53,6 @@ function ActionCell({
 
     const text = isChildListItem ? translate(actionTranslationsMap[CONST.SEARCH.ACTION_TYPES.VIEW]) : translate(actionTranslationsMap[action]);
 
-	const isClicked = useRef(false);
-	const lastAction = useRef('');
-	const getLastAction = lastAction.current;
-
-
-	const handleLoading = () => {
-		if(action === 'submit' || action === 'approve' || action === 'pay') {
-			isClicked.current = true;
-				//!isClicked.current;
-			lastAction.current = text;
-		}
-		goToItem();
-		return;
-
-	}
-
-	const resetLastAction = useMemo(() => {
-		if(isClicked.current) {
-
-			lastAction.current = ''
-			isClicked.current = false;
-		}
-		else if(getLastAction && !isClicked.current) {
-lastAction.current = '' 
-		}
-
-	}, [text])
-
-	const setLastActionWithIsLoading = useMemo(() => {
-	if(isLoading && !isClicked.current) {
-lastAction.current = text;
-		} 	}, [isLoading])
-	React.useEffect(() => {
-		console.log('action....................:', action)
-
-	}, [])
     const getButtonInnerStyles = useCallback(
         (shouldUseSuccessStyle: boolean) => {
             if (!isSelected) {
@@ -145,12 +109,10 @@ lastAction.current = text;
         <Button
             text={text}
 	    onPress={goToItem}
-	    //onPress={handleLoading}
             small
             style={[styles.w100]}
             innerStyles={getButtonInnerStyles(shouldUseSuccessStyleProp)}
-	    isLoading={isLoading}
-	    //isLoading={isLoading || getLastAction === text}
+            isLoading={isLoading}
             success={shouldUseSuccessStyleProp}
             isDisabled={isOffline}
         />

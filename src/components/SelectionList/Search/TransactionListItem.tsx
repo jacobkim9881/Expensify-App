@@ -41,27 +41,25 @@ function TransactionListItem<TItem extends ListItem>({
 	}
 
         if (previousActionItem && transactionItem.action !== previousActionItem && transactionItem.isActionLoading) {
-            console.log('item.action !== previousActionItem.current//////////////')
-		console.log('previousActionItem: ', previousActionItem, ', transactionItem.action: ', transactionItem.action)
             setPreviousActionItem('');
-		console.log('transactionItem: ', transactionItem)
-            console.log('isLoading,?.....................: ', transactionItem.isActionLoading)
             setIsActionLoading(currentSearchHash, transactionItem, false);        
+            console.log('item.action !== previousActionItem.current//////////////')
+	    console.log('previousActionItem: ', previousActionItem, ', transactionItem.action: ', transactionItem.action)
+	    console.log('transactionItem: ', transactionItem)
+            console.log('isLoading,?.....................: ', transactionItem.isActionLoading)
         }
         }, [transactionItem.action, currentSearchHash, item, previousActionItem, transactionItem])  
 
     const handlePreviousActionItem = useCallback(() => {
 	if (transactionItem.isActionLoading) {return};
         if (!transactionItem.isActionLoading) { 
-
-		console.log('previousActionItem: ', previousActionItem, ', transactionItem.action: ', transactionItem.action)
+            console.log('previousActionItem: ', previousActionItem, ', transactionItem.action: ', transactionItem.action)
             console.log('previousActionItem.current is not definedddddddddddd')
 
             setIsActionLoading(currentSearchHash, transactionItem, true);        
             setPreviousActionItem(transactionItem.action);
 	}   
         }, [currentSearchHash, transactionItem])
-	    //}, [])
 
     const listItemPressableStyle = [
         styles.selectionListPressableItemWrapper,

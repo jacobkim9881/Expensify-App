@@ -1,6 +1,5 @@
 import {Str} from 'expensify-common';
-import React, {useMemo, useRef, useCallback} from 'react';
-//import React, {useMemo} from 'react';
+import React, {useMemo} from 'react';
 import type {StyleProp, ViewStyle} from 'react-native';
 import {View} from 'react-native';
 import Checkbox from '@components/Checkbox';
@@ -30,7 +29,6 @@ import ActionCell from './ActionCell';
 import ExpenseItemHeaderNarrow from './ExpenseItemHeaderNarrow';
 import TextWithIconCell from './TextWithIconCell';
 import UserInfoCell from './UserInfoCell';
-import {test1} from '@libs/actions/Search';
 
 type CellProps = {
     // eslint-disable-next-line react/no-unused-prop-types
@@ -267,20 +265,6 @@ function TransactionListItemRow({
     const StyleUtils = useStyleUtils();
     const theme = useTheme();
 
-	React.useEffect(() => {
-console.log('TransactionListItemRow..................... item: ', item)
-	}, [])
-	const previousActionItem = useRef('');
-	const setPreviousActionItem = useMemo(() => {
-		if (!previousActionItem.current) {
-previousActionItem.current = item.action
-		}
-
-		if (item.action !== previousActionItem.current) {
-			//test1({isActionLoading: false});
-	
-		}
-	}, [item, previousActionItem])
     const isOnHold = useMemo(() => TransactionUtils.isOnHold(item), [item]);
 
     if (!isLargeScreenWidth) {
