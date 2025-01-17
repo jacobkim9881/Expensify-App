@@ -20,7 +20,6 @@ function TransactionListItem<TItem extends ListItem>({
     canSelectMultiple,
     onSelectRow,
     onCheckboxPress,
-    onDismissError,
     onFocus,
     onLongPressRow,
     shouldSyncFocus,
@@ -98,8 +97,6 @@ function TransactionListItem<TItem extends ListItem>({
             showTooltip={showTooltip}
             canSelectMultiple={canSelectMultiple}
             onSelectRow={onSelectRow}
-            onDismissError={onDismissError}
-            errors={item.errors}
             pendingAction={item.pendingAction}
             keyForList={item.keyForList}
             onFocus={onFocus}

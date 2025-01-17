@@ -119,6 +119,8 @@ function BaseSelectionList<TItem extends ListItem>(
         shouldScrollToFocusedIndex = true,
         onContentSizeChange,
         listItemTitleStyles,
+        initialNumToRender = 12,
+        listItemTitleContainerStyles,
     }: BaseSelectionListProps<TItem>,
     ref: ForwardedRef<SelectionListHandle>,
 ) {
@@ -325,7 +327,7 @@ console.log('src/components/SelectionList/BaseSelectionList.tsx.................
         initialFocusedIndex: flattenedSections.allOptions.findIndex((option) => option.keyForList === initiallyFocusedOptionKey),
         maxIndex: Math.min(flattenedSections.allOptions.length - 1, CONST.MAX_SELECTION_LIST_PAGE_LENGTH * currentPage - 1),
         disabledIndexes: disabledArrowKeyIndexes,
-        isActive: isFocused,
+        isActive: true,
         onFocusedIndexChange: (index: number) => {
             const focusedItem = flattenedSections.allOptions.at(index);
             if (focusedItem) {
@@ -337,6 +339,19 @@ console.log('src/components/SelectionList/BaseSelectionList.tsx.................
         },
         isFocused,
     });
+
+    const selectedItemIndex = useMemo(
+        () => (initiallyFocusedOptionKey ? flattenedSections.allOptions.findIndex((option) => option.isSelected) : -1),
+        [flattenedSections.allOptions, initiallyFocusedOptionKey],
+    );
+
+    useEffect(() => {
+        if (selectedItemIndex === -1 || selectedItemIndex === focusedIndex) {
+            return;
+        }
+        setFocusedIndex(selectedItemIndex);
+        // eslint-disable-next-line react-compiler/react-compiler, react-hooks/exhaustive-deps
+    }, [selectedItemIndex]);
 
     const clearInputAfterSelect = useCallback(() => {
         onChangeText?.('');
@@ -401,10 +416,20 @@ console.log('src/components/SelectionList/BaseSelectionList.tsx.................
         }
     };
 
-    const selectFocusedOption = () => {
+    const getFocusedOption = useCallback(() => {
         const focusedOption = focusedIndex !== -1 ? flattenedSections.allOptions.at(focusedIndex) : undefined;
 
         if (!focusedOption || (focusedOption.isDisabled && !focusedOption.isSelected)) {
+            return;
+        }
+
+        return focusedOption;
+    }, [flattenedSections.allOptions, focusedIndex]);
+
+    const selectFocusedOption = () => {
+        const focusedOption = getFocusedOption();
+
+        if (!focusedOption) {
             return;
         }
 
@@ -533,6 +558,7 @@ console.log('src/components/SelectionList/BaseSelectionList.tsx.................
                     titleStyles={listItemTitleStyles}
                     shouldHighlightSelectedItem={shouldHighlightSelectedItem}
                     singleExecution={singleExecution}
+                    titleContainerStyles={listItemTitleContainerStyles}
                 />
             </View>
         );
@@ -739,13 +765,11 @@ console.log('src/components/SelectionList/BaseSelectionList.tsx.................
         isTextInputFocusedRef.current = isTextInputFocused;
     }, []);
 
-    useImperativeHandle(ref, () => ({scrollAndHighlightItem, clearInputAfterSelect, updateAndScrollToFocusedIndex, updateExternalTextInputFocus, scrollToIndex}), [
-        scrollAndHighlightItem,
-        clearInputAfterSelect,
-        updateAndScrollToFocusedIndex,
-        updateExternalTextInputFocus,
-        scrollToIndex,
-    ]);
+    useImperativeHandle(
+        ref,
+        () => ({scrollAndHighlightItem, clearInputAfterSelect, updateAndScrollToFocusedIndex, updateExternalTextInputFocus, scrollToIndex, getFocusedOption, focusTextInput}),
+        [scrollAndHighlightItem, clearInputAfterSelect, updateAndScrollToFocusedIndex, updateExternalTextInputFocus, scrollToIndex, getFocusedOption, focusTextInput],
+    );
 
     /** Selects row when pressing Enter */
     useKeyboardShortcut(CONST.KEYBOARD_SHORTCUTS.ENTER, selectFocusedOption, {
@@ -815,7 +839,7 @@ console.log('src/components/SelectionList/BaseSelectionList.tsx.................
                         indicatorStyle="white"
                         keyboardShouldPersistTaps="always"
                         showsVerticalScrollIndicator={showScrollIndicator}
-                        initialNumToRender={12}
+                        initialNumToRender={initialNumToRender}
                         maxToRenderPerBatch={maxToRenderPerBatch}
                         windowSize={windowSize}
                         updateCellsBatchingPeriod={updateCellsBatchingPeriod}
