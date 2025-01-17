@@ -1,4 +1,5 @@
-import React, {useEffect, useRef} from 'react';
+import React, {forwardRef, useEffect, useRef} from 'react';
+import type {ForwardedRef} from 'react';
 import {View} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
 import Text from './Text';
@@ -7,6 +8,15 @@ import ONYXKEYS from '@src/ONYXKEYS';
 import type {ValidateCodeActionModalProps} from '@components/ValidateCodeActionModal/type';
 import ValidateCodeForm from '@components/ValidateCodeActionModal/ValidateCodeForm';
 import type {ValidateCodeFormHandle} from '@components/ValidateCodeActionModal/ValidateCodeForm/BaseValidateCodeForm';
+
+
+type ValidateCodeActionWithoutModalProps = {
+ref: ForwardedRef<ValidateCodeFormHandle>;
+//validateCodeFormRef?: ForwardedRef<ValidateCodeFormHandle>;
+}
+
+
+type ValidateCodeActionProps = ValidateCodeActionModalProps & ValidateCodeActionWithoutModalProps;
 
 function ValidateCodeAction({
     isVisible,
@@ -22,11 +32,15 @@ function ValidateCodeAction({
     sendValidateCode,
     hasMagicCodeBeenSent,
     isLoading,
- validateCodeFormRef,
-}: ValidateCodeActionModalProps) {
+	//    validateCodeFormRef,
+	 //ref,
+}: ValidateCodeActionProps,
+	//}: ValidateCodeActionModalProps,
+	//ref: ValidateCodeActionWithoutModalProps,
+) {
     const themeStyles = useThemeStyles();
     const firstRenderRef = useRef(true);
-     //const validateCodeFormRef = useRef<ValidateCodeFormHandle>(null);
+   const validateCodeFormRef = useRef<ValidateCodeFormHandle>(null);
 
     const [validateCodeAction] = useOnyx(ONYXKEYS.VALIDATE_ACTION_CODE);
 
@@ -49,7 +63,6 @@ function ValidateCodeAction({
     }, [isVisible, sendValidateCode, hasMagicCodeBeenSent]);
 
     return (
-        <>
                 <View style={[themeStyles.ph5, themeStyles.mt3, themeStyles.mb5, themeStyles.flex1]}>
                     <Text style={[themeStyles.mb3]}>{descriptionPrimary}</Text>
                     {!!descriptionSecondary && <Text style={[themeStyles.mb3]}>{descriptionSecondary}</Text>}
@@ -62,15 +75,17 @@ function ValidateCodeAction({
                         sendValidateCode={sendValidateCode}
                         clearError={clearError}
                         buttonStyles={[themeStyles.justifyContentEnd, themeStyles.flex1]}
-                        ref={validateCodeFormRef}
+                          //ref={ref}
                         hasMagicCodeBeenSent={hasMagicCodeBeenSent}
                     />
-                </View>
+
                 {footer?.()}
-        </>
+                </View>
     );
 }
 
 ValidateCodeAction.displayName = 'ValidateCodeAction';
 
+//export default React.forwardRef(ValidateCodeAction);
 export default ValidateCodeAction;
+//export default forwardRef(ValidateCodeAction);
