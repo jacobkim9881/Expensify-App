@@ -320,15 +320,14 @@ setIsValidateCodeActionModalVisible(false)
                     validateError={!isEmptyObject(validateLoginError) ? validateLoginError : ErrorUtils.getLatestErrorField(loginData, 'validateCodeSent')}
                     clearError={() => User.clearContactMethodErrors(contactMethod, !isEmptyObject(validateLoginError) ? 'validateLogin' : 'validateCodeSent')}
                     onClose={() => {
+                        User.clearContactMethodErrors(contactMethod, 'validateLogin') 
                         //setIsValidateCodeActionModalVisible(false))
                         //setIsCloseModal(true);
                     }}
                     isClose={isCloseModal}
                     sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
                     descriptionPrimary={translate('contacts.enterMagicCode', {contactMethod: formattedContactMethod})}
-		     //validateCodeFormRef={validateCodeFormRef}
-		     forwardedRef={validateCodeFormRef}
-		     //ref={(ref) => {validateCodeFormRef.current = ref}}
+		    forwardedRef={validateCodeFormRef}
                 />
                 )}
                 {!isValidateCodeActionModalVisible && getMenuItems()}
