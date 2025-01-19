@@ -163,6 +163,7 @@ setIsValidateCodeActionModalVisible(false)
 	});
 
     useEffect(() => {
+	    console.log('isValidateCodeActionModalVisible,: ', isValidateCodeActionModalVisible)
         setIsValidateCodeActionModalVisible(!loginData?.validatedDate);
     }, [loginData?.validatedDate, loginData?.errorFields?.addedLogin]);
 

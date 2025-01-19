@@ -43,7 +43,7 @@ function ValidateCodeAction({
         clearError();
         onClose?.();
         firstRenderRef.current = true;
-    }, []);
+    }, [clearError, onClose]);
 
     useEffect(() => {
         if (!firstRenderRef.current || !isVisible || hasMagicCodeBeenSent) {
@@ -81,7 +81,22 @@ ValidateCodeAction.displayName = 'ValidateCodeAction';
 
 export default forwardRef((props, ref) => (
     <ValidateCodeAction
-        {...props}
+	    {
+	    isVisible,
+    descriptionPrimary,
+    descriptionSecondary,
+    onClose,
+    isClose,
+    validatePendingAction,
+    validateError,
+    handleSubmitForm,
+    clearError,
+    footer,
+    sendValidateCode,
+    hasMagicCodeBeenSent,
+    isLoading,
+
+    }
         forwardedRef={ref}
 />
 ));
