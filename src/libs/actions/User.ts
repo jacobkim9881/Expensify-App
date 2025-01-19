@@ -297,11 +297,12 @@ function resetValidateActionCodeSent() {
 /**
  * Clears any possible stored errors for a specific field on a contact method
  */
-function clearContactMethodErrors(contactMethod: string, fieldName: string) {
+function clearContactMethodErrors(contactMethod: string, fieldName: string, validateLoginError, loginData) {
+	const start = Date.now();
     Onyx.merge(ONYXKEYS.LOGIN_LIST, {
         [contactMethod]: {
             errorFields: {
-                [fieldName]: null,
+                [fieldName]: start,
             },
             pendingFields: {
                 [fieldName]: null,

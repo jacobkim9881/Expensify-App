@@ -11,8 +11,7 @@ import type {ValidateCodeFormHandle} from '@components/ValidateCodeActionModal/V
 
 
 type ValidateCodeActionWithoutModalProps = {
-ref: ForwardedRef<ValidateCodeFormHandle>;
-//validateCodeFormRef?: ForwardedRef<ValidateCodeFormHandle>;
+forwardedRef: ForwardedRef<ValidateCodeFormHandle>;
 }
 
 
@@ -32,25 +31,19 @@ function ValidateCodeAction({
     sendValidateCode,
     hasMagicCodeBeenSent,
     isLoading,
-	//    validateCodeFormRef,
-	 //ref,
+    forwardedRef
 }: ValidateCodeActionProps,
-	//}: ValidateCodeActionModalProps,
-	//ref: ValidateCodeActionWithoutModalProps,
 ) {
     const themeStyles = useThemeStyles();
     const firstRenderRef = useRef(true);
-   const validateCodeFormRef = useRef<ValidateCodeFormHandle>(null);
 
     const [validateCodeAction] = useOnyx(ONYXKEYS.VALIDATE_ACTION_CODE);
 
-    useEffect(() => {
-        if (!isVisible) {
-            clearError();
-            onClose?.();
-            firstRenderRef.current = true;
-        }
-    }, [isVisible, onClose, clearError]);
+    useEffect(() => () => {
+        clearError();
+        onClose?.();
+        firstRenderRef.current = true;
+    }, []);
 
     useEffect(() => {
         if (!firstRenderRef.current || !isVisible || hasMagicCodeBeenSent) {
@@ -75,7 +68,7 @@ function ValidateCodeAction({
                         sendValidateCode={sendValidateCode}
                         clearError={clearError}
                         buttonStyles={[themeStyles.justifyContentEnd, themeStyles.flex1]}
-                          //ref={ref}
+                        ref={forwardedRef}
                         hasMagicCodeBeenSent={hasMagicCodeBeenSent}
                     />
 
@@ -86,6 +79,9 @@ function ValidateCodeAction({
 
 ValidateCodeAction.displayName = 'ValidateCodeAction';
 
-//export default React.forwardRef(ValidateCodeAction);
-export default ValidateCodeAction;
-//export default forwardRef(ValidateCodeAction);
+export default forwardRef((props, ref) => (
+    <ValidateCodeAction
+        {...props}
+        forwardedRef={ref}
+/>
+));

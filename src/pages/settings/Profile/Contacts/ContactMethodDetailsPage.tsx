@@ -277,7 +277,6 @@ setIsValidateCodeActionModalVisible(false)
         >
             <HeaderWithBackButton
                 title={formattedContactMethod}
-                onBackButtonPress={() => Navigation.goBack(ROUTES.SETTINGS_CONTACT_METHODS.getRoute(backTo))}
                     threeDotsMenuItems={getThreeDotsMenuItems()}
                     shouldShowThreeDotsButton={getThreeDotsMenuItems().length > 0}
                     shouldOverlayDots
@@ -328,7 +327,7 @@ setIsValidateCodeActionModalVisible(false)
                     sendValidateCode={() => User.requestContactMethodValidateCode(contactMethod)}
                     descriptionPrimary={translate('contacts.enterMagicCode', {contactMethod: formattedContactMethod})}
 		     //validateCodeFormRef={validateCodeFormRef}
-		     //ref={validateCodeFormRef}
+		     forwardedRef={validateCodeFormRef}
 		     //ref={(ref) => {validateCodeFormRef.current = ref}}
                 />
                 )}
