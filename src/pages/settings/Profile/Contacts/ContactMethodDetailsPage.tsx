@@ -274,6 +274,24 @@ setIsValidateCodeActionModalVisible(false)
 		    }
 		    }
 		}
+		focusTrapSettings={{
+                    focusTrapOptions: {
+			checkCanFocusTrap: (trapContainers) => {
+                            const results = trapContainers.map((trapContainer) => {
+                                return new Promise((resolve) => {
+                                    const interval = setInterval(() => {
+                                        if (getComputedStyle(trapContainer).visibility !== 'hidden') {
+                                            resolve();
+                                            clearInterval(interval);
+                                        }
+                                    }, 5);
+                                });
+                            });
+                            // Return a promise that resolves when all the trap containers are able to receive focus
+                            return Promise.all(results);
+                        }
+                    }
+		}}  
             testID={ContactMethodDetailsPage.displayName}
         >
             <HeaderWithBackButton
