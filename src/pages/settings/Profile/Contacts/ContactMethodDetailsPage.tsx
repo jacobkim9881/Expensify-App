@@ -349,7 +349,7 @@ setIsValidateCodeActionModalVisible(false)
 		    forwardedRef={validateCodeFormRef}
                 />
                 )}
-                {!isValidateCodeActionModalVisible && getMenuItems()}
+                {!isValidateCodeActionModalVisible && loginData?.validatedDate && getMenuItems()}
             </ScrollView>
         </ScreenWrapper>
     );
