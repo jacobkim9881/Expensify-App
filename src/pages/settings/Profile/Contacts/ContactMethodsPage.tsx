@@ -1,5 +1,5 @@
 import {Str} from 'expensify-common';
-import React, {useCallback, useState} from 'react';
+import React, {useRef, useEffect, useMemo, useCallback, useState} from 'react';
 import {View} from 'react-native';
 import {useOnyx} from 'react-native-onyx';
 import Button from '@components/Button';
@@ -22,6 +22,8 @@ import ONYXKEYS from '@src/ONYXKEYS';
 import ROUTES from '@src/ROUTES';
 import type SCREENS from '@src/SCREENS';
 import {isEmptyObject} from '@src/types/utils/EmptyObject';
+import FocusTrapContainerElement from '@components/FocusTrap/FocusTrapContainerElement';
+
 
 type ContactMethodsPageProps = PlatformStackScreenProps<SettingsNavigatorParamList, typeof SCREENS.SETTINGS.PROFILE.CONTACT_METHODS>;
 
@@ -35,6 +37,17 @@ function ContactMethodsPage({route}: ContactMethodsPageProps) {
 
     const [isActingAsDelegate] = useOnyx(ONYXKEYS.ACCOUNT, {selector: (account) => !!account?.delegatedAccess?.delegate});
     const [isNoDelegateAccessMenuVisible, setIsNoDelegateAccessMenuVisible] = useState(false);
+	const [headerWithBackBtnContainerElement, setHeaderWithBackButtonContainerElement] = useState<HTMLElement | null>(null); 
+    const [tabBarContainerElement, setTabBarContainerElement] = useState<HTMLElement | null>(null);
+    const [activeTabContainerElement, setActiveTabContainerElement] = useState<HTMLElement | null>(null);
+	const [active, setActive] = useState(document.activeElement);
+	const handleFocusIn = (e) => {
+		console.log('!document.activeElement? : ', document.activeElement === undefined)
+		console.log('document.activeElement: ', document.activeElement)
+    setActive(document.activeElement);
+  }
+	const wrapperRef = useRef(null); 
+
 
     // Sort the login names by placing the one corresponding to the default contact method as the first item before displaying the contact methods.
     // The default contact method is determined by checking against the session email (the current login).
@@ -96,15 +109,48 @@ function ContactMethodsPage({route}: ContactMethodsPageProps) {
         Navigation.navigate(ROUTES.SETTINGS_NEW_CONTACT_METHOD.getRoute(navigateBackTo));
     }, [navigateBackTo, isActingAsDelegate]);
 
+    const containerElements = useMemo(() => {
+        return [headerWithBackBtnContainerElement, tabBarContainerElement, activeTabContainerElement].filter((element) => !!element) as HTMLElement[];
+    }, [headerWithBackBtnContainerElement, tabBarContainerElement, activeTabContainerElement]);
+
+    const onTabFocusTrapContainerElementChanged = useCallback((activeTabElement?: HTMLElement | null) => {
+        setActiveTabContainerElement(activeTabElement ?? null);
+    }, []);
+
+	useEffect(() => () => {
+console.log('out to page')
+	}, [])
+
+useEffect(() => {
+		console.log('!document.activeElement? : ', document.activeElement === undefined)
+		console.log('document.activeElement: ', document.activeElement)
+
+    document.addEventListener('focusin', handleFocusIn)
+    return () => {
+      document.removeEventListener('focusin', handleFocusIn)
+  };
+  }, [])
+
+
     return (
         <ScreenWrapper
             shouldEnableKeyboardAvoidingView={false}
             testID={ContactMethodsPage.displayName}
+	    ref={wrapperRef}
+		focusTrapSettings={{
+		}}
         >
+            <FocusTrapContainerElement
+                onContainerElementChanged={setHeaderWithBackButtonContainerElement}
+                style={[styles.w100]}
+            >
+
             <HeaderWithBackButton
                 title={translate('contacts.contactMethods')}
                 onBackButtonPress={() => Navigation.goBack()}
             />
+
+            </FocusTrapContainerElement>
             <ScrollView contentContainerStyle={styles.flexGrow1}>
                 <View style={[styles.ph5, styles.mv3, styles.flexRow, styles.flexWrap]}>
                     <Text>

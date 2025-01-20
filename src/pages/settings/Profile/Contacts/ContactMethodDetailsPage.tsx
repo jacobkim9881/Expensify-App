@@ -37,6 +37,7 @@ import {isEmptyObject} from '@src/types/utils/EmptyObject';
 import isLoadingOnyxValue from '@src/types/utils/isLoadingOnyxValue';
 import KeyboardUtils from '@src/utils/keyboard';
 import type {ValidateCodeFormHandle} from './ValidateCodeForm/BaseValidateCodeForm';
+import sharedTrapStack from '@components/FocusTrap/sharedTrapStack';
 
 type ContactMethodDetailsPageProps = PlatformStackScreenProps<SettingsNavigatorParamList, typeof SCREENS.SETTINGS.PROFILE.CONTACT_METHOD_DETAILS>;
 
@@ -280,6 +281,7 @@ setIsValidateCodeActionModalVisible(false)
                             const results = trapContainers.map((trapContainer) => {
                                 return new Promise((resolve) => {
                                     const interval = setInterval(() => {
+					    console.log('sharedTrapStack: ', sharedTrapStack)
                                         if (getComputedStyle(trapContainer).visibility !== 'hidden') {
                                             resolve();
                                             clearInterval(interval);
@@ -289,7 +291,8 @@ setIsValidateCodeActionModalVisible(false)
                             });
                             // Return a promise that resolves when all the trap containers are able to receive focus
                             return Promise.all(results);
-                        }
+			},
+
                     }
 		}}  
             testID={ContactMethodDetailsPage.displayName}
