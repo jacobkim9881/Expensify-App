@@ -278,11 +278,12 @@ setIsValidateCodeActionModalVisible(false)
 		focusTrapSettings={{
                     focusTrapOptions: {
 			    //checkCanFocusTrap: (trapContainer : HTMLElement) => {
-				checkCanFocusTrap: (trapContainers : (HTMLElement | SVGElement)[]) => {
+			    checkCanFocusTrap: (trapContainers : Array<HTMLElement | SVGElement>) => {
 				//const results : Promise<void>[] = trapContainers.map((trapContainer) => {
 					return new Promise<void>((resolve) => {
                                     const interval = setInterval(() => {
 					    console.log('sharedTrapStack: ', sharedTrapStack)
+					    console.log('trapContainers: ', trapContainers)
                                         if (getComputedStyle(trapContainers[0]).visibility !== 'hidden') {
                                             resolve();
                                             clearInterval(interval);
