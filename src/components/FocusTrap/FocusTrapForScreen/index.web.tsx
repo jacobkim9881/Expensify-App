@@ -50,6 +50,7 @@ function FocusTrapForScreen({children, focusTrapSettings}: FocusTrapProps) {
                 delayInitialFocus: CONST.ANIMATED_TRANSITION,
                 initialFocus: false,
                 setReturnFocus: false,
+                unpauseOnDeactivate: false,
                 ...(focusTrapSettings?.focusTrapOptions ?? {}),
                 // Called after focus is sent to the focus trap
                 onPostActivate: () => {
