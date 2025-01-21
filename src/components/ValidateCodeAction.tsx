@@ -79,7 +79,7 @@ function ValidateCodeAction({
 
 ValidateCodeAction.displayName = 'ValidateCodeAction';
 
-export default forwardRef((props, ref) => (
+export default forwardRef<ValidateCodeFormHandle, ValidateCodeActionProps>((props, ref) => (
     <ValidateCodeAction
         {...props}
         forwardedRef={ref}

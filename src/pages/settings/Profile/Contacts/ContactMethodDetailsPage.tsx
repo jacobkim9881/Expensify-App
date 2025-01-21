@@ -277,20 +277,21 @@ setIsValidateCodeActionModalVisible(false)
 		}
 		focusTrapSettings={{
                     focusTrapOptions: {
-			checkCanFocusTrap: (trapContainers) => {
-                            const results = trapContainers.map((trapContainer) => {
-                                return new Promise((resolve) => {
+			    //checkCanFocusTrap: (trapContainer : HTMLElement) => {
+				checkCanFocusTrap: (trapContainers : (HTMLElement | SVGElement)[]) => {
+				//const results : Promise<void>[] = trapContainers.map((trapContainer) => {
+					return new Promise<void>((resolve) => {
                                     const interval = setInterval(() => {
 					    console.log('sharedTrapStack: ', sharedTrapStack)
-                                        if (getComputedStyle(trapContainer).visibility !== 'hidden') {
+                                        if (getComputedStyle(trapContainers[0]).visibility !== 'hidden') {
                                             resolve();
                                             clearInterval(interval);
                                         }
                                     }, 5);
                                 });
-                            });
+					//});
                             // Return a promise that resolves when all the trap containers are able to receive focus
-                            return Promise.all(results);
+				//return Promise.all(results);
 			},
 
                     }
