@@ -123,11 +123,25 @@ console.log('out to page')
 
 useEffect(() => {
 		console.log('!document.activeElement? : ', document.activeElement === undefined)
-		console.log('document.activeElement: ', document.activeElement)
+	console.log('document.activeElement: ', document.activeElement)
+	console.log(' wrapperRef.current: ', wrapperRef.current)
+
+	const listener = (e) => {
+		//console.log('popstate: ', e)
+		//console.log('focus wrapperRef: ', wrapperRef)
+		console.log('focus wrapperRef.current: ', wrapperRef.current)
+		if(wrapperRef.current) {
+			console.log('focus...')
+			wrapperRef?.current?.focus?.();
+		}
+	return;
+	}
+	window.addEventListener('popstate', listener);
 
     document.addEventListener('focusin', handleFocusIn)
     return () => {
       document.removeEventListener('focusin', handleFocusIn)
+      document.removeEventListener('popstate', handleFocusIn)
   };
   }, [])
 
@@ -138,6 +152,8 @@ useEffect(() => {
             testID={ContactMethodsPage.displayName}
 	    ref={wrapperRef}
 		focusTrapSettings={{
+                    focusTrapOptions: {
+ initialFocus: undefined		    }
 		}}
         >
             <FocusTrapContainerElement

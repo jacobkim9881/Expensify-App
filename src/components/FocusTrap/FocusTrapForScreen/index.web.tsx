@@ -53,12 +53,7 @@ function FocusTrapForScreen({children, focusTrapSettings}: FocusTrapProps) {
                 unpauseOnDeactivate: false,
                 ...(focusTrapSettings?.focusTrapOptions ?? {}),
                 // Called after focus is sent to the focus trap
-                onPostActivate: () => {
-                    // eslint-disable-next-line no-console
-                    console.log('Focus has been sent to the animated focus trap');
-			console.log('focusTrapSettings?.active: ', focusTrapSettings?.active)
-			console.log('sharedTrapStack,: ', sharedTrapStack)
-                },
+
 
             }}
         >
