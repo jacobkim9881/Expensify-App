@@ -65,6 +65,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
     const {windowWidth} = useWindowDimensions();
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isValidateCodeFormRendered, setIsValidateCodeFormRendered] = useState(false);
     const validateCodeFormRef = useRef<ValidateCodeFormHandle>(null);
     const backTo = route.params.backTo;
 
@@ -165,6 +166,9 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
     useBeforeRemove(() => setIsValidateCodeActionModalVisible(false));
 
     useEffect(() => {
+        if (!isValidateCodeFormRendered && !loginData?.validatedDate) {
+            setIsValidateCodeFormRendered(true);
+        }
         setIsValidateCodeActionModalVisible(!loginData?.validatedDate);
     }, [loginData?.validatedDate, loginData?.errorFields?.addedLogin]);
 
@@ -334,7 +338,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
                     />
                 )}
 
-                {!isValidateCodeActionModalVisible && !!loginData?.validatedDate && getMenuItems()}
+                {!isValidateCodeActionModalVisible && !!loginData?.validatedDate && !isValidateCodeFormRendered && getMenuItems()}
             </ScrollView>
         </ScreenWrapper>
     );
