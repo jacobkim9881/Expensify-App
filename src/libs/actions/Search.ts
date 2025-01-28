@@ -297,21 +297,33 @@ function submitMoneyRequestOnSearch(hash: number, reportList: SearchReport[], po
 }
 
 function approveMoneyRequestOnSearch(hash: number, reportIDList: string[], transactionIDList?: string[]) {
-    const createOnyxData = (update: Partial<SearchTransaction> | Partial<SearchReport>): OnyxUpdate[] => [
+	console.log('reportIDList: ', reportIDList)
+    const createOnyxData = (update: Partial<SearchTransaction> | Partial<SearchReport>, update2): OnyxUpdate[] => [
         {
             onyxMethod: Onyx.METHOD.MERGE,
             key: `${ONYXKEYS.COLLECTION.SNAPSHOT}${hash}`,
             value: {
-                data: transactionIDList
+                data:  [transactionIDList
+                //data: transactionIDList
                     ? (Object.fromEntries(transactionIDList.map((transactionID) => [`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`, update])) as Partial<SearchTransaction>)
                     : (Object.fromEntries(reportIDList.map((reportID) => [`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, update])) as Partial<SearchReport>),
+//(Object.fromEntries(reportIDList.map((reportID) => [`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, update2]))) ] 
             },
         },
     ];
-    const optimisticData: OnyxUpdate[] = createOnyxData({isActionLoading: true});
+    //const optimisticData: OnyxUpdate[] = createOnyxData({isActionLoading: true});
+    const optimisticData: OnyxUpdate[] = createOnyxData({
+	    isActionLoading: true},
+	    {
+	    statusNum: CONST.REPORT.STATUS_NUM.APPROVED,
+	    stateNum: CONST.REPORT.STATE_NUM.APPROVED
+	    }
+
+    );
     const failureData: OnyxUpdate[] = createOnyxData({errors: getMicroSecondOnyxErrorWithTranslationKey('common.genericErrorMessage')});
     const finallyData: OnyxUpdate[] = createOnyxData({isActionLoading: false});
 
+	console.log('optimisticData: ', optimisticData)
     API.write(WRITE_COMMANDS.APPROVE_MONEY_REQUEST_ON_SEARCH, {hash, reportIDList}, {optimisticData, failureData, finallyData});
 }
 
