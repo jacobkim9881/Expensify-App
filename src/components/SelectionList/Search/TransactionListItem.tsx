@@ -35,7 +35,7 @@ function TransactionListItem<TItem extends ListItem>({
 
     const [previousActionItem, setPreviousActionItem] = useState('')
     useEffect(() => {
-	    //console.log('item////////////////////////////: ', item)
+	    console.log('item////////////////////////////: ', item)
 	if(!previousActionItem) {
 		//setIsActionLoading(currentSearchHash, transactionItem, false);        
 	}
