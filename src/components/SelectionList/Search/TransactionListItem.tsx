@@ -42,7 +42,7 @@ function TransactionListItem<TItem extends ListItem>({
 
         if (previousActionItem && transactionItem.action !== previousActionItem && transactionItem.isActionLoading) {
             setPreviousActionItem('');
-            setIsActionLoading(currentSearchHash, transactionItem, false);        
+             //setIsActionLoading(currentSearchHash, transactionItem, false);        
             console.log('item.action !== previousActionItem.current//////////////')
 	    console.log('previousActionItem: ', previousActionItem, ', transactionItem.action: ', transactionItem.action)
 	    console.log('transactionItem: ', transactionItem)
@@ -56,7 +56,7 @@ function TransactionListItem<TItem extends ListItem>({
             console.log('previousActionItem: ', previousActionItem, ', transactionItem.action: ', transactionItem.action)
             console.log('previousActionItem.current is not definedddddddddddd')
 
-            setIsActionLoading(currentSearchHash, transactionItem, true);        
+             //setIsActionLoading(currentSearchHash, transactionItem, true);        
             setPreviousActionItem(transactionItem.action);
 	}   
         }, [currentSearchHash, transactionItem])
