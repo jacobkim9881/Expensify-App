@@ -19,6 +19,7 @@ import useLocalize from '@hooks/useLocalize';
 import usePrevious from '@hooks/usePrevious';
 import useTheme from '@hooks/useTheme';
 import useThemeStyles from '@hooks/useThemeStyles';
+import useWindowDimensions from '@hooks/useWindowDimensions';
 import blurActiveElement from '@libs/Accessibility/blurActiveElement';
 import {canUseTouchScreen} from '@libs/DeviceCapabilities';
 import * as ErrorUtils from '@libs/ErrorUtils';
@@ -52,6 +53,7 @@ function ContactMethodDetailsPage({route}: ContactMethodDetailsPageProps) {
     const {formatPhoneNumber, translate} = useLocalize();
     const theme = useTheme();
     const themeStyles = useThemeStyles();
+    const {windowWidth} = useWindowDimensions();
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const validateCodeFormRef = useRef<ValidateCodeFormHandle>(null);

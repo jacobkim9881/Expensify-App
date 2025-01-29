@@ -302,17 +302,63 @@ function approveMoneyRequestOnSearch(hash: number, reportIDList: string[], trans
             onyxMethod: Onyx.METHOD.MERGE,
             key: `${ONYXKEYS.COLLECTION.SNAPSHOT}${hash}`,
             value: {
+		    /*
                 data: transactionIDList
                     ? (Object.fromEntries(transactionIDList.map((transactionID) => [`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`, update])) as Partial<SearchTransaction>)
                     : (Object.fromEntries(reportIDList.map((reportID) => [`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, update])) as Partial<SearchReport>),
+		    */
+		    data: Object.fromEntries(reportIDList.map((reportID) => [`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, update])) as Partial<SearchReport>
             },
         },
     ];
-    const optimisticData: OnyxUpdate[] = createOnyxData({isActionLoading: true});
-    const failureData: OnyxUpdate[] = createOnyxData({errors: getMicroSecondOnyxErrorWithTranslationKey('common.genericErrorMessage'), isActionLoading: false});
+
+	/*
+    const createOnyxData1 = (update: Partial<SearchTransaction> | Partial<SearchReport>): OnyxUpdate[] => [
+        {
+            onyxMethod: Onyx.METHOD.MERGE,
+            key: `${ONYXKEYS.COLLECTION.SNAPSHOT}${hash}`,
+            value: {
+		    data: (Object.fromEntries(transactionIDList.map((transactionID) => [`${ONYXKEYS.COLLECTION.TRANSACTION}${transactionID}`, update])) as Partial<SearchTransaction>)
+            },
+        },
+    ];
+    */
+
+    const optimisticTransactionData: OnyxUpdate = {
+            onyxMethod: Onyx.METHOD.MERGE,
+            key: `${ONYXKEYS.COLLECTION.SNAPSHOT}${hash}`,
+            value: {
+		    data: Object.fromEntries(reportIDList.map((reportID) => [`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, {
+isActionLoading: true
+		    }])) as Partial<SearchReport>
+            },
+        };
+
+    const optimisticReportData: OnyxUpdate = {
+            onyxMethod: Onyx.METHOD.MERGE,
+            key: `${ONYXKEYS.COLLECTION.SNAPSHOT}${hash}`,
+            value: {
+		    data: Object.fromEntries(reportIDList.map((reportID) => [`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, {
+    stateNum: CONST.REPORT.STATE_NUM.APPROVED,
+	    statusNum: CONST.REPORT.STATUS_NUM.APPROVED
+		    }])) as Partial<SearchReport>
+            },
+        };
+
+    const optimisticData2: OnyxUpdate[] = [optimisticTransactionData, optimisticReportData];
+
+    const optimisticData: OnyxUpdate[] = createOnyxData({
+	    stateNum: CONST.REPORT.STATE_NUM.APPROVED,
+	    statusNum: CONST.REPORT.STATUS_NUM.APPROVED
+    });
+     //const optimisticData: OnyxUpdate[] = createOnyxData({isActionLoading: true});
+    const failureData: OnyxUpdate[] = createOnyxData({errors: getMicroSecondOnyxErrorWithTranslationKey('common.genericErrorMessage')});
+     //const failureData: OnyxUpdate[] = createOnyxData({errors: getMicroSecondOnyxErrorWithTranslationKey('common.genericErrorMessage'), isActionLoading: false});
     const finallyData: OnyxUpdate[] = createOnyxData({isActionLoading: false});
 
-    API.write(WRITE_COMMANDS.APPROVE_MONEY_REQUEST_ON_SEARCH, {hash, reportIDList}, {failureData});
+    API.write(WRITE_COMMANDS.APPROVE_MONEY_REQUEST_ON_SEARCH, {hash, reportIDList}, {optimisticData2, failureData, finallyData});
+     //API.write(WRITE_COMMANDS.APPROVE_MONEY_REQUEST_ON_SEARCH, {hash, reportIDList}, {optimisticData, failureData, finallyData});
+     //API.write(WRITE_COMMANDS.APPROVE_MONEY_REQUEST_ON_SEARCH, {hash, reportIDList}, {failureData});
 }
 
 function payMoneyRequestOnSearch(hash: number, paymentData: PaymentData[], transactionIDList?: string[]) {
