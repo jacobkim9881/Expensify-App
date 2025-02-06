@@ -26,7 +26,6 @@ const actionTranslationsMap: Record<SearchTransactionAction, TranslationPaths> =
 
 type ActionCellProps = {
     action?: SearchTransactionAction;
-    shouldUseSuccessStyle?: boolean;
     isLargeScreenWidth?: boolean;
     isSelected?: boolean;
     goToItem: () => void;
@@ -37,7 +36,6 @@ type ActionCellProps = {
 
 function ActionCell({
     action = CONST.SEARCH.ACTION_TYPES.VIEW,
-    shouldUseSuccessStyle: shouldUseSuccessStyleProp = true,
     isLargeScreenWidth = true,
     isSelected = false,
     goToItem,
@@ -125,13 +123,15 @@ lastAction.current = text;
     }
 
     if (action === CONST.SEARCH.ACTION_TYPES.VIEW || action === CONST.SEARCH.ACTION_TYPES.REVIEW || shouldUseViewAction) {
+        const buttonInnerStyles = isSelected ? styles.buttonDefaultSelected : {};
+
         return isLargeScreenWidth ? (
             <Button
                 text={text}
                 onPress={goToItem}
                 small
                 style={[styles.w100]}
-                innerStyles={getButtonInnerStyles(false)}
+                innerStyles={buttonInnerStyles}
                 link={isChildListItem}
                 shouldUseDefaultHover={!isChildListItem}
                 icon={!isChildListItem && action === CONST.SEARCH.ACTION_TYPES.REVIEW ? Expensicons.DotIndicator : undefined}
@@ -148,7 +148,6 @@ lastAction.current = text;
 	    //onPress={handleLoading}
             small
             style={[styles.w100]}
-            innerStyles={getButtonInnerStyles(shouldUseSuccessStyleProp)}
 	    isLoading={isLoading}
 	    //isLoading={isLoading || getLastAction === text}
             success={shouldUseSuccessStyleProp}
