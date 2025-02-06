@@ -150,7 +150,7 @@ lastAction.current = text;
             style={[styles.w100]}
 	    isLoading={isLoading}
 	    //isLoading={isLoading || getLastAction === text}
-            success={shouldUseSuccessStyleProp}
+            success
             isDisabled={isOffline}
         />
     );

@@ -289,8 +289,6 @@ previousActionItem.current = item.action
 	
 		}
 	}, [item, previousActionItem])
-    const isOnHold = useMemo(() => TransactionUtils.isOnHold(item), [item]);
-
     if (!isLargeScreenWidth) {
         return (
             <View style={containerStyle}>

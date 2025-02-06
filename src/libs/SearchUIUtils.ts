@@ -367,8 +367,8 @@ console.log('getAction........................CONST.SEARCH.ACTION_TYPES.PAY')
     const isAllowedToApproveExpenseReport = isAllowedToApproveExpenseReportUtils(report, undefined, policy);
     if (canApproveIOU(report, policy) && isAllowedToApproveExpenseReport && !hasOnlyPendingTransactions) {
         console.log('getAction........................CONST.SEARCH.ACTION_TYPES.APPROVE:')
-	    console.log('IOU.canApproveIOU(report, policy): ', IOU.canApproveIOU(report, policy))
-	    console.log('ReportUtils.isAllowedToApproveExpenseReport(report, undefined, policy): ', ReportUtils.isAllowedToApproveExpenseReport(report, undefined, policy))
+	    console.log('IOU.canApproveIOU(report, policy): ', canApproveIOU(report, policy))
+	    console.log('ReportUtils.isAllowedToApproveExpenseReport(report, undefined, policy): ', isAllowedToApproveExpenseReport)
 
         return CONST.SEARCH.ACTION_TYPES.APPROVE;
     }
